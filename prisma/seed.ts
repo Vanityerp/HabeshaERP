@@ -503,28 +503,38 @@ async function main() {
   tomorrow.setDate(tomorrow.getDate() + 1)
   tomorrow.setHours(10, 0, 0, 0)
 
-  const appointment1 = await prisma.appointment.create({
-    data: {
-      bookingReference: 'VH-001',
-      clientId: client1User.id,
-      staffId: staffMembers[0].member.id, // First staff member
-      locationId: locations[0].id, // D-ring road location
-      date: tomorrow,
-      duration: 60,
-      totalPrice: 150,
-      status: 'CONFIRMED',
-      notes: 'First time client',
-    },
+  // Check if appointment already exists
+  let appointment1 = await prisma.appointment.findUnique({
+    where: { bookingReference: 'VH-001' }
   })
 
-  await prisma.appointmentService.create({
-    data: {
-      appointmentId: appointment1.id,
-      serviceId: services[0].id,
-      price: 150,
-      duration: 60,
-    },
-  })
+  if (!appointment1) {
+    appointment1 = await prisma.appointment.create({
+      data: {
+        bookingReference: 'VH-001',
+        clientId: client1User.id,
+        staffId: staffMembers[0].member.id, // First staff member
+        locationId: locations[0].id, // D-ring road location
+        date: tomorrow,
+        duration: 60,
+        totalPrice: 150,
+        status: 'CONFIRMED',
+        notes: 'First time client',
+      },
+    })
+
+    await prisma.appointmentService.create({
+      data: {
+        appointmentId: appointment1.id,
+        serviceId: services[0].id,
+        price: 150,
+        duration: 60,
+      },
+    })
+    console.log('  ✅ Created sample appointment')
+  } else {
+    console.log('  ⏭️  Sample appointment already exists')
+  }
 
   // Create loyalty programs
   await Promise.all([
@@ -546,15 +556,23 @@ async function main() {
     }),
   ])
 
+  // Note: Transaction seeding is skipped for now
+  // Transactions will be created automatically when:
+  // 1. Appointments are completed via POS
+  // 2. Products are sold via POS
+  // 3. Services are sold via POS
+  console.log('💰 Transaction tracking is enabled - transactions will be created from sales')
+
   console.log('✅ Database seeding completed successfully!')
   console.log('📊 Created:')
-  console.log('  - 23 users (1 admin, 20 staff, 2 clients)')
+  console.log('  - 25 users (1 admin, 23 staff, 2 clients)')
   console.log('  - 5 locations (D-ring road, Muaither, Medinat Khalifa, Home service, Online store)')
   console.log(`  - ${realServiceData.length} real salon services`)
   console.log(`  - ${realServiceData.length * 4} location-service associations (excluding online store)`)
-  console.log('  - 20 staff members with comprehensive HR data')
+  console.log('  - 23 staff members with comprehensive HR data')
   console.log('  - 1 sample appointment')
   console.log('  - 2 loyalty programs')
+  console.log('  - Transaction tracking enabled (transactions created from sales)')
 
   // Count services by category
   const categoryCount = realServiceData.reduce((acc, service) => {
