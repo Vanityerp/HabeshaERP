@@ -79,7 +79,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { staffId, locationIds, generatePassword = true, customPassword } = body
+    const { staffId, locationIds, generatePassword = true, customPassword, customUsername } = body
 
     console.log(`🔄 Creating credentials for staff ID: ${staffId}`)
 
@@ -100,13 +100,50 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Staff member already has login credentials" }, { status: 400 })
     }
 
-    // Generate username and password
-    const username = generateUsername(staffMember.name, staffMember.employeeNumber || undefined)
+    // Generate or use custom username
+    let username: string
+    if (customUsername) {
+      username = customUsername.toLowerCase().trim()
+      // Validate username format
+      if (!/^[a-z0-9.]+$/.test(username)) {
+        return NextResponse.json({
+          error: "Username can only contain lowercase letters, numbers, and dots"
+        }, { status: 400 })
+      }
+    } else {
+      username = generateUsername(staffMember.name, staffMember.employeeNumber || undefined)
+    }
+
     const email = `${username}@vanityhub.com`
+
+    // Check if email already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { email }
+    })
+
+    if (existingUser) {
+      return NextResponse.json({
+        error: "This username is already taken. Please choose a different one."
+      }, { status: 400 })
+    }
+
+    // Generate or use custom password
     const password = generatePassword ? generateTemporaryPassword() : customPassword
-    
+
     if (!password) {
       return NextResponse.json({ error: "Password is required" }, { status: 400 })
+    }
+
+    // Validate password if custom password is provided
+    if (!generatePassword && customPassword) {
+      const { validatePassword } = await import('@/lib/auth-utils')
+      const validation = validatePassword(customPassword)
+      if (!validation.isValid) {
+        return NextResponse.json({
+          error: "Password validation failed",
+          details: validation.errors
+        }, { status: 400 })
+      }
     }
 
     // Hash the password
@@ -150,12 +187,13 @@ export async function POST(request: NextRequest) {
     }
 
     console.log(`✅ Successfully created credentials for ${staffMember.name}`)
-    
+
     return NextResponse.json({
       success: true,
       credentials: {
         username: email,
         temporaryPassword: generatePassword ? password : undefined,
+        password: !generatePassword ? password : undefined,
         staffId,
         userId: user.id
       }

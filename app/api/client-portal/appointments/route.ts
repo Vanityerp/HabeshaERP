@@ -3,6 +3,7 @@ import { appointments, createAppointment, Appointment } from "@/lib/appointments
 import { parseISO, isBefore, isAfter, addMinutes } from "date-fns";
 import { addAppointment, getAllAppointments } from "@/lib/appointment-service";
 import { getUserFromHeaders, filterAppointmentsByLocationAccess } from "@/lib/auth-server";
+import { prisma } from "@/lib/prisma";
 
 // Get all appointments or filter by client
 export async function GET(request: NextRequest) {
@@ -68,6 +69,14 @@ export async function GET(request: NextRequest) {
 export async function POST(request: Request) {
   try {
     const data = await request.json();
+
+    console.log("📅 Client Portal: Booking appointment for client:", {
+      clientId: data.clientId,
+      clientName: data.clientName,
+      clientPhone: data.clientPhone,
+      service: data.service,
+      isGuestCheckout: data.isGuestCheckout
+    });
 
     // Validate required fields
     if (!data.clientId || !data.staffId || !data.service || !data.date || !data.duration || !data.location) {
@@ -161,27 +170,80 @@ export async function POST(request: Request) {
       updatedAt: new Date().toISOString()
     };
 
-    // In a real app, we would save this to a database
-    // For now, we'll add it to our mock data and use the appointment service
-
-    // Add to the appointments array for backward compatibility
-    appointments.push(newAppointment);
-
-    // Use the appointment service to add the appointment to all storage locations
-    // Note: The appointment service can't directly update localStorage on the server side,
-    // but it will update the in-memory arrays that will be used by the client
+    // Save appointment to Prisma database
     try {
-      // Add the appointment using the appointment service
-      addAppointment(newAppointment);
-      console.log("API: Created new appointment via appointment service", newAppointment.id);
-    } catch (error) {
-      console.error("Error in appointment creation:", error);
-    }
+      console.log("💾 Saving appointment to Prisma database...");
 
-    return NextResponse.json({
-      success: true,
-      appointment: newAppointment
-    });
+      // Create appointment in Prisma
+      const prismaAppointment = await prisma.appointment.create({
+        data: {
+          bookingReference: newAppointment.bookingReference,
+          clientId: data.clientId,
+          staffId: data.staffId,
+          locationId: data.location, // location is the locationId
+          date: new Date(data.date),
+          duration: data.duration,
+          totalPrice: data.price || 0,
+          status: data.status || "PENDING",
+          notes: data.notes,
+          services: {
+            create: data.serviceId ? [{
+              serviceId: data.serviceId,
+              price: data.price || 0,
+              duration: data.duration
+            }] : []
+          }
+        },
+        include: {
+          client: true,
+          staff: true,
+          location: true,
+          services: {
+            include: {
+              service: true
+            }
+          }
+        }
+      });
+
+      console.log("✅ Appointment saved to Prisma:", prismaAppointment.id);
+
+      // Also add to in-memory arrays for backward compatibility
+      appointments.push(newAppointment);
+
+      try {
+        addAppointment(newAppointment);
+        console.log("✅ Appointment added to appointment service");
+      } catch (error) {
+        console.error("⚠️ Error adding to appointment service:", error);
+      }
+
+      return NextResponse.json({
+        success: true,
+        appointment: {
+          ...newAppointment,
+          id: prismaAppointment.id,
+          prismaId: prismaAppointment.id
+        }
+      });
+    } catch (error) {
+      console.error("❌ Error saving appointment to Prisma:", error);
+
+      // Fallback to in-memory storage if Prisma fails
+      appointments.push(newAppointment);
+
+      try {
+        addAppointment(newAppointment);
+      } catch (serviceError) {
+        console.error("Error in appointment service:", serviceError);
+      }
+
+      return NextResponse.json({
+        success: true,
+        appointment: newAppointment,
+        warning: "Appointment saved to memory only, not persisted to database"
+      });
+    }
   } catch (error) {
     console.error("Error booking appointment:", error);
     return NextResponse.json({ error: "Failed to book appointment" }, { status: 500 });

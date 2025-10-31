@@ -85,7 +85,7 @@ export function ClientSignupForm() {
         if (existingClient && existingClient.id === newClient.id) {
           // Update existing client with new email if different
           if (existingClient.email !== formData.email) {
-            updateClient(existingClient.id, { email: formData.email })
+            await updateClient(existingClient.id, { email: formData.email })
           }
 
           // Store authentication for existing client

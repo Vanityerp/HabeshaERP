@@ -26,7 +26,8 @@ import {
   XCircle,
   AlertTriangle,
   PlayCircle,
-  PauseCircle
+  PauseCircle,
+  Home
 } from "lucide-react"
 import { parseISO, subDays, isAfter, isBefore, addMinutes } from "date-fns"
 import { formatAppDate, formatAppTime, isPast, isToday, isFuture } from "@/lib/date-utils"
@@ -286,22 +287,43 @@ export default function AppointmentsPage() {
     }
   }
 
+  // Check if appointment is a home service
+  const isHomeService = (location: string) => {
+    return location?.toLowerCase().includes('home service') || location?.toLowerCase() === 'home';
+  };
+
   // Appointment Card Component
   const AppointmentCard = ({ appointment, showTimeStatus = false }: { appointment: AppointmentData, showTimeStatus?: boolean }) => {
     const staffDetails = getStaffDetails(appointment.staffId)
     const timeStatus = showTimeStatus ? getTimeStatus(appointment) : null
     const appointmentDate = parseISO(appointment.date)
+    const isHome = isHomeService(appointment.location)
 
     return (
-      <Card className="hover:shadow-md transition-shadow">
+      <Card className={`hover:shadow-md transition-shadow ${
+        isHome ? 'border-l-4 border-l-blue-500 bg-blue-50/30' : ''
+      }`}>
         <CardContent className="p-6">
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center space-x-3">
-              <div className="p-2 bg-pink-100 rounded-lg">
-                <Scissors className="h-5 w-5 text-pink-600" />
+              <div className={`p-2 rounded-lg ${
+                isHome ? 'bg-blue-100' : 'bg-pink-100'
+              }`}>
+                {isHome ? (
+                  <Home className="h-5 w-5 text-blue-600" />
+                ) : (
+                  <Scissors className="h-5 w-5 text-pink-600" />
+                )}
               </div>
               <div>
-                <h3 className="font-semibold text-lg">{appointment.service}</h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-semibold text-lg">{appointment.service}</h3>
+                  {isHome && (
+                    <Badge className="bg-blue-100 text-blue-700 border-blue-300 text-xs">
+                      Home Service
+                    </Badge>
+                  )}
+                </div>
                 <p className="text-sm text-gray-600">
                   {formatAppDate(appointmentDate)} at {formatAppTime(appointmentDate)}
                 </p>
@@ -349,8 +371,14 @@ export default function AppointmentsPage() {
 
           {/* Location and Booking Reference */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div className="flex items-center text-sm text-gray-600">
-              <MapPin className="h-4 w-4 mr-2" />
+            <div className={`flex items-center text-sm ${
+              isHome ? 'text-blue-700 font-medium' : 'text-gray-600'
+            }`}>
+              {isHome ? (
+                <Home className="h-4 w-4 mr-2" />
+              ) : (
+                <MapPin className="h-4 w-4 mr-2" />
+              )}
               {getLocationName(appointment.location)}
             </div>
             {appointment.bookingReference && (

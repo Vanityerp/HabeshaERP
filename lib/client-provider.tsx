@@ -13,11 +13,11 @@ interface ClientContextType {
   clients: Client[]
   getClient: (id: string) => Client | undefined
   addClient: (client: Omit<Client, "id" | "avatar" | "segment" | "status">) => Promise<Client>
-  updateClient: (id: string, clientData: Partial<Client>) => Client | undefined
+  updateClient: (id: string, clientData: Partial<Client>) => Promise<Client | undefined>
   deleteClient: (id: string) => boolean
-  updateClientPreferences: (id: string, preferences: ClientPreferences) => Client | undefined
-  updateClientSegment: (id: string, segment: Client["segment"]) => Client | undefined
-  updateClientStatus: (id: string, status: Client["status"]) => Client | undefined
+  updateClientPreferences: (id: string, preferences: ClientPreferences) => Promise<Client | undefined>
+  updateClientSegment: (id: string, segment: Client["segment"]) => Promise<Client | undefined>
+  updateClientStatus: (id: string, status: Client["status"]) => Promise<Client | undefined>
   // Auto-registration methods
   findClientByPhoneAndName: (phone: string, name: string) => Client | undefined
   autoRegisterClient: (clientData: {
@@ -28,22 +28,22 @@ interface ClientContextType {
     preferredLocation?: string
   }) => Promise<Client | null>
   normalizePhoneNumber: (phone: string) => string
-  refreshClients: () => Promise<void>
+  refreshClients: () => Promise<Client[]>
 }
 
 const ClientContext = createContext<ClientContextType>({
   clients: [],
   getClient: () => undefined,
   addClient: async () => ({} as Client),
-  updateClient: () => undefined,
+  updateClient: async () => undefined,
   deleteClient: () => false,
-  updateClientPreferences: () => undefined,
-  updateClientSegment: () => undefined,
-  updateClientStatus: () => undefined,
+  updateClientPreferences: async () => undefined,
+  updateClientSegment: async () => undefined,
+  updateClientStatus: async () => undefined,
   findClientByPhoneAndName: () => undefined,
   autoRegisterClient: async () => null,
   normalizePhoneNumber: () => "",
-  refreshClients: async () => {},
+  refreshClients: async () => [],
 })
 
 export function ClientProvider({ children }: { children: React.ReactNode }) {
@@ -51,36 +51,26 @@ export function ClientProvider({ children }: { children: React.ReactNode }) {
   const [isInitialized, setIsInitialized] = useState(false)
   const { toast } = useToast()
 
-  // Load clients from database on initialization
+  // Load clients from Prisma database (SINGLE SOURCE OF TRUTH) on initialization
   useEffect(() => {
     if (isInitialized) return;
 
     const loadClientsFromDatabase = async () => {
       try {
-        console.log('Loading clients from database...')
+        console.log('🔄 Loading clients from Prisma (single source of truth)...')
         const response = await fetch('/api/clients')
         if (response.ok) {
           const data = await response.json()
-          // API now returns properly transformed clients
-          console.log(`Initial load: API returned ${data.clients.length} clients:`, data.clients.map(c => c.name))
+          // API returns clients from Prisma database
+          console.log(`✅ Loaded ${data.clients.length} clients from Prisma`)
           setClients(data.clients)
-          console.log(`Loaded ${data.clients.length} clients from database`)
         } else {
-          console.warn('Failed to load clients from database, using fallback:', response.status, response.statusText)
-          // Fallback to local storage/mock data
-          const fallbackClients = ClientDataService.getClients()
-          setClients(Array.isArray(fallbackClients) ? fallbackClients : [])
-        }
-      } catch (error) {
-        console.error("Error loading clients from database:", error)
-        // Fallback to local storage/mock data
-        try {
-          const fallbackClients = ClientDataService.getClients()
-          setClients(Array.isArray(fallbackClients) ? fallbackClients : [])
-        } catch (fallbackError) {
-          console.error("Error loading fallback clients:", fallbackError)
+          console.error('❌ Failed to load clients from Prisma:', response.status, response.statusText)
           setClients([])
         }
+      } catch (error) {
+        console.error("❌ Error loading clients from Prisma:", error)
+        setClients([])
       }
     }
 
@@ -231,30 +221,79 @@ export function ClientProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  // Update an existing client
-  const updateClient = (id: string, clientData: Partial<Client>) => {
-    let updatedClient: Client | undefined
+  // Update an existing client with database persistence
+  const updateClient = async (id: string, clientData: Partial<Client>) => {
+    try {
+      console.log('🔄 Updating client:', id, clientData)
 
-    setClients(prevClients => {
-      const updatedClients = prevClients.map(client => {
-        if (client.id === id) {
-          updatedClient = { ...client, ...clientData }
-          return updatedClient
+      // Persist to database via API
+      const apiPayload: any = {
+        name: clientData.name,
+        email: clientData.email,
+        phone: clientData.phone,
+        address: clientData.address,
+        city: clientData.city,
+        state: clientData.state,
+        zipCode: clientData.zip, // Map 'zip' to 'zipCode' for API
+        birthday: clientData.birthday,
+        notes: clientData.notes,
+        preferredLocationId: clientData.preferredLocation, // Send as-is (e.g., "loc1")
+        preferences: clientData.preferences
+      }
+
+      // Remove undefined values to avoid overwriting with undefined
+      Object.keys(apiPayload).forEach(key => {
+        if (apiPayload[key] === undefined) {
+          delete apiPayload[key]
         }
-        return client
       })
 
-      return updatedClients
-    })
+      console.log('📤 Sending API payload:', apiPayload)
 
-    if (updatedClient) {
+      const response = await fetch(`/api/clients/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(apiPayload)
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        console.error('❌ API Error:', errorData)
+        throw new Error(errorData.error || `Failed to update client: ${response.statusText}`)
+      }
+
+      const responseData = await response.json()
+      console.log('✅ API Response:', responseData)
+
+      // Refresh clients from database to ensure consistency
+      const refreshedClients = await refreshClients()
+
+      // Get the updated client from the refreshed list
+      const updatedClient = refreshedClients.find(c => c.id === id)
+
+      if (updatedClient) {
+        toast({
+          title: "Client updated",
+          description: `${updatedClient.name}'s information has been updated.`,
+        })
+      }
+
+      return updatedClient
+    } catch (error) {
+      console.error('❌ Error updating client:', error)
       toast({
-        title: "Client updated",
-        description: `${updatedClient.name}'s information has been updated.`,
+        title: "Update failed",
+        description: error instanceof Error ? error.message : "Failed to update client. Please try again.",
+        variant: "destructive"
       })
-    }
 
-    return updatedClient
+      // Revert local state by refreshing from database
+      await refreshClients()
+
+      return undefined
+    }
   }
 
   // Delete a client
@@ -275,18 +314,18 @@ export function ClientProvider({ children }: { children: React.ReactNode }) {
   }
 
   // Update client preferences
-  const updateClientPreferences = (id: string, preferences: ClientPreferences) => {
-    return updateClient(id, { preferences })
+  const updateClientPreferences = async (id: string, preferences: ClientPreferences) => {
+    return await updateClient(id, { preferences })
   }
 
   // Update client segment
-  const updateClientSegment = (id: string, segment: Client["segment"]) => {
-    return updateClient(id, { segment })
+  const updateClientSegment = async (id: string, segment: Client["segment"]) => {
+    return await updateClient(id, { segment })
   }
 
   // Update client status
-  const updateClientStatus = (id: string, status: Client["status"]) => {
-    return updateClient(id, { status })
+  const updateClientStatus = async (id: string, status: Client["status"]) => {
+    return await updateClient(id, { status })
   }
 
   // Normalize phone number for consistent comparison
@@ -372,22 +411,23 @@ export function ClientProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  // Refresh clients from database
-  const refreshClients = async () => {
+  // Refresh clients from Prisma database (SINGLE SOURCE OF TRUTH)
+  const refreshClients = async (): Promise<Client[]> => {
     try {
-      console.log('Refreshing clients from database...')
+      console.log('🔄 Refreshing clients from Prisma...')
       const response = await fetch('/api/clients')
       if (response.ok) {
         const data = await response.json()
-        // API now returns properly transformed clients
-        console.log(`API returned ${data.clients.length} clients:`, data.clients.map(c => c.name))
+        console.log(`✅ Refreshed ${data.clients.length} clients from Prisma`)
         setClients(data.clients)
-        console.log(`Refreshed ${data.clients.length} clients from database`)
+        return data.clients
       } else {
-        console.error('Failed to refresh clients from database:', response.status, response.statusText)
+        console.error('❌ Failed to refresh clients from Prisma:', response.status, response.statusText)
+        return []
       }
     } catch (error) {
-      console.error("Error refreshing clients:", error)
+      console.error("❌ Error refreshing clients from Prisma:", error)
+      return []
     }
   }
 

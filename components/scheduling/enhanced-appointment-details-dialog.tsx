@@ -28,7 +28,8 @@ import {
   Scissors,
   ShoppingBag,
   DollarSign,
-  CreditCard
+  CreditCard,
+  Home
 } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import { Separator } from "@/components/ui/separator"
@@ -96,6 +97,7 @@ export function EnhancedAppointmentDetailsDialog({
   const [activeTab, setActiveTab] = useState("details")
   const [isUpdating, setIsUpdating] = useState(false)
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false)
+  const [lastTransaction, setLastTransaction] = useState<any>(null)
 
   // Dialog states for other actions
   const [isRescheduleDialogOpen, setIsRescheduleDialogOpen] = useState(false)
@@ -123,6 +125,11 @@ export function EnhancedAppointmentDetailsDialog({
       .map(part => part[0])
       .join('')
       .toUpperCase();
+  };
+
+  // Check if appointment is a home service
+  const isHomeService = (location: string) => {
+    return location?.toLowerCase().includes('home service') || location?.toLowerCase() === 'home';
   };
 
   // Status colors for badges
@@ -366,6 +373,9 @@ export function EnhancedAppointmentDetailsDialog({
           productAmount: consolidatedTransaction.productAmount,
           discountAmount: consolidatedTransaction.discountAmount
         });
+
+        // Store the transaction for the payment dialog
+        setLastTransaction(consolidatedTransaction);
       } else {
         console.error("❌ Failed to create consolidated transaction");
       }
@@ -502,12 +512,45 @@ export function EnhancedAppointmentDetailsDialog({
     return total;
   };
 
+  // Calculate service total (excluding products)
+  const calculateServiceTotal = () => {
+    let total = 0;
+
+    // Add main service price
+    if (typeof appointment.price === 'number') {
+      total += appointment.price;
+    }
+
+    // Add additional services prices
+    if (appointment.additionalServices && appointment.additionalServices.length > 0) {
+      appointment.additionalServices.forEach((service: any) => {
+        if (typeof service.price === 'number') {
+          total += service.price;
+        }
+      });
+    }
+
+    return total;
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[550px] md:max-w-[600px] p-0 overflow-hidden">
-        <DialogHeader className="p-6 pb-2 sticky top-0 bg-background z-10">
+      <DialogContent className={`sm:max-w-[550px] md:max-w-[600px] p-0 overflow-hidden ${
+        isHomeService(appointment.location) ? 'border-l-4 border-l-blue-500' : ''
+      }`}>
+        <DialogHeader className={`p-6 pb-2 sticky top-0 z-10 ${
+          isHomeService(appointment.location) ? 'bg-blue-50/50' : 'bg-background'
+        }`}>
           <div className="flex justify-between items-center">
-            <DialogTitle>{appointment.type === "blocked" ? "Blocked Time" : "Appointment Details"}</DialogTitle>
+            <div className="flex items-center gap-2">
+              <DialogTitle>{appointment.type === "blocked" ? "Blocked Time" : "Appointment Details"}</DialogTitle>
+              {isHomeService(appointment.location) && (
+                <Badge className="bg-blue-100 text-blue-800 border-blue-300">
+                  <Home className="h-3 w-3 mr-1" />
+                  Home Service
+                </Badge>
+              )}
+            </div>
             <Badge
               className={`${statusColors[appointment.status as keyof typeof statusColors] || statusColors.pending}`}
             >
@@ -561,12 +604,6 @@ export function EnhancedAppointmentDetailsDialog({
                         </Badge>
                       )}
                     </div>
-                    <p className="text-sm text-muted-foreground">
-                      {appointment.clientId ?
-                        (appointment.clientId.includes('@') ? appointment.clientId : 'client@example.com')
-                        : 'client@example.com'
-                      }
-                    </p>
                   </div>
                 </div>
               )}
@@ -813,15 +850,32 @@ export function EnhancedAppointmentDetailsDialog({
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3">
+                <div className={`flex items-start gap-3 p-3 rounded-md ${
+                  isHomeService(appointment.location)
+                    ? 'bg-blue-50 border border-blue-200'
+                    : ''
+                }`}>
                   <div className="w-5 h-5 mt-0.5 flex-shrink-0">
-                    <MapPin className="h-5 w-5 text-gray-500" />
+                    {isHomeService(appointment.location) ? (
+                      <Home className="h-5 w-5 text-blue-600" />
+                    ) : (
+                      <MapPin className="h-5 w-5 text-gray-500" />
+                    )}
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <h4 className="font-medium">Location</h4>
-                    <p className="text-sm text-gray-600">
-                      {getLocationName(appointment.location)}
-                    </p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <p className={`text-sm ${
+                        isHomeService(appointment.location) ? 'text-blue-700 font-medium' : 'text-gray-600'
+                      }`}>
+                        {getLocationName(appointment.location)}
+                      </p>
+                      {isHomeService(appointment.location) && (
+                        <Badge variant="outline" className="bg-blue-100 text-blue-700 border-blue-300 text-xs">
+                          Home Visit
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -1014,9 +1068,14 @@ export function EnhancedAppointmentDetailsDialog({
       {/* Payment Dialog */}
       <PaymentDialog
         open={isPaymentDialogOpen}
-        onOpenChange={setIsPaymentDialogOpen}
+        onOpenChange={(open) => {
+          setIsPaymentDialogOpen(open);
+          if (!open) setLastTransaction(null);
+        }}
         total={calculateTotal()}
+        serviceTotal={calculateServiceTotal()}
         onComplete={handlePaymentComplete}
+        lastTransaction={lastTransaction}
       />
 
       {/* Reschedule Dialog */}

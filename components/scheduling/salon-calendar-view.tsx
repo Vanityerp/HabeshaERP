@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ChevronLeft, ChevronRight, CalendarIcon, ListIcon, Plus } from "lucide-react"
+import { ChevronLeft, ChevronRight, CalendarIcon, ListIcon, Plus, Home } from "lucide-react"
 import { format, addDays, subDays, parseISO } from "date-fns"
 import { cn } from "@/lib/utils"
 import { getCleanClientName } from "@/lib/utils/client-name-utils"
@@ -146,8 +146,18 @@ export function SalonCalendarView({ onAddAppointment }: SalonCalendarViewProps) 
   const goToPreviousDay = () => setDate(subDays(date, 1))
   const goToNextDay = () => setDate(addDays(date, 1))
 
-  // Get appointment background color based on service type
-  const getAppointmentColor = (service: string) => {
+  // Check if appointment is a home service
+  const isHomeService = (location: string) => {
+    return location?.toLowerCase().includes('home service') || location?.toLowerCase() === 'home';
+  };
+
+  // Get appointment background color based on service type and location
+  const getAppointmentColor = (service: string, location?: string) => {
+    // Home service appointments get distinct blue styling
+    if (location && isHomeService(location)) {
+      return "bg-blue-100 border-l-blue-600"
+    }
+
     if (service.toLowerCase().includes("color") || service.toLowerCase().includes("highlights")) {
       return "bg-amber-100 border-l-amber-500"
     } else if (service.toLowerCase().includes("haircut") || service.toLowerCase().includes("style")) {
@@ -298,14 +308,19 @@ export function SalonCalendarView({ onAddAppointment }: SalonCalendarViewProps) 
                                 key={appointment.id}
                                 className={cn(
                                   "absolute inset-x-1 p-2 rounded-sm border-l-4 cursor-pointer overflow-hidden",
-                                  getAppointmentColor(appointment.service),
+                                  getAppointmentColor(appointment.service, appointment.location),
                                 )}
                                 style={{
                                   height: `${heightMultiplier * 60 - 2}px`,
                                   zIndex: 10,
                                 }}
                               >
-                                <div className="text-sm font-medium truncate">{getCleanClientName(appointment.clientName)} - {appointment.service}</div>
+                                <div className="flex items-center gap-1">
+                                  {isHomeService(appointment.location) && (
+                                    <Home className="h-3 w-3 text-blue-600 flex-shrink-0" />
+                                  )}
+                                  <div className="text-sm font-medium truncate">{getCleanClientName(appointment.clientName)} - {appointment.service}</div>
+                                </div>
                                 <div className="text-xs text-gray-500 truncate">
                                   {format(appointmentDate, "h:mm")} -
                                   {format(new Date(appointmentDate.getTime() + appointment.duration * 60000), "h:mm a")}

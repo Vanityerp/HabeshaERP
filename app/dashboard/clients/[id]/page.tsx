@@ -1,9 +1,11 @@
 "use client"
 
-import { useState, useEffect, use } from "react"
+import { useState, useEffect, use, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/auth-provider"
 import { useClients, Client } from "@/lib/client-provider"
+import { useTransactions } from "@/lib/transaction-provider"
+import { useLocations } from "@/lib/location-provider"
 import { EditClientDialog } from "@/components/clients/edit-client-dialog"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -27,7 +29,7 @@ import {
   History,
   RefreshCw
 } from "lucide-react"
-import { parseISO } from "date-fns"
+import { parseISO, format } from "date-fns"
 import { formatAppDate, formatAppTime } from "@/lib/date-utils"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -36,6 +38,7 @@ import { CurrencyDisplay } from "@/components/ui/currency-display"
 import { useCurrency } from "@/lib/currency-provider"
 import { useToast } from "@/components/ui/use-toast"
 import { IndividualClientCommunication } from "@/components/clients/individual-client-communication"
+import { TransactionType } from "@/lib/transaction-types"
 
 interface ClientProfilePageProps {
   params: Promise<{
@@ -47,8 +50,10 @@ export default function ClientProfilePage({ params }: ClientProfilePageProps) {
   const router = useRouter()
   const { currentLocation } = useAuth()
   const { getClient } = useClients()
+  const { transactions: allTransactions } = useTransactions()
   const { formatCurrency } = useCurrency()
   const { toast } = useToast()
+  const { getLocationName } = useLocations()
   const [client, setClient] = useState<Client | null>(null)
   const [loading, setLoading] = useState(true)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
@@ -64,6 +69,143 @@ export default function ClientProfilePage({ params }: ClientProfilePageProps) {
   // Unwrap params using React.use() during render
   const unwrappedParams = use(params)
   const clientId = unwrappedParams.id
+
+  // Get real transactions for this client
+  // Match by clientId, clientName, or phone number for comprehensive results
+  const clientTransactions = useMemo(() => {
+    if (!clientId || !client) return []
+
+    // Normalize phone for comparison
+    const normalizePhone = (phone: string) => {
+      if (!phone) return ''
+      return phone.replace(/\D/g, '')
+    }
+
+    const clientNormalizedPhone = normalizePhone(client.phone || '')
+    const clientNormalizedName = client.name.toLowerCase().trim()
+
+    console.log(`🔍 Filtering transactions for client: ${client.name} (ID: ${clientId})`)
+    console.log(`📊 Total transactions available: ${allTransactions.length}`)
+
+    // Filter transactions that match this client by ID, name, or phone
+    const filtered = allTransactions.filter(tx => {
+      // Match by client ID
+      if (tx.clientId === clientId || tx.clientId === client.id) {
+        console.log(`✅ Transaction ${tx.id} matched by clientId`)
+        return true
+      }
+
+      // Match by client name (case-insensitive)
+      if (tx.clientName && tx.clientName.toLowerCase().trim() === clientNormalizedName) {
+        console.log(`✅ Transaction ${tx.id} matched by clientName: ${tx.clientName}`)
+        return true
+      }
+
+      // Match by phone number (if transaction has phone metadata)
+      if (clientNormalizedPhone && clientNormalizedPhone.length >= 8) {
+        if (tx.metadata?.phone) {
+          const txNormalizedPhone = normalizePhone(tx.metadata.phone)
+          if (txNormalizedPhone === clientNormalizedPhone) {
+            console.log(`✅ Transaction ${tx.id} matched by phone in metadata`)
+            return true
+          }
+        }
+      }
+
+      // Match by email (if transaction has email metadata)
+      if (client.email && tx.metadata?.email) {
+        if (tx.metadata.email.toLowerCase() === client.email.toLowerCase()) {
+          console.log(`✅ Transaction ${tx.id} matched by email in metadata`)
+          return true
+        }
+      }
+
+      return false
+    })
+
+    console.log(`📊 Found ${filtered.length} transactions for client ${client.name}`)
+    return filtered
+  }, [clientId, client, allTransactions])
+
+  // Calculate loyalty points and reward history from real transactions
+  const loyaltyData = useMemo(() => {
+    if (!client) {
+      return {
+        points: 0,
+        pointsToNextReward: 500,
+        tier: "Bronze" as const,
+        memberSince: "N/A",
+        rewardHistory: []
+      }
+    }
+
+    // Calculate points from transactions
+    // Service purchases: 10 points per QAR spent
+    // Product purchases: 5 points per QAR spent
+    let totalPoints = 0
+    const rewardHistory: Array<{
+      id: string
+      date: string
+      description: string
+      points: number
+      redeemed: boolean
+    }> = []
+
+    clientTransactions.forEach((transaction) => {
+      const transactionDate = format(new Date(transaction.date), "MMM d, yyyy")
+
+      if (transaction.type === TransactionType.SERVICE_SALE || transaction.type === TransactionType.CONSOLIDATED_SALE) {
+        const serviceAmount = transaction.serviceAmount || transaction.amount
+        const points = Math.floor(serviceAmount * 10) // 10 points per QAR
+        totalPoints += points
+
+        rewardHistory.push({
+          id: transaction.id,
+          date: transactionDate,
+          description: "Service Purchase",
+          points: points,
+          redeemed: false
+        })
+      } else if (transaction.type === TransactionType.PRODUCT_SALE) {
+        const points = Math.floor(transaction.amount * 5) // 5 points per QAR
+        totalPoints += points
+
+        rewardHistory.push({
+          id: transaction.id,
+          date: transactionDate,
+          description: "Product Purchase",
+          points: points,
+          redeemed: false
+        })
+      }
+    })
+
+    // Determine tier based on total spent
+    const totalSpent = client.totalSpent || 0
+    let tier: "Bronze" | "Silver" | "Gold" | "Platinum" = "Bronze"
+    if (totalSpent >= 5000) tier = "Platinum"
+    else if (totalSpent >= 2500) tier = "Gold"
+    else if (totalSpent >= 1000) tier = "Silver"
+
+    // Calculate points to next reward (500 points = 1 reward)
+    const pointsToNextReward = 500 - (totalPoints % 500)
+
+    // Member since date
+    const memberSince = client.createdAt
+      ? format(new Date(client.createdAt), "MMM d, yyyy")
+      : "N/A"
+
+    // Sort reward history by date (newest first)
+    rewardHistory.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+
+    return {
+      points: totalPoints,
+      pointsToNextReward,
+      tier,
+      memberSince,
+      rewardHistory: rewardHistory.slice(0, 10) // Keep last 10 activities
+    }
+  }, [client, clientTransactions])
 
   // Load client history from API
   const loadClientHistory = async () => {
@@ -267,11 +409,7 @@ export default function ClientProfilePage({ params }: ClientProfilePageProps) {
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-muted-foreground" />
                   <span>
-                    Preferred: {client.preferredLocation === "loc1"
-                      ? "Downtown"
-                      : client.preferredLocation === "loc2"
-                        ? "Westside"
-                        : "Northside"}
+                    Preferred: {getLocationName(client.preferredLocation || "loc1")}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -325,33 +463,11 @@ export default function ClientProfilePage({ params }: ClientProfilePageProps) {
             <ClientLoyaltyCard
               clientId={client.id}
               clientName={client.name}
-              points={450}
-              pointsToNextReward={50}
-              tier="Gold"
-              memberSince="Jan 15, 2025"
-              rewardHistory={[
-                {
-                  id: "r1",
-                  date: "Mar 15, 2025",
-                  description: "Service Purchase",
-                  points: 75,
-                  redeemed: false
-                },
-                {
-                  id: "r2",
-                  date: "Mar 1, 2025",
-                  description: "Product Purchase",
-                  points: 45,
-                  redeemed: false
-                },
-                {
-                  id: "r3",
-                  date: "Feb 15, 2025",
-                  description: "Reward Redemption",
-                  points: 250,
-                  redeemed: true
-                }
-              ]}
+              points={loyaltyData.points}
+              pointsToNextReward={loyaltyData.pointsToNextReward}
+              tier={loyaltyData.tier}
+              memberSince={loyaltyData.memberSince}
+              rewardHistory={loyaltyData.rewardHistory}
             />
           </div>
 

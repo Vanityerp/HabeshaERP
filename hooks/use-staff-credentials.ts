@@ -245,6 +245,111 @@ export function useStaffCredentials() {
     }
   }, [toast, fetchStaffCredentials])
 
+  const createManualCredentials = useCallback(async (
+    staffId: string,
+    locationIds: string[],
+    username: string,
+    password: string
+  ) => {
+    try {
+      const response = await fetch('/api/staff/credentials', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          staffId,
+          locationIds,
+          generatePassword: false,
+          customPassword: password,
+          customUsername: username
+        })
+      })
+
+      const result = await response.json()
+
+      if (response.ok) {
+        toast({
+          title: "Success",
+          description: "Login credentials created successfully",
+        })
+        await fetchStaffCredentials() // Refresh data
+        return result.credentials
+      } else {
+        throw new Error(result.error || 'Failed to create credentials')
+      }
+    } catch (error) {
+      console.error('Error creating manual credentials:', error)
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to create credentials",
+        variant: "destructive"
+      })
+      throw error
+    }
+  }, [toast, fetchStaffCredentials])
+
+  const updatePassword = useCallback(async (staffId: string, newPassword: string) => {
+    try {
+      const response = await fetch(`/api/staff/credentials/${staffId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'update_password',
+          newPassword
+        })
+      })
+
+      const result = await response.json()
+
+      if (response.ok) {
+        toast({
+          title: "Success",
+          description: "Password updated successfully",
+        })
+        await fetchStaffCredentials() // Refresh data
+        return result
+      } else {
+        throw new Error(result.error || 'Failed to update password')
+      }
+    } catch (error) {
+      console.error('Error updating password:', error)
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to update password",
+        variant: "destructive"
+      })
+      throw error
+    }
+  }, [toast, fetchStaffCredentials])
+
+  const deleteCredentials = useCallback(async (staffId: string) => {
+    try {
+      const response = await fetch(`/api/staff/credentials/${staffId}`, {
+        method: 'DELETE'
+      })
+
+      const result = await response.json()
+
+      if (response.ok) {
+        toast({
+          title: "Success",
+          description: "Credentials deleted successfully",
+        })
+        await fetchStaffCredentials() // Refresh data
+        return result
+      } else {
+        throw new Error(result.error || 'Failed to delete credentials')
+      }
+    } catch (error) {
+      console.error('Error deleting credentials:', error)
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to delete credentials",
+        variant: "destructive"
+      })
+      throw error
+    }
+  }, [toast, fetchStaffCredentials])
+
   return {
     staff,
     locations,
@@ -252,9 +357,12 @@ export function useStaffCredentials() {
     fetchStaffCredentials,
     fetchLocations,
     createCredentials,
+    createManualCredentials,
     resetPassword,
+    updatePassword,
     updateLocations,
     toggleActive,
+    deleteCredentials,
     generateTestCredentials
   }
 }

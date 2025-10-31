@@ -59,13 +59,23 @@ export async function PUT(
         if (!newPassword) {
           return NextResponse.json({ error: "New password is required" }, { status: 400 })
         }
-        
+
+        // Validate password strength
+        const { validatePassword } = await import('@/lib/auth-utils')
+        const validation = validatePassword(newPassword)
+        if (!validation.isValid) {
+          return NextResponse.json({
+            error: "Password validation failed",
+            details: validation.errors
+          }, { status: 400 })
+        }
+
         const newHashedPassword = hashPassword(newPassword)
         await prisma.user.update({
           where: { id: staffMember.user.id },
           data: { password: newHashedPassword }
         })
-        
+
         console.log(`✅ Password updated for ${staffMember.name}`)
         break
 

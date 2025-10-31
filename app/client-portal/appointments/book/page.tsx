@@ -58,7 +58,7 @@ export default function BookAppointmentPage() {
   const router = useRouter()
   const { toast } = useToast()
   const { formatCurrency } = useCurrency()
-  const { clients } = useClients()
+  const { clients, autoRegisterClient, normalizePhoneNumber } = useClients()
   const { staff, isLoading: staffLoading, error: staffError } = useApiStaff()
 
   // Client state
@@ -128,6 +128,9 @@ export default function BookAppointmentPage() {
   const [clientPhone, setClientPhone] = useState<string>("")
   const [clientEmail, setClientEmail] = useState<string>("")
   const [isGuestCheckout, setIsGuestCheckout] = useState(false)
+  const [existingClient, setExistingClient] = useState<any>(null)
+  const [isNewClient, setIsNewClient] = useState(true)
+  const [isLookingUpClient, setIsLookingUpClient] = useState(false)
 
   // Calendar state
   const [currentMonth, setCurrentMonth] = useState(new Date())
@@ -837,6 +840,95 @@ export default function BookAppointmentPage() {
     }
   }
 
+  // Phone lookup function - check for existing clients
+  const lookupClientByPhone = useCallback(async (phone: string) => {
+    if (!phone || phone.length < 8) {
+      setExistingClient(null)
+      setIsNewClient(true)
+      return
+    }
+
+    setIsLookingUpClient(true)
+    console.log("🔍 Client Portal: Looking up client by phone:", phone)
+
+    try {
+      // STEP 1: Check database via API
+      const response = await fetch(`/api/clients/lookup?phone=${encodeURIComponent(phone)}`)
+      const data = await response.json()
+
+      if (data.found && data.client) {
+        // Client found in database
+        setExistingClient(data.client)
+        setIsNewClient(false)
+
+        // Auto-populate name and email if in guest checkout mode
+        if (isGuestCheckout) {
+          setClientName(data.client.name)
+          setClientEmail(data.client.email || "")
+        }
+
+        console.log("✅ Client Portal: Existing client found in database:", data.client.name, data.client.id)
+
+        toast({
+          title: "Client recognized",
+          description: `Welcome back, ${data.client.name}!`,
+        })
+      } else {
+        // STEP 2: Check client-provider (localStorage)
+        console.log("🔍 Client Portal: Not found in database, checking localStorage...")
+        const normalizedPhone = normalizePhoneNumber(phone)
+        const localClient = clients.find(client => {
+          const clientNormalizedPhone = normalizePhoneNumber(client.phone)
+          return clientNormalizedPhone === normalizedPhone
+        })
+
+        if (localClient) {
+          // Client found in localStorage
+          setExistingClient(localClient)
+          setIsNewClient(false)
+
+          // Auto-populate name and email if in guest checkout mode
+          if (isGuestCheckout) {
+            setClientName(localClient.name)
+            setClientEmail(localClient.email || "")
+          }
+
+          console.log("✅ Client Portal: Existing client found in localStorage:", localClient.name, localClient.id)
+
+          toast({
+            title: "Client recognized",
+            description: `Welcome back, ${localClient.name}!`,
+          })
+        } else {
+          // New client
+          setExistingClient(null)
+          setIsNewClient(true)
+          console.log("📝 Client Portal: New client - phone not found")
+        }
+      }
+    } catch (error) {
+      console.error("Error looking up client:", error)
+      // On error, assume new client
+      setExistingClient(null)
+      setIsNewClient(true)
+    } finally {
+      setIsLookingUpClient(false)
+    }
+  }, [clients, isGuestCheckout, toast])
+
+  // Debounced phone lookup
+  useEffect(() => {
+    if (!isGuestCheckout || !clientPhone) {
+      return
+    }
+
+    const timer = setTimeout(() => {
+      lookupClientByPhone(clientPhone)
+    }, 500) // 500ms debounce
+
+    return () => clearTimeout(timer)
+  }, [clientPhone, isGuestCheckout, lookupClientByPhone])
+
   const handleGuestCheckoutToggle = (checked: boolean) => {
     console.log("Guest checkout toggle:", checked)
     setIsGuestCheckout(checked)
@@ -846,12 +938,16 @@ export default function BookAppointmentPage() {
       setClientName("")
       setClientPhone("")
       setClientEmail("")
+      setExistingClient(null)
+      setIsNewClient(true)
       console.log("Switched to guest checkout - cleared form fields")
     } else {
       // Restore client info from logged in user
       setClientName(client?.name || "")
       setClientPhone(client?.phone || "")
       setClientEmail(client?.email || "")
+      setExistingClient(null)
+      setIsNewClient(true)
       console.log("Switched to account info - restored form fields")
     }
   }
@@ -968,10 +1064,38 @@ export default function BookAppointmentPage() {
         return
       }
 
+      // Handle client ID - use existing client or auto-register new client
+      let finalClientId = client.id
+
+      if (isGuestCheckout) {
+        if (existingClient) {
+          // Use existing client ID
+          finalClientId = existingClient.id
+          console.log(`Client Portal: Using existing client: ${existingClient.name} (${existingClient.id})`)
+        } else if (clientPhone && clientName) {
+          // Auto-register new client
+          console.log(`Client Portal: Auto-registering new client: ${clientName}`)
+          const autoRegisteredClient = await autoRegisterClient({
+            name: clientName,
+            email: finalClientEmail,
+            phone: clientPhone,
+            source: "client_portal",
+            preferredLocation: selectedLocation
+          })
+
+          if (autoRegisteredClient) {
+            finalClientId = autoRegisteredClient.id
+            console.log(`Client Portal: Auto-registered new client: ${autoRegisteredClient.name} (${autoRegisteredClient.id})`)
+          } else {
+            console.log("Client Portal: Failed to auto-register client, using default client ID")
+          }
+        }
+      }
+
       // Create appointment object
       const appointment = {
         id: `appointment-${Date.now()}`,
-        clientId: client.id,
+        clientId: finalClientId,
         clientName: clientName || client.name,
         clientEmail: finalClientEmail,
         clientPhone: clientPhone || client.phone,
@@ -2176,6 +2300,42 @@ export default function BookAppointmentPage() {
                       </div>
 
                       <div className="space-y-4">
+                        {/* Phone Number - First field for immediate lookup */}
+                        <div>
+                          <Label htmlFor="clientPhone" className="text-sm text-gray-500">
+                            Phone Number
+                            {!isGuestCheckout && <span className="text-xs text-gray-400 ml-1">(from account)</span>}
+                          </Label>
+                          <div className="relative">
+                            <Input
+                              id="clientPhone"
+                              value={clientPhone}
+                              onChange={(e) => setClientPhone(e.target.value)}
+                              placeholder="Your phone number"
+                              className={`mt-1 ${!isGuestCheckout ? 'bg-gray-50' : ''}`}
+                              readOnly={!isGuestCheckout}
+                              required
+                            />
+                            {isGuestCheckout && isLookingUpClient && (
+                              <div className="absolute right-3 top-1/2 -translate-y-1/2 mt-0.5">
+                                <div className="animate-spin h-4 w-4 border-2 border-pink-600 border-t-transparent rounded-full"></div>
+                              </div>
+                            )}
+                          </div>
+                          {isGuestCheckout && !isNewClient && existingClient && (
+                            <div className="mt-2 flex items-center gap-2 text-sm text-green-600 bg-green-50 border border-green-200 rounded px-3 py-2">
+                              <Check className="h-4 w-4" />
+                              <span>Existing client recognized: {existingClient.name}</span>
+                            </div>
+                          )}
+                          {isGuestCheckout && isNewClient && clientPhone.length >= 8 && !isLookingUpClient && (
+                            <div className="mt-2 flex items-center gap-2 text-sm text-blue-600 bg-blue-50 border border-blue-200 rounded px-3 py-2">
+                              <Info className="h-4 w-4" />
+                              <span>New client - please enter your details</span>
+                            </div>
+                          )}
+                        </div>
+                        {/* Full Name - Second field (auto-populated for existing clients) */}
                         <div>
                           <Label htmlFor="clientName" className="text-sm text-gray-500">
                             Full Name
@@ -2191,21 +2351,7 @@ export default function BookAppointmentPage() {
                             required
                           />
                         </div>
-                        <div>
-                          <Label htmlFor="clientPhone" className="text-sm text-gray-500">
-                            Phone Number
-                            {!isGuestCheckout && <span className="text-xs text-gray-400 ml-1">(from account)</span>}
-                          </Label>
-                          <Input
-                            id="clientPhone"
-                            value={clientPhone}
-                            onChange={(e) => setClientPhone(e.target.value)}
-                            placeholder="Your phone number"
-                            className={`mt-1 ${!isGuestCheckout ? 'bg-gray-50' : ''}`}
-                            readOnly={!isGuestCheckout}
-                            required
-                          />
-                        </div>
+                        {/* Email - Third field (auto-populated for existing clients) */}
                         <div>
                           <Label htmlFor="clientEmail" className="text-sm text-gray-500">Email</Label>
                           {isGuestCheckout ? (

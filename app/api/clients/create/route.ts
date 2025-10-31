@@ -69,18 +69,27 @@ export async function POST(request: Request) {
       }
     })
 
-    // Create client profile
+    // Create client profile with all fields
     const client = await prisma.client.create({
       data: {
         userId: user.id,
         name: data.name.trim(),
         phone: data.phone,
+        email: data.email || null,
+        address: data.address || null,
+        city: data.city || null,
+        state: data.state || null,
+        zipCode: data.zip || null,
         dateOfBirth: data.birthday ? new Date(data.birthday) : null,
         preferences: data.preferences ? JSON.stringify(data.preferences) : null,
-        notes: data.notes || null
+        notes: data.notes || null,
+        preferredLocationId: data.preferredLocation || null,
+        registrationSource: data.registrationSource || 'manual',
+        isAutoRegistered: data.isAutoRegistered || false
       },
       include: {
-        user: true
+        user: true,
+        preferredLocation: true
       }
     })
 

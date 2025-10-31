@@ -111,10 +111,10 @@ export function EditClientDialog({ clientId, open, onOpenChange, onClientUpdated
     setActiveTab("review")
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    const updatedClient = updateClient(clientId, {
+    const updatedClient = await updateClient(clientId, {
       ...formData,
       preferences,
     })
@@ -128,14 +128,14 @@ export function EditClientDialog({ clientId, open, onOpenChange, onClientUpdated
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
-        <form onSubmit={handleSubmit}>
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] flex flex-col">
+        <form onSubmit={handleSubmit} className="flex flex-col h-full">
           <DialogHeader>
             <DialogTitle>Edit Client</DialogTitle>
             <DialogDescription>Update client information and preferences.</DialogDescription>
           </DialogHeader>
 
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-5">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-5 flex-1 flex flex-col overflow-hidden">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="basic">Basic Info</TabsTrigger>
               <TabsTrigger value="preferences">Preferences</TabsTrigger>
@@ -345,7 +345,7 @@ export function EditClientDialog({ clientId, open, onOpenChange, onClientUpdated
               </div>
             </TabsContent>
 
-            <TabsContent value="preferences" className="py-4">
+            <TabsContent value="preferences" className="py-4 overflow-y-auto max-h-[60vh]">
               <ClientPreferencesForm
                 initialPreferences={preferences}
                 onSave={handlePreferencesSave}

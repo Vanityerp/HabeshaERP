@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -60,37 +60,59 @@ export function EnhancedClientDetailsDialog({ client, open, onOpenChange }: Clie
   const [activeTab, setActiveTab] = useState("info")
   const { getLocationName } = useLocations()
   const { getClient } = useClients()
+  const [clientAppointments, setClientAppointments] = useState<any[]>([])
+  const [clientPurchases, setClientPurchases] = useState<any[]>([])
+  const [loading, setLoading] = useState(false)
 
   // Get full client data with preferences
   const fullClient = getClient(client.id)
 
-  // Get client appointments
-  // TODO: Replace with real API call to fetch client appointments
-  const clientAppointments: any[] = []
+  // Load client history when dialog opens
+  useEffect(() => {
+    if (open && client.id) {
+      loadClientHistory()
+    }
+  }, [open, client.id])
 
-  // Generate timeline events from appointments and other activities
+  const loadClientHistory = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch(`/api/clients/${client.id}/history`)
+      if (response.ok) {
+        const data = await response.json()
+        setClientAppointments(data.appointments || [])
+        setClientPurchases(data.purchases || [])
+        console.log(`Loaded history for ${client.name}: ${data.appointments?.length} appointments, ${data.purchases?.length} purchases`)
+      }
+    } catch (error) {
+      console.error('Error loading client history:', error)
+    }
+    setLoading(false)
+  }
+
+  // Generate timeline events from appointments and purchases
   const timelineEvents = [
     ...clientAppointments.map(appointment => ({
       id: appointment.id,
       date: appointment.date,
       type: "appointment",
-      title: appointment.service,
-      description: `with ${appointment.staffName}`,
+      title: appointment.title || appointment.service,
+      description: appointment.description,
       status: appointment.status,
+      amount: appointment.amount,
       icon: <Scissors className="h-4 w-4" />,
-      color: getAppointmentStatusColor(appointment.status)
+      color: appointment.color || getAppointmentStatusColor(appointment.status)
     })),
-    // Add some mock purchase events
-    {
-      id: "p1",
-      date: "2025-03-15T14:30:00",
+    ...clientPurchases.map(purchase => ({
+      id: purchase.id,
+      date: purchase.date,
       type: "purchase",
       title: "Product Purchase",
-      description: "Shampoo & Conditioner Set",
-      amount: 45.99,
+      description: purchase.description,
+      amount: purchase.amount,
       icon: <ShoppingBag className="h-4 w-4" />,
       color: "bg-green-100 text-green-800"
-    },
+    })),
     // Add some mock communication events
     {
       id: "c1",

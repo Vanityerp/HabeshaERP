@@ -218,6 +218,8 @@ export class ConsolidatedTransactionService {
         transactionType: 'consolidated',
         serviceCount,
         productCount,
+        phone: appointment.clientPhone || '', // Store client phone for matching
+        email: appointment.clientEmail || '', // Store client email for matching
         discountApplied: discountPercentage && discountPercentage > 0,
         finalTotal: totalAmount
       },

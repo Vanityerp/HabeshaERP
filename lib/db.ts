@@ -481,18 +481,27 @@ export const locationsRepository = {
   },
 }
 
+/**
+ * @deprecated DEPRECATED: PostgreSQL client repository is no longer used.
+ * Use Prisma as the single source of truth for client data.
+ * See lib/db-client-deprecation-notice.md for migration guide.
+ * Use lib/services/clients.ts or /api/clients endpoints instead.
+ */
 export const clientsRepository = {
   findAll: async () => {
+    console.warn('⚠️ DEPRECATED: clientsRepository.findAll() is deprecated. Use Prisma client or /api/clients instead.')
     const result = await query("SELECT * FROM clients ORDER BY name")
     return result.rows
   },
 
   findById: async (id: number) => {
+    console.warn('⚠️ DEPRECATED: clientsRepository.findById() is deprecated. Use Prisma client or /api/clients/[id] instead.')
     const result = await query("SELECT * FROM clients WHERE id = $1", [id])
     return result.rows[0]
   },
 
   findByLocation: async (locationId: number) => {
+    console.warn('⚠️ DEPRECATED: clientsRepository.findByLocation() is deprecated. Use Prisma client with filters instead.')
     const result = await query(
       `
       SELECT c.* FROM clients c
@@ -506,6 +515,7 @@ export const clientsRepository = {
   },
 
   create: async (client: any) => {
+    console.warn('⚠️ DEPRECATED: clientsRepository.create() is deprecated. Use POST /api/clients/create instead.')
     const { name, email, phone, address, notes, preferred_location_id } = client
     const result = await query(
       "INSERT INTO clients (name, email, phone, address, notes, preferred_location_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",

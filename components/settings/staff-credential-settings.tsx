@@ -24,19 +24,26 @@ import {
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu"
 import { Checkbox } from "@/components/ui/checkbox"
-import { 
-  KeyRound, 
-  MoreHorizontal, 
-  Plus, 
-  RefreshCw, 
-  Shield, 
-  Users, 
-  Eye, 
+import {
+  KeyRound,
+  MoreHorizontal,
+  Plus,
+  RefreshCw,
+  Shield,
+  Users,
+  Eye,
   EyeOff,
   MapPin,
   TestTube,
-  Loader2
+  Loader2,
+  Edit,
+  Trash2,
+  Copy,
+  Check,
+  AlertTriangle
 } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Progress } from "@/components/ui/progress"
 
 interface StaffMember {
   id: string
@@ -76,27 +83,105 @@ export function StaffCredentialSettings() {
     fetchStaffCredentials,
     fetchLocations,
     createCredentials,
+    createManualCredentials,
     resetPassword,
+    updatePassword,
     updateLocations,
     toggleActive,
+    deleteCredentials,
     generateTestCredentials
   } = useStaffCredentials()
 
   const [searchTerm, setSearchTerm] = useState("")
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  const [isManualCreateDialogOpen, setIsManualCreateDialogOpen] = useState(false)
+  const [isEditPasswordDialogOpen, setIsEditPasswordDialogOpen] = useState(false)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [isTestDialogOpen, setIsTestDialogOpen] = useState(false)
   const [isLocationDialogOpen, setIsLocationDialogOpen] = useState(false)
+  const [isResetPasswordDialogOpen, setIsResetPasswordDialogOpen] = useState(false)
   const [selectedStaff, setSelectedStaff] = useState<StaffMember | null>(null)
   const [selectedLocations, setSelectedLocations] = useState<string[]>([])
   const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [generatedCredentials, setGeneratedCredentials] = useState<any>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [manualUsername, setManualUsername] = useState("")
+  const [manualPassword, setManualPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
+  const [newPassword, setNewPassword] = useState("")
+  const [passwordStrength, setPasswordStrength] = useState(0)
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([])
+  const [copiedField, setCopiedField] = useState<string | null>(null)
 
   // Fetch staff and locations data
   useEffect(() => {
     fetchStaffCredentials()
     fetchLocations()
   }, [fetchStaffCredentials, fetchLocations])
+
+  // Password validation helper
+  const validatePasswordStrength = (password: string) => {
+    const errors: string[] = []
+    let strength = 0
+
+    if (password.length < 8) {
+      errors.push('Password must be at least 8 characters')
+    } else {
+      strength += 20
+    }
+
+    if (password.length >= 12) {
+      strength += 10
+    }
+
+    if (/[A-Z]/.test(password)) {
+      strength += 20
+    } else {
+      errors.push('Add at least one uppercase letter')
+    }
+
+    if (/[a-z]/.test(password)) {
+      strength += 20
+    } else {
+      errors.push('Add at least one lowercase letter')
+    }
+
+    if (/[0-9]/.test(password)) {
+      strength += 15
+    } else {
+      errors.push('Add at least one number')
+    }
+
+    if (/[^A-Za-z0-9]/.test(password)) {
+      strength += 15
+    } else {
+      errors.push('Add at least one special character')
+    }
+
+    setPasswordStrength(strength)
+    setPasswordErrors(errors)
+    return errors.length === 0
+  }
+
+  // Copy to clipboard helper
+  const copyToClipboard = async (text: string, field: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopiedField(field)
+      setTimeout(() => setCopiedField(null), 2000)
+      toast({
+        title: "Copied!",
+        description: `${field} copied to clipboard`,
+      })
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to copy to clipboard",
+        variant: "destructive"
+      })
+    }
+  }
 
   const handleCreateCredentials = async () => {
     if (!selectedStaff || selectedLocations.length === 0) {
@@ -133,14 +218,134 @@ export function StaffCredentialSettings() {
 
   const handleResetPassword = async (staffMember: StaffMember) => {
     try {
+      setSelectedStaff(staffMember)
       const tempPassword = await resetPassword(staffMember.id)
       setGeneratedCredentials({
         username: staffMember.user?.email,
         temporaryPassword: tempPassword
       })
       setShowPassword(false)
+      setIsResetPasswordDialogOpen(true)
     } catch (error) {
       // Error handling is done in the hook
+    }
+  }
+
+  const handleManualCreateCredentials = async () => {
+    if (!selectedStaff || selectedLocations.length === 0) {
+      toast({
+        title: "Error",
+        description: "Please select a staff member and at least one location",
+        variant: "destructive"
+      })
+      return
+    }
+
+    if (!manualUsername || !manualPassword) {
+      toast({
+        title: "Error",
+        description: "Please provide both username and password",
+        variant: "destructive"
+      })
+      return
+    }
+
+    if (manualPassword !== confirmPassword) {
+      toast({
+        title: "Error",
+        description: "Passwords do not match",
+        variant: "destructive"
+      })
+      return
+    }
+
+    if (!validatePasswordStrength(manualPassword)) {
+      toast({
+        title: "Error",
+        description: "Password does not meet security requirements",
+        variant: "destructive"
+      })
+      return
+    }
+
+    try {
+      setIsSubmitting(true)
+      const credentials = await createManualCredentials(
+        selectedStaff.id,
+        selectedLocations,
+        manualUsername,
+        manualPassword
+      )
+      setGeneratedCredentials(credentials)
+      setManualUsername("")
+      setManualPassword("")
+      setConfirmPassword("")
+      setPasswordStrength(0)
+      setPasswordErrors([])
+    } catch (error) {
+      // Error handling is done in the hook
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleUpdatePassword = async () => {
+    if (!selectedStaff) return
+
+    if (!newPassword) {
+      toast({
+        title: "Error",
+        description: "Please enter a new password",
+        variant: "destructive"
+      })
+      return
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: "Error",
+        description: "Passwords do not match",
+        variant: "destructive"
+      })
+      return
+    }
+
+    if (!validatePasswordStrength(newPassword)) {
+      toast({
+        title: "Error",
+        description: "Password does not meet security requirements",
+        variant: "destructive"
+      })
+      return
+    }
+
+    try {
+      setIsSubmitting(true)
+      await updatePassword(selectedStaff.id, newPassword)
+      setIsEditPasswordDialogOpen(false)
+      setNewPassword("")
+      setConfirmPassword("")
+      setPasswordStrength(0)
+      setPasswordErrors([])
+    } catch (error) {
+      // Error handling is done in the hook
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleDeleteCredentials = async () => {
+    if (!selectedStaff) return
+
+    try {
+      setIsSubmitting(true)
+      await deleteCredentials(selectedStaff.id)
+      setIsDeleteDialogOpen(false)
+      setSelectedStaff(null)
+    } catch (error) {
+      // Error handling is done in the hook
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -360,6 +565,19 @@ export function StaffCredentialSettings() {
                             <DropdownMenuItem
                               onClick={() => {
                                 setSelectedStaff(member)
+                                setNewPassword("")
+                                setConfirmPassword("")
+                                setPasswordStrength(0)
+                                setPasswordErrors([])
+                                setIsEditPasswordDialogOpen(true)
+                              }}
+                            >
+                              <Edit className="h-4 w-4 mr-2" />
+                              Edit Password
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setSelectedStaff(member)
                                 setSelectedLocations(member.locations.map(l => l.id))
                                 setIsLocationDialogOpen(true)
                               }}
@@ -371,18 +589,45 @@ export function StaffCredentialSettings() {
                               <Shield className="h-4 w-4 mr-2" />
                               {member.user?.isActive ? 'Deactivate' : 'Activate'}
                             </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setSelectedStaff(member)
+                                setIsDeleteDialogOpen(true)
+                              }}
+                              className="text-red-600"
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Delete Credentials
+                            </DropdownMenuItem>
                           </>
                         ) : (
-                          <DropdownMenuItem
-                            onClick={() => {
-                              setSelectedStaff(member)
-                              setSelectedLocations(member.locations.map(l => l.id))
-                              setIsCreateDialogOpen(true)
-                            }}
-                          >
-                            <Plus className="h-4 w-4 mr-2" />
-                            Create Credentials
-                          </DropdownMenuItem>
+                          <>
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setSelectedStaff(member)
+                                setSelectedLocations(member.locations.map(l => l.id))
+                                setIsCreateDialogOpen(true)
+                              }}
+                            >
+                              <Plus className="h-4 w-4 mr-2" />
+                              Auto-Generate Credentials
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setSelectedStaff(member)
+                                setSelectedLocations(member.locations.map(l => l.id))
+                                setManualUsername("")
+                                setManualPassword("")
+                                setConfirmPassword("")
+                                setPasswordStrength(0)
+                                setPasswordErrors([])
+                                setIsManualCreateDialogOpen(true)
+                              }}
+                            >
+                              <KeyRound className="h-4 w-4 mr-2" />
+                              Create Manual Credentials
+                            </DropdownMenuItem>
+                          </>
                         )}
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -581,6 +826,497 @@ export function StaffCredentialSettings() {
             >
               {isSubmitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
               Update Locations
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Manual Create Credentials Dialog */}
+      <Dialog open={isManualCreateDialogOpen} onOpenChange={setIsManualCreateDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Create Manual Credentials</DialogTitle>
+            <DialogDescription>
+              Manually set username and password for the selected staff member
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedStaff && (
+            <div className="space-y-4">
+              <div>
+                <Label>Staff Member</Label>
+                <p className="text-sm font-medium">{selectedStaff.name}</p>
+                <p className="text-xs text-muted-foreground">
+                  Employee #{selectedStaff.employeeNumber} • {selectedStaff.jobRole}
+                </p>
+              </div>
+
+              <div>
+                <Label>Location Access</Label>
+                <div className="space-y-2 mt-2 max-h-32 overflow-y-auto">
+                  {locations.map((location) => (
+                    <div key={location.id} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`manual-${location.id}`}
+                        checked={selectedLocations.includes(location.id)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setSelectedLocations([...selectedLocations, location.id])
+                          } else {
+                            setSelectedLocations(selectedLocations.filter(id => id !== location.id))
+                          }
+                        }}
+                      />
+                      <Label htmlFor={`manual-${location.id}`} className="text-sm">
+                        {location.name} - {location.city}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="manual-username">Username</Label>
+                <Input
+                  id="manual-username"
+                  placeholder="e.g., john.doe"
+                  value={manualUsername}
+                  onChange={(e) => setManualUsername(e.target.value)}
+                  className="mt-1"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Will be used as: {manualUsername || 'username'}@vanityhub.com
+                </p>
+              </div>
+
+              <div>
+                <Label htmlFor="manual-password">Password</Label>
+                <div className="flex items-center gap-2 mt-1">
+                  <Input
+                    id="manual-password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter password"
+                    value={manualPassword}
+                    onChange={(e) => {
+                      setManualPassword(e.target.value)
+                      validatePasswordStrength(e.target.value)
+                    }}
+                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </Button>
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="manual-confirm-password">Confirm Password</Label>
+                <div className="flex items-center gap-2 mt-1">
+                  <Input
+                    id="manual-confirm-password"
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Confirm password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </Button>
+                </div>
+              </div>
+
+              {/* Password Strength Indicator */}
+              {manualPassword && (
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <Label className="text-xs">Password Strength</Label>
+                    <span className="text-xs font-medium">
+                      {passwordStrength < 40 ? 'Weak' : passwordStrength < 70 ? 'Fair' : passwordStrength < 90 ? 'Good' : 'Strong'}
+                    </span>
+                  </div>
+                  <Progress
+                    value={passwordStrength}
+                    className={`h-2 ${
+                      passwordStrength < 40 ? 'bg-red-200' :
+                      passwordStrength < 70 ? 'bg-yellow-200' :
+                      passwordStrength < 90 ? 'bg-blue-200' :
+                      'bg-green-200'
+                    }`}
+                  />
+                  {passwordErrors.length > 0 && (
+                    <div className="text-xs text-red-600 space-y-1">
+                      {passwordErrors.map((error, index) => (
+                        <p key={index}>• {error}</p>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {generatedCredentials && (
+                <Alert>
+                  <Check className="h-4 w-4" />
+                  <AlertDescription>
+                    <div className="space-y-2">
+                      <p className="font-medium">Credentials Created Successfully!</p>
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs">
+                            <span className="font-medium">Email:</span> {generatedCredentials.username}
+                          </p>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => copyToClipboard(generatedCredentials.username, 'Email')}
+                          >
+                            {copiedField === 'Email' ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                          </Button>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs">
+                            <span className="font-medium">Password:</span> {showPassword ? generatedCredentials.password : '••••••••'}
+                          </p>
+                          <div className="flex gap-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setShowPassword(!showPassword)}
+                            >
+                              {showPassword ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => copyToClipboard(generatedCredentials.password, 'Password')}
+                            >
+                              {copiedField === 'Password' ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        ⚠️ Make sure to save these credentials. They won't be shown again.
+                      </p>
+                    </div>
+                  </AlertDescription>
+                </Alert>
+              )}
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsManualCreateDialogOpen(false)
+                setManualUsername("")
+                setManualPassword("")
+                setConfirmPassword("")
+                setGeneratedCredentials(null)
+                setPasswordStrength(0)
+                setPasswordErrors([])
+              }}
+            >
+              {generatedCredentials ? 'Close' : 'Cancel'}
+            </Button>
+            {!generatedCredentials && (
+              <Button
+                onClick={handleManualCreateCredentials}
+                disabled={isSubmitting || selectedLocations.length === 0 || !manualUsername || !manualPassword || !confirmPassword}
+              >
+                {isSubmitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                Create Credentials
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Password Dialog */}
+      <Dialog open={isEditPasswordDialogOpen} onOpenChange={setIsEditPasswordDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Password</DialogTitle>
+            <DialogDescription>
+              Set a new password for this staff member
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedStaff && (
+            <div className="space-y-4">
+              <div>
+                <Label>Staff Member</Label>
+                <p className="text-sm font-medium">{selectedStaff.name}</p>
+                <p className="text-xs text-muted-foreground">
+                  {selectedStaff.user?.email}
+                </p>
+              </div>
+
+              <div>
+                <Label htmlFor="new-password">New Password</Label>
+                <div className="flex items-center gap-2 mt-1">
+                  <Input
+                    id="new-password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter new password"
+                    value={newPassword}
+                    onChange={(e) => {
+                      setNewPassword(e.target.value)
+                      validatePasswordStrength(e.target.value)
+                    }}
+                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </Button>
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="confirm-new-password">Confirm New Password</Label>
+                <div className="flex items-center gap-2 mt-1">
+                  <Input
+                    id="confirm-new-password"
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Confirm new password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </Button>
+                </div>
+              </div>
+
+              {/* Password Strength Indicator */}
+              {newPassword && (
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <Label className="text-xs">Password Strength</Label>
+                    <span className="text-xs font-medium">
+                      {passwordStrength < 40 ? 'Weak' : passwordStrength < 70 ? 'Fair' : passwordStrength < 90 ? 'Good' : 'Strong'}
+                    </span>
+                  </div>
+                  <Progress
+                    value={passwordStrength}
+                    className={`h-2 ${
+                      passwordStrength < 40 ? 'bg-red-200' :
+                      passwordStrength < 70 ? 'bg-yellow-200' :
+                      passwordStrength < 90 ? 'bg-blue-200' :
+                      'bg-green-200'
+                    }`}
+                  />
+                  {passwordErrors.length > 0 && (
+                    <div className="text-xs text-red-600 space-y-1">
+                      {passwordErrors.map((error, index) => (
+                        <p key={index}>• {error}</p>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Password Requirements */}
+              <Alert>
+                <AlertTriangle className="h-4 w-4" />
+                <AlertDescription className="text-xs">
+                  <p className="font-medium mb-1">Password Requirements:</p>
+                  <ul className="list-disc list-inside space-y-0.5">
+                    <li>At least 8 characters long</li>
+                    <li>At least one uppercase letter</li>
+                    <li>At least one lowercase letter</li>
+                    <li>At least one number</li>
+                    <li>At least one special character</li>
+                  </ul>
+                </AlertDescription>
+              </Alert>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsEditPasswordDialogOpen(false)
+                setNewPassword("")
+                setConfirmPassword("")
+                setPasswordStrength(0)
+                setPasswordErrors([])
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleUpdatePassword}
+              disabled={isSubmitting || !newPassword || !confirmPassword || newPassword !== confirmPassword}
+            >
+              {isSubmitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Update Password
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Credentials Dialog */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete Credentials</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete login credentials for this staff member?
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedStaff && (
+            <div className="space-y-4">
+              <div>
+                <Label>Staff Member</Label>
+                <p className="text-sm font-medium">{selectedStaff.name}</p>
+                <p className="text-xs text-muted-foreground">
+                  {selectedStaff.user?.email}
+                </p>
+              </div>
+
+              <Alert variant="destructive">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertDescription>
+                  <p className="font-medium mb-2">Warning: This action cannot be undone!</p>
+                  <ul className="text-xs space-y-1">
+                    <li>• The staff member will no longer be able to log in</li>
+                    <li>• All access to the system will be revoked</li>
+                    <li>• You can create new credentials later if needed</li>
+                  </ul>
+                </AlertDescription>
+              </Alert>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsDeleteDialogOpen(false)
+                setSelectedStaff(null)
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteCredentials}
+              disabled={isSubmitting}
+            >
+              {isSubmitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Delete Credentials
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Reset Password Dialog (Enhanced) */}
+      <Dialog open={isResetPasswordDialogOpen} onOpenChange={setIsResetPasswordDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Password Reset Successful</DialogTitle>
+            <DialogDescription>
+              A new temporary password has been generated
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedStaff && generatedCredentials && (
+            <div className="space-y-4">
+              <div>
+                <Label>Staff Member</Label>
+                <p className="text-sm font-medium">{selectedStaff.name}</p>
+              </div>
+
+              <Alert>
+                <Check className="h-4 w-4" />
+                <AlertDescription>
+                  <div className="space-y-3">
+                    <p className="font-medium">New Temporary Credentials:</p>
+
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between p-2 bg-muted rounded">
+                        <div className="flex-1">
+                          <p className="text-xs text-muted-foreground">Email</p>
+                          <p className="text-sm font-mono">{generatedCredentials.username}</p>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => copyToClipboard(generatedCredentials.username, 'Email')}
+                        >
+                          {copiedField === 'Email' ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                        </Button>
+                      </div>
+
+                      <div className="flex items-center justify-between p-2 bg-muted rounded">
+                        <div className="flex-1">
+                          <p className="text-xs text-muted-foreground">Temporary Password</p>
+                          <p className="text-sm font-mono">
+                            {showPassword ? generatedCredentials.temporaryPassword : '••••••••'}
+                          </p>
+                        </div>
+                        <div className="flex gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setShowPassword(!showPassword)}
+                          >
+                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => copyToClipboard(generatedCredentials.temporaryPassword, 'Password')}
+                          >
+                            {copiedField === 'Password' ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <Alert variant="destructive">
+                      <AlertTriangle className="h-4 w-4" />
+                      <AlertDescription className="text-xs">
+                        <p className="font-medium">Important:</p>
+                        <ul className="mt-1 space-y-0.5">
+                          <li>• Save these credentials now - they won't be shown again</li>
+                          <li>• Share them securely with the staff member</li>
+                          <li>• The staff member should change this password after first login</li>
+                        </ul>
+                      </AlertDescription>
+                    </Alert>
+                  </div>
+                </AlertDescription>
+              </Alert>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button
+              onClick={() => {
+                setIsResetPasswordDialogOpen(false)
+                setGeneratedCredentials(null)
+                setShowPassword(false)
+              }}
+            >
+              I've Saved the Credentials
             </Button>
           </DialogFooter>
         </DialogContent>

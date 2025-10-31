@@ -1,6 +1,17 @@
-// DEPRECATED: This service is no longer used
-// All client data is now persisted in the database through Prisma
-// Use API endpoints to fetch real client data
+/**
+ * ⚠️ DEPRECATED: This service is no longer used
+ *
+ * All client data is now managed through Prisma as the SINGLE SOURCE OF TRUTH.
+ *
+ * DO NOT USE THIS SERVICE FOR ANY NEW CODE.
+ *
+ * Migration Guide:
+ * - Use /api/clients endpoints for client operations
+ * - Use lib/services/clients.ts for server-side business logic
+ * - Use lib/client-provider.tsx (useClients hook) for client-side state
+ *
+ * See lib/db-client-deprecation-notice.md for full migration guide.
+ */
 
 "use client"
 
@@ -78,81 +89,72 @@ function migrateClientPreferences(clients: any[]): Client[] {
   })
 }
 
-// Client Data Service
+/**
+ * @deprecated DEPRECATED: ClientDataService is no longer used.
+ * Use Prisma as the single source of truth for client data.
+ * See lib/db-client-deprecation-notice.md for migration guide.
+ */
 export const ClientDataService = {
-  // Initialize clients with default data if none exists
+  /**
+   * @deprecated Use Prisma database instead. This function does nothing.
+   */
   initializeClients: (): Client[] => {
-    console.log("ClientDataService: Initializing clients...")
-
-    const existingClients = getFromStorage<Client[]>(STORAGE_KEY, [])
-    if (existingClients.length > 0) {
-      console.log("ClientDataService: Found existing clients:", existingClients.length)
-      // Migrate existing clients to new preferences structure
-      const migratedClients = migrateClientPreferences(existingClients)
-      // Save migrated data back to storage
-      saveToStorage(STORAGE_KEY, migratedClients)
-      console.log("ClientDataService: Migrated client preferences to new structure")
-      return migratedClients
-    }
-
-    console.log("ClientDataService: No existing clients found, initializing with defaults")
-    const clientsWithTimestamps = defaultClients.map(client => ({
-      ...client,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    }))
-
-    saveToStorage(STORAGE_KEY, clientsWithTimestamps)
-    console.log("ClientDataService: Initialized", clientsWithTimestamps.length, "default clients")
-    return clientsWithTimestamps
-  },
-
-  // DEPRECATED: Use API endpoints instead
-  getClients: (): Client[] => {
-    console.warn("ClientDataService.getClients is deprecated. Use GET /api/clients instead.")
+    console.warn("⚠️ DEPRECATED: ClientDataService.initializeClients() does nothing. Clients are managed in Prisma database.")
     return []
   },
 
-  // Get client by ID
+  /**
+   * @deprecated Use GET /api/clients instead.
+   */
+  getClients: (): Client[] => {
+    console.warn("⚠️ DEPRECATED: ClientDataService.getClients() is deprecated. Use GET /api/clients instead.")
+    return []
+  },
+
+  /**
+   * @deprecated Use GET /api/clients/[id] instead.
+   */
   getClientById: (id: string): Client | undefined => {
-    const clients = ClientDataService.getClients()
-    return clients.find(client => client.id === id)
+    console.warn("⚠️ DEPRECATED: ClientDataService.getClientById() is deprecated. Use GET /api/clients/[id] instead.")
+    return undefined
   },
 
-  // Get clients by location
+  /**
+   * @deprecated Use GET /api/clients with location filter instead.
+   */
   getClientsByLocation: (locationId: string): Client[] => {
-    const clients = ClientDataService.getClients()
-    return clients.filter(client => 
-      client.locations?.includes(locationId) || client.preferredLocation === locationId
-    )
+    console.warn("⚠️ DEPRECATED: ClientDataService.getClientsByLocation() is deprecated. Use GET /api/clients?locationId=X instead.")
+    return []
   },
 
-  // Get clients by segment
+  /**
+   * @deprecated Use Prisma queries with filters instead.
+   */
   getClientsBySegment: (segment: string): Client[] => {
-    const clients = ClientDataService.getClients()
-    return clients.filter(client => client.segment === segment)
+    console.warn("⚠️ DEPRECATED: ClientDataService.getClientsBySegment() is deprecated. Use Prisma queries instead.")
+    return []
   },
 
-  // Search clients
+  /**
+   * @deprecated Use GET /api/clients with search parameter instead.
+   */
   searchClients: (query: string): Client[] => {
-    const clients = ClientDataService.getClients()
-    const lowercaseQuery = query.toLowerCase()
-    
-    return clients.filter(client =>
-      client.name.toLowerCase().includes(lowercaseQuery) ||
-      client.email.toLowerCase().includes(lowercaseQuery) ||
-      client.phone.includes(query)
-    )
+    console.warn("⚠️ DEPRECATED: ClientDataService.searchClients() is deprecated. Use GET /api/clients with search instead.")
+    return []
   },
 
-  // DEPRECATED: Use API endpoints instead
+  /**
+   * @deprecated Use POST/PUT /api/clients instead.
+   */
   saveClients: (clients: Client[]) => {
-    console.warn("ClientDataService.saveClients is deprecated. Use POST/PUT /api/clients instead.")
+    console.warn("⚠️ DEPRECATED: ClientDataService.saveClients() is deprecated. Use POST/PUT /api/clients instead.")
   },
 
-  // DEPRECATED: Use API endpoints instead
+  /**
+   * @deprecated Use POST /api/clients/create instead.
+   */
   addClient: (clientData: Omit<Client, "id" | "createdAt" | "updatedAt">): Client => {
-    console.warn("ClientDataService.addClient is deprecated. Use POST /api/clients instead.")
+    console.warn("⚠️ DEPRECATED: ClientDataService.addClient() is deprecated. Use POST /api/clients/create instead.")
     return {
       ...clientData,
       id: 'deprecated',
@@ -164,21 +166,27 @@ export const ClientDataService = {
     }
   },
 
-  // DEPRECATED: Use API endpoints instead
+  /**
+   * @deprecated Use PUT /api/clients/[id] instead.
+   */
   updateClient: (id: string, updates: Partial<Client>): Client | null => {
-    console.warn("ClientDataService.updateClient is deprecated. Use PUT /api/clients/[id] instead.")
+    console.warn("⚠️ DEPRECATED: ClientDataService.updateClient() is deprecated. Use PUT /api/clients/[id] instead.")
     return null
   },
 
-  // DEPRECATED: Use API endpoints instead
+  /**
+   * @deprecated Use DELETE /api/clients/[id] instead.
+   */
   deleteClient: (id: string): boolean => {
-    console.warn("ClientDataService.deleteClient is deprecated. Use DELETE /api/clients/[id] instead.")
+    console.warn("⚠️ DEPRECATED: ClientDataService.deleteClient() is deprecated. Use DELETE /api/clients/[id] instead.")
     return false
   },
 
-  // DEPRECATED: Use API endpoints for client statistics
+  /**
+   * @deprecated Use lib/services/clients.ts getClientStats() instead.
+   */
   getClientStats: () => {
-    console.warn("ClientDataService.getClientStats is deprecated. Use GET /api/clients/stats instead.")
+    console.warn("⚠️ DEPRECATED: ClientDataService.getClientStats() is deprecated. Use lib/services/clients.ts instead.")
     return {
       total: 0,
       active: 0,

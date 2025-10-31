@@ -3,11 +3,10 @@
 
 generator client {
   provider = "prisma-client-js"
-  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -119,22 +118,34 @@ model StaffSchedule {
 // ============================================================================
 
 model Client {
-  id          String   @id @default(cuid())
-  userId      String   @unique
-  name        String
-  phone       String?
-  dateOfBirth DateTime?
-  preferences String?  // JSON data stored as string
-  notes       String? // Using Text type for potentially long content
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                  String    @id @default(cuid())
+  userId              String    @unique
+  name                String
+  phone               String?
+  email               String?   // Client's email (can differ from user email)
+  address             String?   // Client's address
+  city                String?   // Client's city
+  state               String?   // Client's state
+  zipCode             String?   // Client's zip code
+  dateOfBirth         DateTime?
+  preferences         String?   // JSON data stored as string
+  notes               String?   // Using Text type for potentially long content
+  preferredLocationId String?   // Preferred location for this client
+  registrationSource  String?   // How the client was registered (manual, client_portal, etc.)
+  isAutoRegistered    Boolean   @default(false) // Whether client was auto-registered
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 
   // Relationships
-  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  loyaltyProgram LoyaltyProgram?
-  memberships    Membership[]
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  preferredLocation Location?        @relation(fields: [preferredLocationId], references: [id])
+  loyaltyProgram    LoyaltyProgram?
+  memberships       Membership[]
 
   @@index([name]) // Index for name searches
+  @@index([phone]) // Index for phone searches
+  @@index([email]) // Index for email searches
+  @@index([preferredLocationId]) // Index for location filtering
   @@map("clients")
 }
 
@@ -158,15 +169,16 @@ model Location {
   coordinates String? // JSON data stored as string
 
   // Relationships
-  staff        StaffLocation[]
-  appointments Appointment[]
-  services     LocationService[]
-  products     ProductLocation[]
-  batches      ProductBatch[]
-  transactions Transaction[]
-  audits       InventoryAudit[]
-  transfersFrom Transfer[] @relation("TransferFrom")
-  transfersTo   Transfer[] @relation("TransferTo")
+  staff              StaffLocation[]
+  appointments       Appointment[]
+  services           LocationService[]
+  products           ProductLocation[]
+  batches            ProductBatch[]
+  transactions       Transaction[]
+  audits             InventoryAudit[]
+  transfersFrom      Transfer[]        @relation("TransferFrom")
+  transfersTo        Transfer[]        @relation("TransferTo")
+  preferredByClients Client[]          // Clients who prefer this location
 
   @@index([name])
   @@index([city, country])

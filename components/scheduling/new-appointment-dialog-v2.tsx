@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, useCallback, useRef } from "react"
 import {
   Dialog,
   DialogContent,
@@ -16,7 +16,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { CalendarIcon, X } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { CalendarIcon, X, CheckCircle2, UserPlus, Loader2 } from "lucide-react"
 import { set, isBefore, startOfDay, addMinutes, parseISO } from "date-fns"
 import { formatAppDate, formatForDateInput, isToday } from "@/lib/date-utils"
 import { cn } from "@/lib/utils"
@@ -91,6 +92,12 @@ export function NewAppointmentDialogV2({
     location: currentLocation === "all" || currentLocation === "home" ? "loc1" : currentLocation,
     notes: "",
   })
+
+  // Phone lookup state
+  const [isLookingUpClient, setIsLookingUpClient] = useState(false)
+  const [existingClient, setExistingClient] = useState<any | null>(null)
+  const [isNewClient, setIsNewClient] = useState(false)
+  const lookupTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // Use staff availability sync for cross-location conflict detection
   const {
@@ -505,6 +512,110 @@ export function NewAppointmentDialogV2({
     console.log("Updated category to:", category);
   }
 
+  // Phone lookup function with debouncing
+  const lookupClientByPhone = useCallback(async (phone: string) => {
+    // Clear any existing timeout
+    if (lookupTimeoutRef.current) {
+      clearTimeout(lookupTimeoutRef.current)
+    }
+
+    // Reset states if phone is empty
+    if (!phone || phone.trim().length === 0) {
+      setExistingClient(null)
+      setIsNewClient(false)
+      setIsLookingUpClient(false)
+      return
+    }
+
+    // Validate phone number has at least 8 digits
+    const digitsOnly = phone.replace(/\D/g, '')
+    if (digitsOnly.length < 8) {
+      setExistingClient(null)
+      setIsNewClient(false)
+      setIsLookingUpClient(false)
+      return
+    }
+
+    // Set loading state immediately
+    setIsLookingUpClient(true)
+
+    // Debounce the API call by 500ms
+    lookupTimeoutRef.current = setTimeout(async () => {
+      try {
+        // STEP 1: Check database via API
+        const response = await fetch(`/api/clients/lookup?phone=${encodeURIComponent(phone)}`)
+        const data = await response.json()
+
+        if (data.found && data.client) {
+          // Client found in database - auto-populate fields
+          setExistingClient(data.client)
+          setIsNewClient(false)
+          setFormData(prev => ({
+            ...prev,
+            clientName: data.client.name,
+            email: data.client.email,
+            phone: phone // Keep the phone as entered
+          }))
+          console.log("✅ Existing client found in database:", data.client.name, data.client.id)
+        } else {
+          // STEP 2: If not found in database, check client-provider (localStorage)
+          console.log("🔍 Not found in database, checking client-provider...")
+          const normalizedPhone = normalizePhoneNumber(phone)
+          const localClient = clients.find(client => {
+            const clientNormalizedPhone = normalizePhoneNumber(client.phone)
+            return clientNormalizedPhone === normalizedPhone
+          })
+
+          if (localClient) {
+            // Client found in localStorage - auto-populate fields
+            setExistingClient(localClient)
+            setIsNewClient(false)
+            setFormData(prev => ({
+              ...prev,
+              clientName: localClient.name,
+              email: localClient.email,
+              phone: phone // Keep the phone as entered
+            }))
+            console.log("✅ Existing client found in localStorage:", localClient.name, localClient.id)
+          } else {
+            // Client not found anywhere - new client
+            setExistingClient(null)
+            setIsNewClient(true)
+            console.log("❌ New client - phone not found in database or localStorage")
+          }
+        }
+      } catch (error) {
+        console.error("❌ Error looking up client:", error)
+        // On error, treat as new client
+        setExistingClient(null)
+        setIsNewClient(true)
+      } finally {
+        setIsLookingUpClient(false)
+      }
+    }, 500) // 500ms debounce delay
+  }, [])
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (lookupTimeoutRef.current) {
+        clearTimeout(lookupTimeoutRef.current)
+      }
+    }
+  }, [])
+
+  // Reset client lookup states when dialog closes
+  useEffect(() => {
+    if (!open) {
+      setExistingClient(null)
+      setIsNewClient(false)
+      setIsLookingUpClient(false)
+      if (lookupTimeoutRef.current) {
+        clearTimeout(lookupTimeoutRef.current)
+      }
+    }
+  }, [open])
+
   const handleSubmit = async () => {
     if (!formData.clientName || !formData.serviceId || !formData.staffId) {
       toast({
@@ -541,11 +652,15 @@ export function NewAppointmentDialogV2({
         throw new Error("Service or staff not found")
       }
 
-      // Auto-register client if phone and name are provided
+      // Handle client ID - use existing client or auto-register new client
       let clientId = `client-${Date.now()}`
 
-      if (formData.phone && formData.clientName) {
-        // Try to auto-register the client
+      if (existingClient) {
+        // Use existing client ID
+        clientId = existingClient.id
+        console.log(`Using existing client: ${existingClient.name} (${existingClient.id})`)
+      } else if (formData.phone && formData.clientName) {
+        // Auto-register new client
         const autoRegisteredClient = await autoRegisterClient({
           name: formData.clientName,
           email: formData.email,
@@ -556,7 +671,12 @@ export function NewAppointmentDialogV2({
 
         if (autoRegisteredClient) {
           clientId = autoRegisteredClient.id
-          console.log(`Auto-registered client: ${autoRegisteredClient.name} (${autoRegisteredClient.id})`)
+          console.log(`Auto-registered new client: ${autoRegisteredClient.name} (${autoRegisteredClient.id})`)
+
+          toast({
+            title: "New client created",
+            description: `${autoRegisteredClient.name} has been added to your client database.`,
+          })
         } else {
           console.log("Failed to auto-register client")
         }
@@ -567,6 +687,8 @@ export function NewAppointmentDialogV2({
         id: `appointment-${Date.now()}`,
         clientId: clientId,
         clientName: formData.clientName,
+        clientEmail: formData.email, // Store client email for matching
+        clientPhone: formData.phone, // Store client phone for matching
         staffId: formData.staffId,
         staffName: selectedStaff.name,
         service: selectedService.name,
@@ -649,9 +771,68 @@ export function NewAppointmentDialogV2({
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
+          {/* Client lookup status indicator */}
+          {(existingClient || isNewClient) && (
+            <div className={cn(
+              "flex items-center gap-2 p-3 rounded-md border",
+              existingClient
+                ? "bg-green-50 border-green-200 text-green-800"
+                : "bg-blue-50 border-blue-200 text-blue-800"
+            )}>
+              {existingClient ? (
+                <>
+                  <CheckCircle2 className="h-4 w-4" />
+                  <span className="text-sm font-medium">Existing client found</span>
+                  <Badge variant="outline" className="ml-auto bg-white">
+                    {existingClient.segment}
+                  </Badge>
+                </>
+              ) : (
+                <>
+                  <UserPlus className="h-4 w-4" />
+                  <span className="text-sm font-medium">New client - please enter details</span>
+                </>
+              )}
+            </div>
+          )}
+
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="clientName">Client Name</Label>
+              <Label htmlFor="phone">
+                Phone <span className="text-red-500">*</span>
+              </Label>
+              <div className="relative">
+                <Input
+                  id="phone"
+                  placeholder="(123) 456-7890"
+                  value={formData.phone}
+                  onChange={(e) => {
+                    const newValue = e.target.value;
+                    console.log("Phone changed:", newValue);
+                    setFormData((prevData) => ({
+                      ...prevData,
+                      phone: newValue
+                    }));
+                    // Trigger client lookup
+                    lookupClientByPhone(newValue);
+                  }}
+                  required
+                />
+                {isLookingUpClient && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+                  </div>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Enter phone number to check for existing client
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="clientName">
+                Client Name <span className="text-red-500">*</span>
+              </Label>
               <Input
                 id="clientName"
                 placeholder="Enter client name"
@@ -664,10 +845,14 @@ export function NewAppointmentDialogV2({
                     clientName: newValue
                   }));
                 }}
+                disabled={!!existingClient}
+                className={existingClient ? "bg-gray-50" : ""}
                 required
               />
             </div>
+          </div>
 
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -683,25 +868,8 @@ export function NewAppointmentDialogV2({
                     email: newValue
                   }));
                 }}
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone</Label>
-              <Input
-                id="phone"
-                placeholder="(123) 456-7890"
-                value={formData.phone}
-                onChange={(e) => {
-                  const newValue = e.target.value;
-                  console.log("Phone changed:", newValue);
-                  setFormData((prevData) => ({
-                    ...prevData,
-                    phone: newValue
-                  }));
-                }}
+                disabled={!!existingClient}
+                className={existingClient ? "bg-gray-50" : ""}
               />
             </div>
 
@@ -865,9 +1033,10 @@ export function NewAppointmentDialogV2({
                         setFormData(updatedFormData)
                       }
                     }}
-                    disabled={(date) =>
-                      isBefore(date, startOfDay(new Date())) // Disable past dates
-                    }
+                    disabled={(date) => {
+                      const today = startOfDay(new Date())
+                      return date < today
+                    }}
                     initialFocus
                   />
                 </PopoverContent>

@@ -8,10 +8,21 @@ export async function GET(
   try {
     const clientId = params.id
 
-    // Get client appointments from Prisma
+    // Get client from database to access userId
+    const client = await prisma.client.findUnique({
+      where: { id: clientId },
+      select: { userId: true }
+    })
+
+    if (!client) {
+      return NextResponse.json({ error: "Client not found" }, { status: 404 })
+    }
+
+    // Get client appointments from Prisma using userId
+    // Note: Appointment.clientId references User.id, not Client.id
     const appointments = await prisma.appointment.findMany({
       where: {
-        clientId: clientId
+        clientId: client.userId // Use userId from client
       },
       include: {
         staff: true,
@@ -27,36 +38,42 @@ export async function GET(
       }
     })
 
-    // Get client purchases/orders from the order management system
-    // For now, we'll use mock data but this should connect to your order system
-    const mockPurchases = [
-      {
-        id: `p1-${clientId}`,
-        date: "2025-03-15T14:30:00",
-        type: "purchase",
-        description: "Shampoo & Conditioner Set",
-        amount: 45.99,
-        paymentMethod: "Credit Card",
-        transactionId: "TX-001",
-        items: [
-          { name: "Premium Shampoo", quantity: 1, price: 22.99 },
-          { name: "Deep Conditioner", quantity: 1, price: 23.00 }
-        ]
+    // Get client purchases/transactions from the database
+    const transactions = await prisma.transaction.findMany({
+      where: {
+        userId: client.userId,
+        type: {
+          in: ['PRODUCT_SALE', 'SERVICE_SALE', 'PACKAGE_SALE']
+        }
       },
-      {
-        id: `p2-${clientId}`,
-        date: "2025-02-28T16:45:00",
-        type: "purchase",
-        description: "Hair Styling Products",
-        amount: 67.50,
-        paymentMethod: "Debit Card",
-        transactionId: "TX-002",
-        items: [
-          { name: "Hair Serum", quantity: 1, price: 35.00 },
-          { name: "Styling Gel", quantity: 2, price: 16.25 }
-        ]
+      include: {
+        location: true
+      },
+      orderBy: {
+        createdAt: 'desc'
       }
-    ]
+    })
+
+    // Transform transactions to purchase format
+    const purchases = transactions.map(transaction => {
+      let items = []
+      try {
+        items = transaction.items ? JSON.parse(transaction.items) : []
+      } catch (error) {
+        console.error('Error parsing transaction items:', error)
+      }
+
+      return {
+        id: transaction.id,
+        date: transaction.createdAt.toISOString(),
+        type: "purchase",
+        description: transaction.description || "Purchase",
+        amount: Number(transaction.amount),
+        paymentMethod: transaction.method,
+        transactionId: transaction.reference || transaction.id,
+        items: items
+      }
+    })
 
     // Transform appointments to timeline format
     const appointmentEvents = appointments.map(appointment => ({
@@ -76,7 +93,7 @@ export async function GET(
     }))
 
     // Transform purchases to timeline format
-    const purchaseEvents = mockPurchases.map(purchase => ({
+    const purchaseEvents = purchases.map(purchase => ({
       id: purchase.id,
       date: purchase.date,
       type: "purchase",

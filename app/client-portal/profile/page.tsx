@@ -150,12 +150,9 @@ export default function ProfilePage() {
     setIsSaving(true)
 
     try {
-      // In a real app, this would be an API call to update the client
-      await new Promise(resolve => setTimeout(resolve, 1000))
-
       // Update client in context
       if (client.id) {
-        updateClient(client.id, {
+        await updateClient(client.id, {
           name: `${formData.firstName} ${formData.lastName}`,
           email: formData.email,
           phone: formData.phone,

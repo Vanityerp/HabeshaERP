@@ -21,7 +21,7 @@ interface ClientDirectoryProps {
 
 export function ClientDirectory({ search }: ClientDirectoryProps) {
   const { currentLocation, hasPermission } = useAuth()
-  const { clients, updateClient } = useClients()
+  const { clients, updateClient, normalizePhoneNumber } = useClients()
   const { getLocationName } = useLocations()
   const router = useRouter()
   const [selectedClient, setSelectedClient] = useState<any>(null)
@@ -38,9 +38,20 @@ export function ClientDirectory({ search }: ClientDirectoryProps) {
       return false
     }
 
-    // Filter by search term
-    if (search && !client.name.toLowerCase().includes(search.toLowerCase())) {
-      return false
+    // Filter by search term (name or phone number)
+    if (search) {
+      const searchLower = search.toLowerCase()
+      const nameMatch = client.name.toLowerCase().includes(searchLower)
+
+      // Normalize both the search term and client phone for comparison
+      const normalizedSearch = normalizePhoneNumber(search)
+      const normalizedClientPhone = normalizePhoneNumber(client.phone || '')
+      const phoneMatch = normalizedClientPhone.includes(normalizedSearch) ||
+                        (client.phone || '').includes(search)
+
+      if (!nameMatch && !phoneMatch) {
+        return false
+      }
     }
 
     return true
