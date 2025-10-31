@@ -75,11 +75,15 @@ export function ClientPreferencesForm({ initialPreferences, onSave }: ClientPref
     setIsInitialized(false)
   }, [initialPreferences?.preferredStylists, initialPreferences?.preferredServices, initialPreferences?.allergies, initialPreferences?.notes])
 
-  // Filter staff to only include stylists and related roles
-  const stylists = staffData.filter(staffMember =>
-    ["stylist", "colorist", "barber", "nail_technician", "esthetician", "massage_therapist"].includes(staffMember.role) &&
-    staffMember.status === "Active"
-  )
+  // Filter staff to only include active staff members
+  // Accept all roles but check for active status
+  const stylists = staffData.filter(staffMember => {
+    // Check if status is Active (case-insensitive)
+    const isActive = staffMember.status?.toLowerCase() === "active" || staffMember.status === "ACTIVE"
+
+    // Include all staff roles (Manager, Stylist, Nail Artist, Beautician, etc.)
+    return isActive
+  })
 
   // Filter services by search term
   const filteredServices = services.filter(service =>

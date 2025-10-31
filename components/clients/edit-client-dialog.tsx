@@ -36,6 +36,7 @@ export function EditClientDialog({ clientId, open, onOpenChange, onClientUpdated
   const { locations, getLocationName, isHomeServiceEnabled } = useLocations()
   const { toast } = useToast()
   const [activeTab, setActiveTab] = useState(initialTab)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Client data state
   const [formData, setFormData] = useState<Partial<Client>>({
@@ -114,16 +115,47 @@ export function EditClientDialog({ clientId, open, onOpenChange, onClientUpdated
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    const updatedClient = await updateClient(clientId, {
-      ...formData,
-      preferences,
-    })
+    console.log('📝 Submitting client update:', { clientId, formData, preferences })
 
-    if (updatedClient && onClientUpdated) {
-      onClientUpdated(updatedClient)
+    setIsSubmitting(true)
+
+    try {
+      const updatedClient = await updateClient(clientId, {
+        ...formData,
+        preferences,
+      })
+
+      if (updatedClient) {
+        console.log('✅ Client updated successfully:', updatedClient)
+
+        toast({
+          title: "Client Updated",
+          description: `${formData.name}'s information has been updated successfully.`,
+        })
+
+        if (onClientUpdated) {
+          onClientUpdated(updatedClient)
+        }
+
+        onOpenChange(false)
+      } else {
+        console.error('❌ Failed to update client: No client returned')
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to update client. Please try again.",
+        })
+      }
+    } catch (error) {
+      console.error('❌ Error updating client:', error)
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to update client. Please try again.",
+      })
+    } finally {
+      setIsSubmitting(false)
     }
-
-    onOpenChange(false)
   }
 
   return (
@@ -436,11 +468,19 @@ export function EditClientDialog({ clientId, open, onOpenChange, onClientUpdated
                 </div>
 
                 <div className="flex justify-between">
-                  <Button type="button" variant="outline" onClick={() => setActiveTab("preferences")}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setActiveTab("preferences")}
+                    disabled={isSubmitting}
+                  >
                     Back to Preferences
                   </Button>
-                  <Button type="submit">
-                    Update Client
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Updating..." : "Update Client"}
                   </Button>
                 </div>
               </div>
