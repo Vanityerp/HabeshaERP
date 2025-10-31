@@ -8,7 +8,7 @@ async function main() {
   console.log('🌱 Starting database seeding...')
 
   // Create admin user (or get existing one)
-  const adminPassword = await bcrypt.hash('admin123', 10)
+  const adminPassword = await bcrypt.hash('Admin33#', 10)
   let admin = await prisma.user.findUnique({
     where: { email: 'admin@vanityhub.com' }
   })
@@ -19,11 +19,20 @@ async function main() {
         email: 'admin@vanityhub.com',
         password: adminPassword,
         role: 'ADMIN',
+        isActive: true,
       },
     })
     console.log('✅ Created admin user')
   } else {
-    console.log('ℹ️ Admin user already exists')
+    // Update existing admin password to ensure it's correct
+    admin = await prisma.user.update({
+      where: { email: 'admin@vanityhub.com' },
+      data: {
+        password: adminPassword,
+        isActive: true,
+      },
+    })
+    console.log('✅ Updated admin user password')
   }
 
   // Create the 5 specific locations (check for existing first to prevent duplicates)
