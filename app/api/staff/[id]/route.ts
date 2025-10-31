@@ -201,7 +201,7 @@ export async function PUT(
 
 /**
  * DELETE /api/staff/[id]
- * 
+ *
  * Delete a staff member
  */
 export async function DELETE(
@@ -210,6 +210,8 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
+
+    console.log(`🔄 Attempting to delete staff member with ID: ${id}`);
 
     // Try to delete from database first
     try {
@@ -220,34 +222,80 @@ export async function DELETE(
       });
 
       if (!existingStaff) {
+        console.log(`❌ Staff member not found: ${id}`);
         return NextResponse.json(
           { error: 'Staff member not found' },
           { status: 404 }
         );
       }
 
-      // Delete staff member (this will cascade to related records)
+      // Check if staff has any appointments
+      const appointmentCount = await prisma.appointment.count({
+        where: { staffId: id }
+      });
+
+      if (appointmentCount > 0) {
+        console.log(`❌ Cannot delete staff with ${appointmentCount} appointments`);
+        return NextResponse.json(
+          {
+            error: `Cannot delete staff member with ${appointmentCount} appointments. Please reassign or cancel the appointments first.`
+          },
+          { status: 400 }
+        );
+      }
+
+      console.log(`🔄 Deleting staff member: ${existingStaff.name}`);
+
+      // Delete related records first (in correct order)
+      // 1. Delete staff-service associations
+      await prisma.staffService.deleteMany({
+        where: { staffId: id }
+      });
+      console.log(`  ✅ Deleted staff-service associations`);
+
+      // 2. Delete staff-location associations
+      await prisma.staffLocation.deleteMany({
+        where: { staffId: id }
+      });
+      console.log(`  ✅ Deleted staff-location associations`);
+
+      // 3. Delete staff schedule
+      await prisma.staffSchedule.deleteMany({
+        where: { staffId: id }
+      });
+      console.log(`  ✅ Deleted staff schedule`);
+
+      // 4. Delete staff member
       await prisma.staffMember.delete({
         where: { id }
       });
+      console.log(`  ✅ Deleted staff member record`);
 
-      // Delete the associated user
+      // 5. Delete the associated user
       await prisma.user.delete({
         where: { id: existingStaff.userId }
       });
+      console.log(`  ✅ Deleted user account`);
 
+      console.log(`✅ Successfully deleted staff member: ${existingStaff.name}`);
       return NextResponse.json({ success: true });
     } catch (dbError) {
-      console.error('Database error deleting staff member:', dbError);
+      console.error('❌ Database error deleting staff member:', dbError);
       return NextResponse.json(
-        { error: 'Failed to delete staff member' },
+        {
+          error: 'Failed to delete staff member',
+          details: dbError instanceof Error ? dbError.message : 'Unknown database error'
+        },
         { status: 500 }
       );
     }
   } catch (error) {
-    console.error('Error deleting staff:', error);
+    console.error('❌ Error deleting staff:', error);
     return NextResponse.json(
-      { error: 'Failed to delete staff member' },
+      {
+        error: 'Failed to delete staff member',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }
