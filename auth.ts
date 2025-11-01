@@ -1,31 +1,7 @@
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
-import { prisma } from "@/lib/prisma-client"
-import bcrypt from "bcryptjs"
+import { authenticateUser, updateLastLogin } from "@/lib/pg-auth"
 import { auditAuth } from "@/lib/security/audit-log"
-
-// Enhanced password comparison using bcrypt
-const comparePasswords = async (plainPassword: string, hashedPassword: string) => {
-  try {
-    // Use bcrypt for proper password comparison
-    return await bcrypt.compare(plainPassword, hashedPassword)
-  } catch (error) {
-    console.error("Password comparison error:", error)
-    return false
-  }
-}
-
-// Get client IP from request
-function getClientIP(request: any): string {
-  const forwarded = request?.headers?.['x-forwarded-for']
-  const realIP = request?.headers?.['x-real-ip']
-
-  if (forwarded) {
-    return forwarded.split(',')[0].trim()
-  }
-
-  return realIP || 'unknown'
-}
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   debug: process.env.NODE_ENV === 'development',
@@ -56,40 +32,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
 
         try {
-          // Direct input without validation layer that may strip characters
           const email = (credentials.email as string).toLowerCase().trim()
           const password = credentials.password as string
 
-          // Use Prisma to find user with staff profile and locations
-          const user = await prisma.user.findUnique({
-            where: { email },
-            include: {
-              staffProfile: {
-                include: {
-                  locations: {
-                    include: {
-                      location: true
-                    }
-                  }
-                }
-              }
-            }
-          })
+          // Use raw PostgreSQL authentication (bypasses Prisma Data Proxy issue)
+          const user = await authenticateUser(email, password)
 
-          if (!user || !user.isActive) {
+          if (!user) {
             // Audit failed login attempt
-            await auditAuth.loginFailed(
-              email,
-              user ? 'Account inactive' : 'User not found'
-            )
-            return null
-          }
-
-          const passwordMatch = await comparePasswords(password, user.password)
-
-          if (!passwordMatch) {
-            // Audit failed login attempt
-            await auditAuth.loginFailed(email, 'Invalid password')
+            await auditAuth.loginFailed(email, 'Invalid credentials')
             return null
           }
 
@@ -97,9 +48,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           let locationIds: string[] = []
           if (user.staffProfile?.locations) {
             locationIds = user.staffProfile.locations
-              .filter(sl => sl.isActive)
+              .filter(sl => sl.location?.id)
               .map(sl => sl.location.id)
           }
+
+          // Update last login
+          await updateLastLogin(user.id)
 
           // Audit successful login
           await auditAuth.loginSuccess(user.id, user.email, user.role)

@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma-client'
-import bcrypt from 'bcryptjs'
+import { authenticateUser } from '@/lib/pg-auth'
 
 export async function POST(request: Request) {
   try {
@@ -17,55 +16,14 @@ export async function POST(request: Request) {
 
     console.log('Direct login attempt for:', email)
 
-    // Find user WITHOUT any validation layer
-    const user = await prisma.user.findUnique({
-      where: { email },
-      include: {
-        staffProfile: {
-          include: {
-            locations: {
-              include: {
-                location: true
-              }
-            }
-          }
-        }
-      }
-    })
+    // Use raw PostgreSQL authentication
+    const user = await authenticateUser(email, password)
 
     if (!user) {
-      console.log('❌ User not found')
+      console.log('❌ Authentication failed')
       return NextResponse.json({
         success: false,
-        error: 'Invalid email or password',
-        debug: { step: 'user_lookup', found: false }
-      }, { status: 401 })
-    }
-
-    if (!user.isActive) {
-      console.log('❌ User not active')
-      return NextResponse.json({
-        success: false,
-        error: 'Account is not active',
-        debug: { step: 'user_status', active: false }
-      }, { status: 401 })
-    }
-
-    // Direct password comparison
-    const passwordMatch = await bcrypt.compare(password, user.password)
-    
-    console.log('Password match result:', passwordMatch)
-
-    if (!passwordMatch) {
-      console.log('❌ Password mismatch')
-      return NextResponse.json({
-        success: false,
-        error: 'Invalid email or password',
-        debug: { 
-          step: 'password_check', 
-          match: false,
-          hashPreview: user.password.substring(0, 20) + '...'
-        }
+        error: 'Invalid email or password'
       }, { status: 401 })
     }
 
@@ -75,7 +33,7 @@ export async function POST(request: Request) {
     let locationIds: string[] = []
     if (user.staffProfile?.locations) {
       locationIds = user.staffProfile.locations
-        .filter(sl => sl.isActive)
+        .filter(sl => sl.location?.id)
         .map(sl => sl.location.id)
     }
 
@@ -88,8 +46,7 @@ export async function POST(request: Request) {
         role: user.role,
         name: user.staffProfile?.name || user.email.split('@')[0],
         locations: user.role === 'ADMIN' ? ['all'] : locationIds
-      },
-      instructions: 'Use NextAuth signIn with these credentials'
+      }
     })
 
   } catch (error) {
