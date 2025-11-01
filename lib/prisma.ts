@@ -9,28 +9,10 @@ export const prisma = globalForPrisma.prisma ?? new PrismaClient({
   log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
   datasources: {
     db: {
-      url: getDatabaseUrl(),
+      url: process.env.DATABASE_URL,
     },
   },
 })
-
-// Helper function to get database URL from environment variables
-function getDatabaseUrl(): string | undefined {
-  const databaseUrl = process.env.DATABASE_URL
-  
-  // Handle Vercel environment variable format
-  if (databaseUrl && databaseUrl.startsWith('{')) {
-    try {
-      const parsed = JSON.parse(databaseUrl)
-      return parsed.url
-    } catch (e) {
-      console.error('Failed to parse DATABASE_URL as JSON:', e)
-      return undefined
-    }
-  }
-  
-  return databaseUrl
-}
 
 // Store the Prisma client in the global object to prevent multiple instances in development
 if (process.env.NODE_ENV !== 'production') {

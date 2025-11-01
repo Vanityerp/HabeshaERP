@@ -70,7 +70,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           const { email, password } = validation.data
 
           // Use Prisma to find user with staff profile and locations
-          console.log('🔍 Looking up user in database:', email)
           const user = await prisma.user.findUnique({
             where: { email },
             include: {
@@ -85,7 +84,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               }
             }
           })
-          console.log('👤 User lookup result:', user ? 'Found' : 'Not found')
 
           if (!user || !user.isActive) {
             // Audit failed login attempt
@@ -96,9 +94,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             return null
           }
 
-          console.log('🔑 Comparing passwords for user:', email)
           const passwordMatch = await comparePasswords(password, user.password)
-          console.log('🔑 Password match result:', passwordMatch)
 
           if (!passwordMatch) {
             // Audit failed login attempt
@@ -116,7 +112,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
           // Audit successful login
           await auditAuth.loginSuccess(user.id, user.email, user.role)
-          console.log('✅ User authenticated successfully:', { id: user.id, email: user.email, role: user.role })
 
           return {
             id: user.id,
@@ -180,8 +175,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   secret: process.env.NEXTAUTH_SECRET,
-  // More flexible cookie configuration for better production compatibility
-  useSecureCookies: process.env.NODE_ENV === 'production' && (process.env.VERCEL === '1' ? false : true),
+  useSecureCookies: process.env.NODE_ENV === 'production',
   cookies: {
     sessionToken: {
       name: process.env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token',
@@ -189,8 +183,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        // Allow cookies to work in all environments, with special handling for Vercel
-        secure: process.env.NODE_ENV === 'production' && (process.env.NEXTAUTH_URL?.startsWith('https://') ?? false),
+        secure: process.env.NODE_ENV === 'production',
         maxAge: 30 * 24 * 60 * 60, // 30 days
       },
     },
