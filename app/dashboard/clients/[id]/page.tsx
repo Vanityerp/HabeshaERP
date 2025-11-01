@@ -220,7 +220,18 @@ export default function ClientProfilePage({ params }: ClientProfilePageProps) {
         setPurchases(data.purchases || [])
         setTimelineEvents(data.timeline || [])
         setHistoryLoaded(true)
-        console.log(`Loaded client history: ${data.appointments?.length} appointments, ${data.purchases?.length} purchases`)
+
+        // Update client's total spent from the API summary
+        if (client && data.summary) {
+          const updatedClient = {
+            ...client,
+            totalSpent: data.summary.totalSpent || 0
+          }
+          setClient(updatedClient)
+          console.log(`✅ Updated client total spent: QAR ${data.summary.totalSpent}`)
+        }
+
+        console.log(`Loaded client history: ${data.appointments?.length} appointments, ${data.purchases?.length} purchases, Total: QAR ${data.summary?.totalSpent || 0}`)
       } else {
         console.error('Failed to load client history:', response.status)
         toast({

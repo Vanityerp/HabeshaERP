@@ -11,12 +11,19 @@ export async function GET(
     // Get client from database to access userId
     const client = await prisma.client.findUnique({
       where: { id: clientId },
-      select: { userId: true }
+      select: {
+        userId: true,
+        name: true,
+        email: true,
+        phone: true
+      }
     })
 
     if (!client) {
       return NextResponse.json({ error: "Client not found" }, { status: 404 })
     }
+
+    console.log(`📋 Fetching history for client: ${client.name} (ID: ${clientId}, UserID: ${client.userId})`)
 
     // Get client appointments from Prisma using userId
     // Note: Appointment.clientId references User.id, not Client.id
@@ -38,12 +45,14 @@ export async function GET(
       }
     })
 
+    console.log(`✅ Found ${appointments.length} appointments for ${client.name}`)
+
     // Get client purchases/transactions from the database
     const transactions = await prisma.transaction.findMany({
       where: {
         userId: client.userId,
         type: {
-          in: ['PRODUCT_SALE', 'SERVICE_SALE', 'PACKAGE_SALE']
+          in: ['PRODUCT_SALE', 'SERVICE_SALE', 'PACKAGE_SALE', 'CONSOLIDATED_SALE']
         }
       },
       include: {
@@ -54,8 +63,42 @@ export async function GET(
       }
     })
 
+    console.log(`✅ Found ${transactions.length} transactions for ${client.name}`)
+
+    // Also check for transactions by client name in description (fallback)
+    // This helps find transactions that might have been created before userId was properly set
+    const transactionsByName = await prisma.transaction.findMany({
+      where: {
+        description: {
+          contains: client.name,
+          mode: 'insensitive'
+        },
+        type: {
+          in: ['PRODUCT_SALE', 'SERVICE_SALE', 'PACKAGE_SALE', 'CONSOLIDATED_SALE']
+        }
+      },
+      include: {
+        location: true
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
+
+    console.log(`✅ Found ${transactionsByName.length} additional transactions by name for ${client.name}`)
+
+    // Merge transactions (remove duplicates by ID)
+    const allTransactions = [...transactions]
+    transactionsByName.forEach(tx => {
+      if (!allTransactions.find(t => t.id === tx.id)) {
+        allTransactions.push(tx)
+      }
+    })
+
+    console.log(`📊 Total unique transactions: ${allTransactions.length}`)
+
     // Transform transactions to purchase format
-    const purchases = transactions.map(transaction => {
+    const purchases = allTransactions.map(transaction => {
       let items = []
       try {
         items = transaction.items ? JSON.parse(transaction.items) : []

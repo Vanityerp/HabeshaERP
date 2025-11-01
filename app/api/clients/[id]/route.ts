@@ -51,6 +51,7 @@ export async function GET(
     // Transform to expected format
     const clientData = {
       id: client.id,
+      userId: client.userId, // ✅ CRITICAL: Include userId for transaction saving
       name: client.name,
       email: client.email || client.user?.email || '',
       phone: client.phone || '',
@@ -175,6 +176,7 @@ export async function PUT(
     // Transform to expected format
     const responseClient = {
       id: updatedClient.id,
+      userId: updatedClient.userId, // ✅ CRITICAL: Include userId for transaction saving
       name: updatedClient.name,
       email: updatedClient.email || updatedClient.user?.email || '',
       phone: updatedClient.phone || '',

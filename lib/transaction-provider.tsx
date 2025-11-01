@@ -374,8 +374,112 @@ export function TransactionProvider({ children }: { children: React.ReactNode })
       locationId: newTransaction.location
     });
 
+    // Save transaction to database
+    saveTransactionToDatabase(newTransaction).catch(error => {
+      console.error('❌ Failed to save transaction to database:', error);
+    });
+
     console.log('=== TRANSACTION PROVIDER: Returning transaction ===');
     return newTransaction;
+  };
+
+  // Helper function to save transaction to database
+  const saveTransactionToDatabase = async (transaction: Transaction) => {
+    try {
+      console.log('💾 SAVE TO DB: Starting save for transaction:', {
+        id: transaction.id,
+        clientId: transaction.clientId,
+        clientName: transaction.clientName,
+        amount: transaction.amount,
+        type: transaction.type
+      });
+
+      // Find the client's userId from clientId
+      let userId = transaction.clientId;
+
+      // If clientId is provided but it's a Client.id (not User.id), we need to fetch the userId
+      if (transaction.clientId) {
+        try {
+          console.log(`🔍 SAVE TO DB: Fetching client data for clientId: ${transaction.clientId}`);
+          const clientResponse = await fetch(`/api/clients/${transaction.clientId}`);
+          console.log(`📡 SAVE TO DB: Client API response status: ${clientResponse.status}`);
+
+          if (clientResponse.ok) {
+            const clientData = await clientResponse.json();
+            userId = clientData.userId || transaction.clientId;
+            console.log(`✅ SAVE TO DB: Resolved userId: ${userId} for clientId: ${transaction.clientId}`);
+          } else {
+            const errorText = await clientResponse.text();
+            console.warn(`⚠️ SAVE TO DB: Could not fetch client data (${clientResponse.status}): ${errorText}`);
+            console.warn('⚠️ SAVE TO DB: Using clientId as userId');
+          }
+        } catch (error) {
+          console.error('❌ SAVE TO DB: Error fetching client data:', error);
+          console.warn('⚠️ SAVE TO DB: Using clientId as userId');
+        }
+      }
+
+      if (!userId) {
+        console.error('❌ SAVE TO DB: No userId available, cannot save transaction');
+        throw new Error('No userId available for transaction');
+      }
+
+      const payload = {
+        userId: userId,
+        amount: transaction.amount,
+        type: transaction.type,
+        status: transaction.status,
+        method: transaction.paymentMethod,
+        reference: transaction.reference?.id || null,
+        description: transaction.description || `${transaction.category} - ${transaction.description || ''}`,
+        locationId: transaction.location || null,
+        appointmentId: transaction.reference?.type === 'appointment' ? transaction.reference.id : null,
+        serviceAmount: transaction.type === 'SERVICE_SALE' || transaction.type === 'CONSOLIDATED_SALE' ? transaction.serviceAmount || transaction.amount : null,
+        productAmount: transaction.type === 'PRODUCT_SALE' || transaction.type === 'CONSOLIDATED_SALE' ? transaction.productAmount || transaction.amount : null,
+        originalServiceAmount: transaction.metadata?.originalServiceAmount || null,
+        discountPercentage: transaction.metadata?.discountPercentage || null,
+        discountAmount: transaction.metadata?.discountAmount || null,
+        items: transaction.items || []
+      };
+
+      console.log('📤 SAVE TO DB: Sending payload to API:', payload);
+
+      const response = await fetch('/api/transactions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      console.log(`📡 SAVE TO DB: API response status: ${response.status}`);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          errorData = { error: errorText };
+        }
+        console.error('❌ SAVE TO DB: Failed to save transaction:', {
+          status: response.status,
+          error: errorData
+        });
+        throw new Error(`Failed to save transaction: ${JSON.stringify(errorData)}`);
+      } else {
+        const result = await response.json();
+        console.log('✅ SAVE TO DB: Transaction saved successfully:', {
+          transactionId: result.transaction?.id,
+          userId: result.transaction?.userId,
+          amount: result.transaction?.amount
+        });
+        return result.transaction;
+      }
+    } catch (error) {
+      console.error('❌ SAVE TO DB: Error saving transaction to database:', error);
+      throw error; // Re-throw to allow caller to handle
+    }
   };
 
   // Update an existing transaction

@@ -29,26 +29,31 @@ export async function POST(request: Request) {
     // Get the request data first
     const data = await request.json()
 
-    // Special case for Receptionist role - always allow creating sales
-    if (userRole !== 'receptionist') {
-      // For other roles, check permissions from the database
-      const { query } = await import("@/lib/db")
-      const roleResult = await query(
-        `SELECT permissions FROM roles WHERE id = $1`,
-        [userRole]
-      )
+    // Check permissions from settings storage (custom roles)
+    const { SettingsStorage } = await import("@/lib/settings-storage")
+    const storedRoles = SettingsStorage.getRoles()
 
-      let hasPermission = false
+    // Try to find the user's role (case-insensitive)
+    let userRoleData = storedRoles.find(role => role.id === userRole)
+    if (!userRoleData) {
+      userRoleData = storedRoles.find(role => role.id.toLowerCase() === userRole.toLowerCase())
+    }
 
-      // Check if user has the required permission
-      if (roleResult.rows.length) {
-        const permissions = roleResult.rows[0].permissions
-        hasPermission = permissions.includes(PERMISSIONS.CREATE_SALE) || permissions.includes(PERMISSIONS.ALL)
-      }
+    let hasPermission = false
 
-      if (!hasPermission) {
-        return NextResponse.json({ error: "Permission denied" }, { status: 403 })
-      }
+    // Check if user has the required permission
+    if (userRoleData && userRoleData.permissions) {
+      hasPermission = userRoleData.permissions.includes(PERMISSIONS.CREATE_SALE) || userRoleData.permissions.includes(PERMISSIONS.ALL)
+    } else {
+      // Fallback to default role permissions
+      const { ROLE_PERMISSIONS } = await import("@/lib/permissions")
+      const roleKey = userRole.toUpperCase() as keyof typeof ROLE_PERMISSIONS
+      const defaultPermissions = ROLE_PERMISSIONS[roleKey] || []
+      hasPermission = defaultPermissions.includes(PERMISSIONS.CREATE_SALE) || defaultPermissions.includes(PERMISSIONS.ALL)
+    }
+
+    if (!hasPermission) {
+      return NextResponse.json({ error: "Permission denied - you don't have permission to create sales" }, { status: 403 })
     }
 
     // Validate required fields
