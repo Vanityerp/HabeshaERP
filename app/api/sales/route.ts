@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { salesRepository } from "@/lib/db"
 import { getServerSession } from "next-auth"
 import { PERMISSIONS } from "@/lib/permissions"
+import { SettingsStorage } from "@/lib/settings-storage"
 
 export async function GET(request: Request) {
   try {
@@ -30,7 +31,6 @@ export async function POST(request: Request) {
     const data = await request.json()
 
     // Check permissions from settings storage (custom roles)
-    const { SettingsStorage } = await import("@/lib/settings-storage")
     const storedRoles = SettingsStorage.getRoles()
 
     // Try to find the user's role (case-insensitive)
@@ -62,7 +62,6 @@ export async function POST(request: Request) {
     }
 
     // Get checkout settings for dynamic tax rate
-    const { SettingsStorage } = await import("@/lib/settings-storage")
     const checkoutSettings = SettingsStorage.getCheckoutSettings()
 
     // Calculate totals
