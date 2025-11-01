@@ -3,7 +3,6 @@ import CredentialsProvider from "next-auth/providers/credentials"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
 import { auditAuth } from "@/lib/security/audit-log"
-import { validateAndSanitizeInput, userLoginSchema } from "@/lib/security/validation"
 
 // Enhanced password comparison using bcrypt
 const comparePasswords = async (plainPassword: string, hashedPassword: string) => {
@@ -57,18 +56,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
 
         try {
-          // Validate and sanitize input
-          const validation = validateAndSanitizeInput(userLoginSchema, {
-            email: credentials.email,
-            password: credentials.password,
-          })
-
-          if (!validation.success) {
-            console.warn('Invalid login input:', validation.errors)
-            return null
-          }
-
-          const { email, password } = validation.data
+          // Direct input without validation layer that may strip characters
+          const email = (credentials.email as string).toLowerCase().trim()
+          const password = credentials.password as string
 
           // Use Prisma to find user with staff profile and locations
           const user = await prisma.user.findUnique({
