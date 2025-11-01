@@ -39,8 +39,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           const user = await authenticateUser(email, password)
 
           if (!user) {
-            // Audit failed login attempt
-            await auditAuth.loginFailed(email, 'Invalid credentials')
+            // Audit failed login attempt (non-blocking)
+            auditAuth.loginFailed(email, 'Invalid credentials').catch(() => {})
             return null
           }
 
@@ -55,8 +55,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           // Update last login
           await updateLastLogin(user.id)
 
-          // Audit successful login
-          await auditAuth.loginSuccess(user.id, user.email, user.role)
+          // Audit successful login (non-blocking)
+          auditAuth.loginSuccess(user.id, user.email, user.role).catch(() => {})
 
           return {
             id: user.id,
@@ -67,12 +67,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           }
         } catch (error) {
           console.error("Auth error:", error)
-          // Audit authentication error
+          // Audit authentication error (non-blocking)
           if (credentials?.email && typeof credentials.email === 'string') {
-            await auditAuth.loginFailed(
+            auditAuth.loginFailed(
               credentials.email,
               'Authentication system error'
-            )
+            ).catch(() => {})
           }
           return null
         }
