@@ -30,6 +30,7 @@ function getClientIP(request: any): string {
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   debug: process.env.NODE_ENV === 'development',
+  trustHost: true, // Required for Vercel and other proxied environments
   logger: {
     error(error: Error) {
       console.error('NextAuth Error:', error)
