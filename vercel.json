@@ -3,6 +3,11 @@
   "buildCommand": "prisma generate && next build",
   "framework": "nextjs",
   "regions": ["iad1"],
+  "build": {
+    "env": {
+      "PRISMA_GENERATE_DATAPROXY": "false"
+    }
+  },
   "functions": {
     "app/api/**/*.ts": {
       "maxDuration": 10
