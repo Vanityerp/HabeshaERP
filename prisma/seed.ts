@@ -110,7 +110,7 @@ async function main() {
   if (!homeServiceLocation) {
     homeServiceLocation = await prisma.location.create({
       data: {
-        id: 'home',
+        id: 'home-service', // Changed from 'home' to 'home-service' to avoid conflicts
         name: 'Home Service',
         address: 'Mobile Service',
         city: 'Doha',
@@ -132,7 +132,7 @@ async function main() {
   if (!onlineStoreLocation) {
     onlineStoreLocation = await prisma.location.create({
       data: {
-        id: 'online',
+        id: 'online-store', // Changed from 'online' to 'online-store' to avoid conflicts
         name: 'Online Store',
         address: 'Online',
         city: 'Doha',
@@ -536,25 +536,45 @@ async function main() {
     console.log('  ⏭️  Sample appointment already exists')
   }
 
-  // Create loyalty programs
-  await Promise.all([
-    prisma.loyaltyProgram.create({
+  // Create loyalty programs (check if they already exist first)
+  console.log('🎁 Creating loyalty programs...')
+  
+  // Check if loyalty programs already exist
+  const existingLoyalty1 = await prisma.loyaltyProgram.findUnique({
+    where: { clientId: client1.id }
+  })
+  
+  const existingLoyalty2 = await prisma.loyaltyProgram.findUnique({
+    where: { clientId: client2.id }
+  })
+
+  if (!existingLoyalty1) {
+    await prisma.loyaltyProgram.create({
       data: {
         clientId: client1.id,
         points: 150,
         tier: 'Silver',
         totalSpent: 450,
       },
-    }),
-    prisma.loyaltyProgram.create({
+    })
+    console.log('  ✅ Created loyalty program for Emma Wilson')
+  } else {
+    console.log('  ⏭️  Loyalty program already exists for Emma Wilson')
+  }
+
+  if (!existingLoyalty2) {
+    await prisma.loyaltyProgram.create({
       data: {
         clientId: client2.id,
         points: 80,
         tier: 'Bronze',
         totalSpent: 240,
       },
-    }),
-  ])
+    })
+    console.log('  ✅ Created loyalty program for Fatima Al-Rashid')
+  } else {
+    console.log('  ⏭️  Loyalty program already exists for Fatima Al-Rashid')
+  }
 
   // Note: Transaction seeding is skipped for now
   // Transactions will be created automatically when:
