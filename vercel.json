@@ -1,6 +1,6 @@
 {
   "installCommand": "npm install --legacy-peer-deps",
-  "buildCommand": "rm -rf node_modules/.prisma && rm -rf node_modules/@prisma/client && npm install @prisma/client --legacy-peer-deps && prisma generate && next build",
+  "buildCommand": "prisma generate && next build",
   "framework": "nextjs",
   "regions": ["iad1"],
   "build": {
