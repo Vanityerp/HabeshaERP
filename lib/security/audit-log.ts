@@ -185,6 +185,7 @@ export async function auditLog(
   } catch (error) {
     console.error('Failed to create audit log:', error)
     // Don't throw error to avoid breaking the main operation
+    // Silently fail if Prisma has issues - audit logging should never block auth
   }
 }
 

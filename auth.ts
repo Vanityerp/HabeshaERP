@@ -1,35 +1,11 @@
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
-import { prisma } from "@/lib/prisma"
-import bcrypt from "bcryptjs"
+import { authenticateUser, updateLastLogin } from "@/lib/pg-auth"
 import { auditAuth } from "@/lib/security/audit-log"
-import { validateAndSanitizeInput, userLoginSchema } from "@/lib/security/validation"
-
-// Enhanced password comparison using bcrypt
-const comparePasswords = async (plainPassword: string, hashedPassword: string) => {
-  try {
-    // Use bcrypt for proper password comparison
-    return await bcrypt.compare(plainPassword, hashedPassword)
-  } catch (error) {
-    console.error("Password comparison error:", error)
-    return false
-  }
-}
-
-// Get client IP from request
-function getClientIP(request: any): string {
-  const forwarded = request?.headers?.['x-forwarded-for']
-  const realIP = request?.headers?.['x-real-ip']
-
-  if (forwarded) {
-    return forwarded.split(',')[0].trim()
-  }
-
-  return realIP || 'unknown'
-}
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   debug: process.env.NODE_ENV === 'development',
+  trustHost: true, // Required for Vercel and other proxied environments
   logger: {
     error(error: Error) {
       console.error('NextAuth Error:', error)
@@ -56,49 +32,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
 
         try {
-          // Validate and sanitize input
-          const validation = validateAndSanitizeInput(userLoginSchema, {
-            email: credentials.email,
-            password: credentials.password,
-          })
+          const email = (credentials.email as string).toLowerCase().trim()
+          const password = credentials.password as string
 
-          if (!validation.success) {
-            console.warn('Invalid login input:', validation.errors)
-            return null
-          }
+          // Use raw PostgreSQL authentication (bypasses Prisma Data Proxy issue)
+          const user = await authenticateUser(email, password)
 
-          const { email, password } = validation.data
-
-          // Use Prisma to find user with staff profile and locations
-          const user = await prisma.user.findUnique({
-            where: { email },
-            include: {
-              staffProfile: {
-                include: {
-                  locations: {
-                    include: {
-                      location: true
-                    }
-                  }
-                }
-              }
-            }
-          })
-
-          if (!user || !user.isActive) {
-            // Audit failed login attempt
-            await auditAuth.loginFailed(
-              email,
-              user ? 'Account inactive' : 'User not found'
-            )
-            return null
-          }
-
-          const passwordMatch = await comparePasswords(password, user.password)
-
-          if (!passwordMatch) {
-            // Audit failed login attempt
-            await auditAuth.loginFailed(email, 'Invalid password')
+          if (!user) {
+            // Audit failed login attempt (non-blocking)
+            auditAuth.loginFailed(email, 'Invalid credentials').catch(() => {})
             return null
           }
 
@@ -106,12 +48,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           let locationIds: string[] = []
           if (user.staffProfile?.locations) {
             locationIds = user.staffProfile.locations
-              .filter(sl => sl.isActive)
+              .filter(sl => sl.location?.id)
               .map(sl => sl.location.id)
           }
 
-          // Audit successful login
-          await auditAuth.loginSuccess(user.id, user.email, user.role)
+          // Update last login
+          await updateLastLogin(user.id)
+
+          // Audit successful login (non-blocking)
+          auditAuth.loginSuccess(user.id, user.email, user.role).catch(() => {})
 
           return {
             id: user.id,
@@ -122,12 +67,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           }
         } catch (error) {
           console.error("Auth error:", error)
-          // Audit authentication error
+          // Audit authentication error (non-blocking)
           if (credentials?.email && typeof credentials.email === 'string') {
-            await auditAuth.loginFailed(
+            auditAuth.loginFailed(
               credentials.email,
               'Authentication system error'
-            )
+            ).catch(() => {})
           }
           return null
         }
