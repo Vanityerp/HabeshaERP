@@ -86,11 +86,13 @@ export function StaffCredentialSettings() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [isTestDialogOpen, setIsTestDialogOpen] = useState(false)
   const [isLocationDialogOpen, setIsLocationDialogOpen] = useState(false)
+  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false)
   const [selectedStaff, setSelectedStaff] = useState<StaffMember | null>(null)
   const [selectedLocations, setSelectedLocations] = useState<string[]>([])
   const [showPassword, setShowPassword] = useState(false)
   const [generatedCredentials, setGeneratedCredentials] = useState<any>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [newPassword, setNewPassword] = useState("")
 
   // Fetch staff and locations data
   useEffect(() => {
@@ -141,6 +143,51 @@ export function StaffCredentialSettings() {
       setShowPassword(false)
     } catch (error) {
       // Error handling is done in the hook
+    }
+  }
+
+  const handleUpdatePassword = async () => {
+    if (!selectedStaff || !newPassword) {
+      toast({
+        title: "Error",
+        description: "Please enter a new password",
+        variant: "destructive"
+      })
+      return
+    }
+
+    try {
+      setIsSubmitting(true)
+      const response = await fetch(`/api/staff/credentials/${selectedStaff.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          action: 'update_password',
+          newPassword 
+        })
+      })
+
+      const result = await response.json()
+
+      if (response.ok) {
+        toast({
+          title: "Success",
+          description: "Password updated successfully",
+        })
+        setIsPasswordDialogOpen(false)
+        setNewPassword("")
+      } else {
+        throw new Error(result.error || 'Failed to update password')
+      }
+    } catch (error) {
+      console.error('Error updating password:', error)
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to update password",
+        variant: "destructive"
+      })
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -356,6 +403,16 @@ export function StaffCredentialSettings() {
                             <DropdownMenuItem onClick={() => handleResetPassword(member)}>
                               <RefreshCw className="h-4 w-4 mr-2" />
                               Reset Password
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setSelectedStaff(member)
+                                setIsPasswordDialogOpen(true)
+                                setNewPassword("")
+                              }}
+                            >
+                              <KeyRound className="h-4 w-4 mr-2" />
+                              Change Password
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => {
@@ -581,6 +638,54 @@ export function StaffCredentialSettings() {
             >
               {isSubmitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
               Update Locations
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Change Password Dialog */}
+      <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Change Password</DialogTitle>
+            <DialogDescription>
+              Set a new password for the selected staff member
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedStaff && (
+            <div className="space-y-4">
+              <div>
+                <Label>Staff Member</Label>
+                <p className="text-sm font-medium">{selectedStaff.name}</p>
+                <p className="text-xs text-muted-foreground">
+                  {selectedStaff.user?.email}
+                </p>
+              </div>
+
+              <div>
+                <Label htmlFor="new-password">New Password</Label>
+                <Input
+                  id="new-password"
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Enter new password"
+                />
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsPasswordDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleUpdatePassword}
+              disabled={isSubmitting || !newPassword}
+            >
+              {isSubmitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Update Password
             </Button>
           </DialogFooter>
         </DialogContent>

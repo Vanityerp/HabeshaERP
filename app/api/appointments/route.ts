@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAllAppointments } from "@/lib/appointment-service";
-import { getUserFromHeaders, filterAppointmentsByLocationAccess } from "@/lib/auth-server";
+import { prisma } from "@/lib/prisma";
+import { getUserFromHeaders } from "@/lib/auth-server";
 
 /**
  * GET /api/appointments
@@ -18,47 +18,101 @@ export async function GET(request: NextRequest) {
     const clientId = searchParams.get("clientId");
     const date = searchParams.get("date");
 
-    // Get all appointments from the appointment service
-    let filteredAppointments = getAllAppointments();
-    console.log("API: Retrieved all appointments", filteredAppointments.length);
+    // Build where clause for Prisma query
+    const whereClause: any = {
+      isActive: true
+    };
 
-    // Apply location-based access control FIRST
-    if (currentUser && currentUser.locations.length > 0) {
-      filteredAppointments = filterAppointmentsByLocationAccess(filteredAppointments, currentUser.locations);
-      console.log(`🔒 Filtered appointments by user location access: ${filteredAppointments.length} appointments visible to user`);
-    }
-
-    // Apply additional filters
+    // Apply filters
     if (locationId) {
-      filteredAppointments = filteredAppointments.filter(
-        appointment => appointment.location === locationId
-      );
+      whereClause.locationId = locationId;
     }
 
     if (staffId) {
-      filteredAppointments = filteredAppointments.filter(
-        appointment => appointment.staffId === staffId
-      );
+      whereClause.staffId = staffId;
     }
 
     if (clientId) {
-      filteredAppointments = filteredAppointments.filter(
-        appointment => appointment.clientId === clientId
-      );
+      whereClause.clientId = clientId;
     }
 
-    if (date) {
-      const targetDate = new Date(date).toDateString();
-      filteredAppointments = filteredAppointments.filter(
-        appointment => new Date(appointment.date).toDateString() === targetDate
+    // Get appointments from database
+    let appointments = await prisma.appointment.findMany({
+      where: whereClause,
+      include: {
+        client: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true
+          }
+        },
+        staff: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        service: {
+          select: {
+            id: true,
+            name: true,
+            duration: true,
+            price: true
+          }
+        },
+        location: {
+          select: {
+            id: true,
+            name: true
+          }
+        }
+      },
+      orderBy: {
+        date: 'asc'
+      }
+    });
+
+    console.log("API: Retrieved appointments from database", appointments.length);
+
+    // Apply location-based access control
+    if (currentUser && currentUser.locations.length > 0 && !currentUser.locations.includes("all")) {
+      appointments = appointments.filter(
+        appointment => currentUser.locations.includes(appointment.locationId)
       );
+      console.log(`🔒 Filtered appointments by user location access: ${appointments.length} appointments visible to user`);
     }
 
-    console.log(`API: Final filtered appointments: ${filteredAppointments.length}`);
+    // Transform appointments to match expected format
+    const transformedAppointments = appointments.map(appointment => ({
+      id: appointment.id,
+      clientId: appointment.clientId,
+      clientName: appointment.client?.name || "Unknown Client",
+      staffId: appointment.staffId,
+      staffName: appointment.staff?.name || "Unknown Staff",
+      service: appointment.service?.name || "Unknown Service",
+      serviceId: appointment.serviceId,
+      date: appointment.date.toISOString(),
+      duration: appointment.service?.duration || 0,
+      location: appointment.locationId,
+      locationName: appointment.location?.name || "Unknown Location",
+      price: Number(appointment.service?.price) || 0,
+      notes: appointment.notes || "",
+      status: appointment.status,
+      statusHistory: appointment.statusHistory ? JSON.parse(appointment.statusHistory as string) : [],
+      type: appointment.type || "service",
+      paymentStatus: appointment.paymentStatus || "unpaid",
+      paymentMethod: appointment.paymentMethod || "",
+      createdAt: appointment.createdAt.toISOString(),
+      updatedAt: appointment.updatedAt.toISOString()
+    }));
+
+    console.log(`API: Final filtered appointments: ${transformedAppointments.length}`);
     
     return NextResponse.json({ 
-      appointments: filteredAppointments,
-      total: filteredAppointments.length
+      appointments: transformedAppointments,
+      total: transformedAppointments.length
     });
   } catch (error) {
     console.error("Error fetching appointments:", error);

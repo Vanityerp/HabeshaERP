@@ -7,6 +7,16 @@ const globalForPrisma = globalThis as unknown as {
 // Create Prisma client with connection pooling and retry logic
 export const prisma = globalForPrisma.prisma ?? new PrismaClient({
   log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL,
+    },
+  },
+  // Add connection pool configuration
+  transactionOptions: {
+    maxWait: 10000, // 10 seconds max wait for a connection
+    timeout: 30000, // 30 seconds transaction timeout
+  },
 })
 
 // Store the Prisma client in the global object to prevent multiple instances in development
@@ -20,5 +30,3 @@ if (typeof process !== 'undefined') {
     await prisma.$disconnect()
   })
 }
-
-

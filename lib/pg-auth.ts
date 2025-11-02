@@ -1,11 +1,11 @@
 import { Pool } from 'pg'
 import bcrypt from 'bcryptjs'
 
-// Create PostgreSQL connection pool
+// Create PostgreSQL connection pool with SSL configuration for Neon
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: false
+    rejectUnauthorized: false // Required for Neon SSL connections
   },
   max: 20,
   idleTimeoutMillis: 30000,
