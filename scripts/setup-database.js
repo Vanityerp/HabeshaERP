@@ -4,8 +4,8 @@
  * Database Setup Script for Vanity Hub
  * 
  * This script helps set up the database for different environments:
- * - Development: SQLite
- * - Production: PostgreSQL
+ * - Development: PostgreSQL (Neon)
+ * - Production: PostgreSQL (Neon)
  * 
  * Usage:
  *   node scripts/setup-database.js [environment]
@@ -21,14 +21,14 @@ const path = require('path')
 
 const ENVIRONMENTS = {
   development: {
-    provider: 'sqlite',
-    url: 'file:./prisma/dev.db',
-    description: 'SQLite database for development'
+    provider: 'postgresql',
+    url: 'postgresql://neondb_owner:npg_o5bQaY4wdfFu@ep-crimson-lake-agstmll3-pooler.c-2.eu-central-1.aws.neon.tech/neondb?sslmode=require&connection_limit=20&pool_timeout=10',
+    description: 'Neon PostgreSQL database for development'
   },
   production: {
     provider: 'postgresql',
-    url: process.env.DATABASE_URL || 'postgresql://username:password@localhost:5432/vanity_hub?schema=public',
-    description: 'PostgreSQL database for production'
+    url: process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_o5bQaY4wdfFu@ep-crimson-lake-agstmll3-pooler.c-2.eu-central-1.aws.neon.tech/neondb?sslmode=require',
+    description: 'Neon PostgreSQL database for production'
   },
   test: {
     provider: 'sqlite',
@@ -101,7 +101,7 @@ function runPrismaCommands(environment) {
       console.log('✅ Database migrations completed')
     } catch (error) {
       console.error('❌ Failed to run migrations:', error.message)
-      console.log('💡 Make sure your PostgreSQL database is running and accessible')
+      console.log('💡 Make sure your Neon database is accessible')
       process.exit(1)
     }
   } else {
@@ -166,7 +166,7 @@ function main() {
     console.log('')
     console.log('Next steps:')
     if (environment === 'production') {
-      console.log('1. Make sure your PostgreSQL server is running')
+      console.log('1. Make sure your Neon database is accessible')
       console.log('2. Update DATABASE_URL in your production environment')
       console.log('3. Run database migrations: npx prisma migrate deploy')
     } else {
@@ -189,8 +189,8 @@ Usage:
   node scripts/setup-database.js [environment] [options]
 
 Environments:
-  development  - SQLite database for local development (default)
-  production   - PostgreSQL database for production
+  development  - Neon PostgreSQL database for local development (default)
+  production   - Neon PostgreSQL database for production
   test         - SQLite database for testing
 
 Options:

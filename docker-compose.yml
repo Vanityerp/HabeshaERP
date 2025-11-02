@@ -1,29 +1,6 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database
-  postgres:
-    image: postgres:15-alpine
-    container_name: vanity-hub-postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: vanity_hub
-      POSTGRES_USER: vanity_user
-      POSTGRES_PASSWORD: vanity_password
-      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
-    networks:
-      - vanity-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U vanity_user -d vanity_hub"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   # Redis for Caching and Sessions
   redis:
     image: redis:7-alpine
@@ -41,27 +18,6 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
-
-  # pgAdmin for Database Management (Development only)
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: vanity-hub-pgadmin
-    restart: unless-stopped
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@vanityhub.com
-      PGADMIN_DEFAULT_PASSWORD: admin123
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
-    ports:
-      - "5050:80"
-    volumes:
-      - pgadmin_data:/var/lib/pgadmin
-    networks:
-      - vanity-network
-    depends_on:
-      postgres:
-        condition: service_healthy
-    profiles:
-      - development
 
   # Redis Commander for Redis Management (Development only)
   redis-commander:
@@ -81,11 +37,7 @@ services:
       - development
 
 volumes:
-  postgres_data:
-    driver: local
   redis_data:
-    driver: local
-  pgadmin_data:
     driver: local
 
 networks:

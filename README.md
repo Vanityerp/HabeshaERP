@@ -53,7 +53,7 @@ A comprehensive, production-ready salon and spa management system built with Nex
 - **Rate Limiting**: Custom Redis-based implementation
 
 ### **Database & Infrastructure**
-- **Primary Database**: PostgreSQL
+- **Primary Database**: PostgreSQL (Neon)
 - **Cache**: Redis
 - **Monitoring**: Custom monitoring service
 - **Testing**: Jest + React Testing Library + Playwright
@@ -63,7 +63,7 @@ A comprehensive, production-ready salon and spa management system built with Nex
 
 ### **Prerequisites**
 - Node.js 18+
-- PostgreSQL 14+
+- PostgreSQL (Neon) - Cloud-based PostgreSQL
 - Redis 6+ (optional, for caching)
 - npm or yarn
 
@@ -87,8 +87,8 @@ cp .env.example .env.local
 
 Edit `.env.local` with your configuration:
 ```env
-# Database
-DATABASE_URL="postgresql://username:password@localhost:5432/vanity_hub"
+# Database (Neon PostgreSQL)
+DATABASE_URL="postgresql://neondb_owner:npg_o5bQaY4wdfFu@ep-crimson-lake-agstmll3-pooler.c-2.eu-central-1.aws.neon.tech/neondb?sslmode=require"
 
 # Authentication
 NEXTAUTH_SECRET="your-secret-key"
@@ -107,7 +107,7 @@ EMAIL_FROM="noreply@vanity-hub.com"
 
 4. **Set up the database**:
 ```bash
-npx prisma migrate dev
+npx prisma db push
 npx prisma db seed
 ```
 
@@ -120,9 +120,9 @@ npm run dev
 Navigate to [http://localhost:3000](http://localhost:3000)
 
 ### **Default Login Credentials**
-- **Admin**: admin@vanity-hub.com / admin123
-- **Manager**: manager@vanity-hub.com / manager123
-- **Staff**: staff@vanity-hub.com / staff123
+- **Admin**: admin@vanity-hub.com / Admin33#
+- **Manager**: Tsedey@habeshasalon.com / Admin33#
+- **Staff**: mekdes@habeshasalon.com / Admin33#
 
 ## 📁 **Project Structure**
 
@@ -219,7 +219,7 @@ npm run test:coverage
 
 ### **Development Environment**
 ```bash
-# Start with Docker
+# Start with Docker (Redis only, database is cloud-based)
 docker-compose up -d
 
 # Or start manually
@@ -299,6 +299,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Prisma](https://www.prisma.io/) for the excellent ORM
 - [Tailwind CSS](https://tailwindcss.com/) for utility-first styling
 - [shadcn/ui](https://ui.shadcn.com/) for beautiful UI components
+- [Neon](https://neon.tech/) for cloud-based PostgreSQL database
 
 ---
 

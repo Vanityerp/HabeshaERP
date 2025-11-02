@@ -7,5 +7,30 @@
     "app/api/**/*.ts": {
       "maxDuration": 10
     }
+  },
+  "env": {
+    "DATABASE_URL": "postgresql://neondb_owner:npg_o5bQaY4wdfFu@ep-crimson-lake-agstmll3-pooler.c-2.eu-central-1.aws.neon.tech/neondb?sslmode=require",
+    "DIRECT_URL": "postgresql://neondb_owner:npg_o5bQaY4wdfFu@ep-crimson-lake-agstmll3.c-2.eu-central-1.aws.neon.tech/neondb?sslmode=require",
+    "NEXTAUTH_SECRET": "a57b39e1af704dc01865a3962d734836136f039df6e1ff052fc7397fe74095f9",
+    "NEXTAUTH_URL": "https://habesha-erp.vercel.app",
+    "USE_MOCK_DATA": "false",
+    "SKIP_DB_CONNECTION": "false",
+    "PRISMA_GENERATE_DATAPROXY": "true",
+    "PGHOST": "ep-crimson-lake-agstmll3-pooler.c-2.eu-central-1.aws.neon.tech",
+    "PGHOST_UNPOOLED": "ep-crimson-lake-agstmll3.c-2.eu-central-1.aws.neon.tech",
+    "PGUSER": "neondb_owner",
+    "PGDATABASE": "neondb",
+    "PGPASSWORD": "npg_o5bQaY4wdfFu",
+    "POSTGRES_URL": "postgresql://neondb_owner:npg_o5bQaY4wdfFu@ep-crimson-lake-agstmll3-pooler.c-2.eu-central-1.aws.neon.tech/neondb?sslmode=require",
+    "POSTGRES_URL_NON_POOLING": "postgresql://neondb_owner:npg_o5bQaY4wdfFu@ep-crimson-lake-agstmll3.c-2.eu-central-1.aws.neon.tech/neondb?sslmode=require",
+    "POSTGRES_USER": "neondb_owner",
+    "POSTGRES_HOST": "ep-crimson-lake-agstmll3-pooler.c-2.eu-central-1.aws.neon.tech",
+    "POSTGRES_PASSWORD": "npg_o5bQaY4wdfFu",
+    "POSTGRES_DATABASE": "neondb",
+    "POSTGRES_URL_NO_SSL": "postgresql://neondb_owner:npg_o5bQaY4wdfFu@ep-crimson-lake-agstmll3-pooler.c-2.eu-central-1.aws.neon.tech/neondb",
+    "POSTGRES_PRISMA_URL": "postgresql://neondb_owner:npg_o5bQaY4wdfFu@ep-crimson-lake-agstmll3-pooler.c-2.eu-central-1.aws.neon.tech/neondb?connect_timeout=15&sslmode=require",
+    "NEXT_PUBLIC_STACK_PROJECT_ID": "6b04d40a-46cf-49c5-aa98-8020bb35a12c",
+    "NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY": "pck_01nd2s2vjhrswbrzxxze11wsn086tynfk07xs6tjq6v1g",
+    "STACK_SECRET_SERVER_KEY": "ssk_8s1edtbkwxhthp9kyxkybca89pcwcrkjjskspsn1xk4ng"
   }
 }
