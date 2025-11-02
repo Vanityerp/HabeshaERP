@@ -5,7 +5,7 @@
   "regions": ["iad1"],
   "build": {
     "env": {
-      "PRISMA_GENERATE_DATAPROXY": "false"
+      "PRISMA_GENERATE_DATAPROXY": "true"
     }
   },
   "functions": {
@@ -14,7 +14,7 @@
     }
   },
   "env": {
-    "DATABASE_URL": "postgresql://neondb_owner:npg_o5bQaY4wdfFu@ep-crimson-lake-agstmll3-pooler.c-2.eu-central-1.aws.neon.tech/neondb?sslmode=require",
+    "DATABASE_URL": "postgresql://neondb_owner:npg_o5bQaY4wdfFu@ep-crimson-lake-agstmll3-pooler.c-2.eu-central-1.aws.neon.tech/neondb?sslmode=require&connection_limit=10&pool_timeout=30",
     "DIRECT_URL": "postgresql://neondb_owner:npg_o5bQaY4wdfFu@ep-crimson-lake-agstmll3.c-2.eu-central-1.aws.neon.tech/neondb?sslmode=require",
     "NEXTAUTH_SECRET": "a57b39e1af704dc01865a3962d734836136f039df6e1ff052fc7397fe74095f9",
     "NEXTAUTH_URL": "https://habesha-erp.vercel.app",
@@ -33,7 +33,7 @@
     "POSTGRES_PASSWORD": "npg_o5bQaY4wdfFu",
     "POSTGRES_DATABASE": "neondb",
     "POSTGRES_URL_NO_SSL": "postgresql://neondb_owner:npg_o5bQaY4wdfFu@ep-crimson-lake-agstmll3-pooler.c-2.eu-central-1.aws.neon.tech/neondb",
-    "POSTGRES_PRISMA_URL": "postgresql://neondb_owner:npg_o5bQaY4wdfFu@ep-crimson-lake-agstmll3-pooler.c-2.eu-central-1.aws.neon.tech/neondb?connect_timeout=15&sslmode=require",
+    "POSTGRES_PRISMA_URL": "postgresql://neondb_owner:npg_o5bQaY4wdfFu@ep-crimson-lake-agstmll3-pooler.c-2.eu-central-1.aws.neon.tech/neondb?connect_timeout=30&sslmode=require",
     "NEXT_PUBLIC_STACK_PROJECT_ID": "6b04d40a-46cf-49c5-aa98-8020bb35a12c",
     "NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY": "pck_01nd2s2vjhrswbrzxxze11wsn086tynfk07xs6tjq6v1g",
     "STACK_SECRET_SERVER_KEY": "ssk_8s1edtbkwxhthp9kyxkybca89pcwcrkjjskspsn1xk4ng"

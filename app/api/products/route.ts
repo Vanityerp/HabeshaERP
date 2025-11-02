@@ -102,66 +102,77 @@ export async function POST(request: Request) {
       }, { status: 400 })
     }
 
-
-
-    const product = await prisma.product.create({
-      data: {
-        name: data.name,
-        description: data.description || null,
-        price: parseFloat(data.price),
-        cost: data.cost ? parseFloat(data.cost) : null,
-        category: data.category,
-        type: data.type || "Other",
-        brand: data.brand || null,
-        sku: data.sku || null,
-        barcode: data.barcode || null,
-        image: data.image || (data.images && data.images.length > 0 ? data.images[0] : null),
-        images: JSON.stringify(data.images || []),
-        isRetail: data.isRetail || false,
-        isFeatured: data.isFeatured || false,
-        isNew: data.isNew || false,
-        isBestSeller: data.isBestSeller || false,
-        isSale: data.isSale || false,
-        salePrice: data.salePrice ? parseFloat(data.salePrice) : null,
-        rating: data.rating || 0,
-        reviewCount: data.reviewCount || 0,
-        features: JSON.stringify(data.features || []),
-        ingredients: JSON.stringify(data.ingredients || []),
-        howToUse: JSON.stringify(data.howToUse || [])
-      },
-      include: {
-        locations: true
-      }
-    })
-
-    // Create location associations if provided
-    if (data.locations && Array.isArray(data.locations)) {
-      // First, let's check what locations exist in the database
-      const existingLocations = await prisma.location.findMany({
-        select: { id: true, name: true }
+    // Create the product using a transaction to ensure consistency
+    const product = await prisma.$transaction(async (tx) => {
+      const newProduct = await tx.product.create({
+        data: {
+          name: data.name,
+          description: data.description || null,
+          price: parseFloat(data.price),
+          cost: data.cost ? parseFloat(data.cost) : null,
+          category: data.category,
+          type: data.type || "Other",
+          brand: data.brand || null,
+          sku: data.sku || null,
+          barcode: data.barcode || null,
+          image: data.image || (data.images && data.images.length > 0 ? data.images[0] : null),
+          images: JSON.stringify(data.images || []),
+          isRetail: data.isRetail || false,
+          isFeatured: data.isFeatured || false,
+          isNew: data.isNew || false,
+          isBestSeller: data.isBestSeller || false,
+          isSale: data.isSale || false,
+          salePrice: data.salePrice ? parseFloat(data.salePrice) : null,
+          rating: data.rating || 0,
+          reviewCount: data.reviewCount || 0,
+          features: JSON.stringify(data.features || []),
+          ingredients: JSON.stringify(data.ingredients || []),
+          howToUse: JSON.stringify(data.howToUse || [])
+        }
       })
 
-      for (const locationData of data.locations) {
-        // Check if the location exists before creating the association
-        const locationExists = existingLocations.some(loc => loc.id === locationData.locationId)
-        if (!locationExists) {
-          console.log(`❌ Location ${locationData.locationId} does not exist in database. Skipping.`)
-          continue
-        }
+      // Create location associations if provided
+      if (data.locations && Array.isArray(data.locations)) {
+        // First, let's check what locations exist in the database
+        const existingLocations = await tx.location.findMany({
+          select: { id: true, name: true }
+        })
 
-        try {
-          await prisma.productLocation.create({
-            data: {
-              productId: product.id,
-              locationId: locationData.locationId,
-              stock: locationData.stock || 0,
-              price: locationData.price ? parseFloat(locationData.price) : null
+        const locationData = data.locations
+          .filter((locationData: any) => {
+            // Check if the location exists before creating the association
+            const locationExists = existingLocations.some(loc => loc.id === locationData.locationId)
+            if (!locationExists) {
+              console.log(`❌ Location ${locationData.locationId} does not exist in database. Skipping.`)
             }
+            return locationExists
           })
-        } catch (error) {
-          console.log(`❌ Failed to create ProductLocation for location ${locationData.locationId}:`, error)
+          .map((locationData: any) => ({
+            productId: newProduct.id,
+            locationId: locationData.locationId,
+            stock: locationData.stock || 0,
+            price: locationData.price ? parseFloat(locationData.price) : null
+          }))
+
+        if (locationData.length > 0) {
+          await tx.productLocation.createMany({
+            data: locationData,
+            skipDuplicates: true
+          })
         }
       }
+
+      // Return the complete product with location associations
+      return await tx.product.findUnique({
+        where: { id: newProduct.id },
+        include: {
+          locations: true
+        }
+      })
+    })
+
+    if (!product) {
+      throw new Error("Failed to create product")
     }
 
     return NextResponse.json({ product })

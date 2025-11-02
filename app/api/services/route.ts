@@ -73,30 +73,49 @@ export async function POST(request: Request) {
       console.log(`📍 Found ${locationIds.length} active locations to assign`)
     }
 
-    // Create the service with Prisma
-    const service = await prisma.service.create({
-      data: {
-        name: data.name,
-        description: data.description || null,
-        duration: parseInt(data.duration),
-        price: parseFloat(data.price),
-        category: data.category || "Uncategorized",
-        showPricesToClients: data.showPrices !== undefined ? data.showPrices : true,
-        locations: {
-          create: locationIds.map((locationId: string) => ({
-            locationId: locationId,
-            price: data.locationPrices?.[locationId] ? parseFloat(data.locationPrices[locationId]) : parseFloat(data.price)
-          }))
+    // Create the service with Prisma using a transaction to ensure consistency
+    const service = await prisma.$transaction(async (tx) => {
+      // Create the service
+      const newService = await tx.service.create({
+        data: {
+          name: data.name,
+          description: data.description || null,
+          duration: parseInt(data.duration),
+          price: parseFloat(data.price),
+          category: data.category || "Uncategorized",
+          showPricesToClients: data.showPrices !== undefined ? data.showPrices : true
         }
-      },
-      include: {
-        locations: {
-          include: {
-            location: true
+      })
+
+      // Create location associations
+      if (locationIds && Array.isArray(locationIds) && locationIds.length > 0) {
+        await tx.locationService.createMany({
+          data: locationIds.map((locationId: string) => ({
+            serviceId: newService.id,
+            locationId: locationId,
+            price: data.locationPrices?.[locationId] ? parseFloat(data.locationPrices[locationId]) : parseFloat(data.price),
+            isActive: true
+          })),
+          skipDuplicates: true
+        })
+      }
+
+      // Fetch the complete service with location associations
+      return await tx.service.findUnique({
+        where: { id: newService.id },
+        include: {
+          locations: {
+            include: {
+              location: true
+            }
           }
         }
-      }
+      })
     })
+
+    if (!service) {
+      throw new Error("Failed to create service")
+    }
 
     // Transform service to match expected format
     const transformedService = {
@@ -120,4 +139,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Failed to create service" }, { status: 500 })
   }
 }
-

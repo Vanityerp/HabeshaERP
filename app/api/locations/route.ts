@@ -36,8 +36,8 @@ export async function GET(request: NextRequest) {
     let filteredLocations = transformedLocations;
 
     if (currentUser) {
-      console.log(`🔍 Current user: ${currentUser.email}, Role: ${currentUser.role}, Locations: ${JSON.stringify(currentUser.locations)}`);
-      filteredLocations = filterLocationsByAccess(transformedLocations, currentUser.locations || [], currentUser.role);
+      console.log(`🔍 Current user role: ${currentUser.role}, Locations: ${JSON.stringify(currentUser.locations)}`);
+      filteredLocations = filterLocationsByAccess(transformedLocations, currentUser.locations || [], currentUser.role || undefined);
       console.log(`🔒 Filtered locations by user access: ${filteredLocations.length}/${transformedLocations.length} locations visible to user`);
       console.log(`🔒 Visible locations: ${filteredLocations.map(loc => loc.name).join(', ')}`);
     } else {
@@ -65,6 +65,7 @@ export async function POST(request: Request) {
     // Create the location with Prisma
     const location = await prisma.location.create({
       data: {
+        id: data.id || `loc_${Date.now()}`, // Generate ID if not provided
         name: data.name,
         address: data.address,
         city: data.city,
