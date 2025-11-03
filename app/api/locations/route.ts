@@ -48,7 +48,16 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ locations: filteredLocations })
   } catch (error) {
     console.error("❌ Error fetching locations:", error)
-    return NextResponse.json({ error: "Failed to fetch locations" }, { status: 500 })
+    console.error("Error details:", {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      DATABASE_URL: process.env.DATABASE_URL ? 'Set (hidden)' : 'NOT SET',
+      NODE_ENV: process.env.NODE_ENV
+    })
+    return NextResponse.json({ 
+      error: "Failed to fetch locations",
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 })
   }
 }
 

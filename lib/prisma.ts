@@ -5,16 +5,18 @@ const globalForPrisma = globalThis as unknown as {
 }
 
 // Create Prisma client with connection pooling and retry logic
-// Handle build-time scenario where DATABASE_URL might not be available
+// In production, DATABASE_URL must be available at runtime
+if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
+  console.error('❌ CRITICAL: DATABASE_URL is not set in production environment')
+}
+
 export const prisma = globalForPrisma.prisma ?? new PrismaClient({
   log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
-  ...(process.env.DATABASE_URL && {
-    datasources: {
-      db: {
-        url: process.env.DATABASE_URL,
-      },
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL || '',
     },
-  }),
+  },
   // Add connection pool configuration
   transactionOptions: {
     maxWait: 10000, // 10 seconds max wait for a connection
