@@ -22,8 +22,12 @@ Go to: https://vercel.com/dashboard → Your Project → Settings → Environmen
 ```
 NEXTAUTH_SECRET=a57b39e1af704dc01865a3962d734836136f039df6e1ff052fc7397fe74095f9
 NEXTAUTH_URL=https://habesha-pos.vercel.app
+
+# Database URLs (both required)
 DATABASE_URL=postgresql://neondb_owner:npg_o5bQaY4wdfFu@ep-crimson-lake-agstmll3-pooler.c-2.eu-central-1.aws.neon.tech/neondb?sslmode=require&connection_limit=10&pool_timeout=30
 DIRECT_URL=postgresql://neondb_owner:npg_o5bQaY4wdfFu@ep-crimson-lake-agstmll3.c-2.eu-central-1.aws.neon.tech/neondb?sslmode=require
+
+# Application config
 NODE_ENV=production
 USE_MOCK_DATA=false
 SKIP_DB_CONNECTION=false

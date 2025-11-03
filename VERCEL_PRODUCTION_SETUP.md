@@ -28,9 +28,11 @@ NEXTAUTH_SECRET=a57b39e1af704dc01865a3962d734836136f039df6e1ff052fc7397fe74095f9
 NEXTAUTH_URL=https://habesha-pos.vercel.app
 
 # Database - Neon PostgreSQL (REQUIRED)
+# Use the pooled connection for runtime queries
 DATABASE_URL=postgresql://neondb_owner:npg_o5bQaY4wdfFu@ep-crimson-lake-agstmll3-pooler.c-2.eu-central-1.aws.neon.tech/neondb?sslmode=require&connection_limit=10&pool_timeout=30
 
-# Direct connection for migrations (REQUIRED)
+# Direct connection for migrations and build (REQUIRED)
+# Use the non-pooled connection for schema operations
 DIRECT_URL=postgresql://neondb_owner:npg_o5bQaY4wdfFu@ep-crimson-lake-agstmll3.c-2.eu-central-1.aws.neon.tech/neondb?sslmode=require
 
 # Application Config (REQUIRED)
