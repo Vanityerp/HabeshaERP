@@ -105,12 +105,17 @@ async function main() {
   }
 
   let homeServiceLocation = await prisma.location.findFirst({
-    where: { name: 'Home service', isActive: true }
+    where: { 
+      OR: [
+        { name: 'Home service' },
+        { name: 'Home Service' }
+      ],
+      isActive: true 
+    }
   })
   if (!homeServiceLocation) {
     homeServiceLocation = await prisma.location.create({
       data: {
-        id: 'home-service', // Changed from 'home' to 'home-service' to avoid conflicts
         name: 'Home Service',
         address: 'Mobile Service',
         city: 'Doha',
@@ -127,12 +132,17 @@ async function main() {
   }
 
   let onlineStoreLocation = await prisma.location.findFirst({
-    where: { name: 'Online store', isActive: true }
+    where: { 
+      OR: [
+        { name: 'Online store' },
+        { name: 'Online Store' }
+      ],
+      isActive: true 
+    }
   })
   if (!onlineStoreLocation) {
     onlineStoreLocation = await prisma.location.create({
       data: {
-        id: 'online-store', // Changed from 'online' to 'online-store' to avoid conflicts
         name: 'Online Store',
         address: 'Online',
         city: 'Doha',
