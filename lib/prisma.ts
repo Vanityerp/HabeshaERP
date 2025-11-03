@@ -12,10 +12,15 @@ if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
 
 // Fix for Vercel Postgres connection with prisma:// protocol
 let databaseUrl = process.env.DATABASE_URL || '';
-if (databaseUrl.startsWith('prisma://')) {
-  // Use DIRECT_URL if available for direct connections
-  databaseUrl = process.env.DIRECT_URL || databaseUrl;
-  console.log('Using direct database connection for Prisma');
+
+// If we're in production and the URL starts with prisma://, use DIRECT_URL instead
+if (process.env.NODE_ENV === 'production' && databaseUrl.startsWith('prisma://')) {
+  if (process.env.DIRECT_URL) {
+    console.log('Using DIRECT_URL for Prisma connection in production');
+    databaseUrl = process.env.DIRECT_URL;
+  } else {
+    console.error('❌ CRITICAL: DIRECT_URL is not set in production environment but DATABASE_URL uses prisma:// protocol');
+  }
 }
 
 export const prisma = globalForPrisma.prisma ?? new PrismaClient({
