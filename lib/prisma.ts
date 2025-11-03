@@ -10,11 +10,19 @@ if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
   console.error('❌ CRITICAL: DATABASE_URL is not set in production environment')
 }
 
+// Fix for Vercel Postgres connection with prisma:// protocol
+let databaseUrl = process.env.DATABASE_URL || '';
+if (databaseUrl.startsWith('prisma://')) {
+  // Use DIRECT_URL if available for direct connections
+  databaseUrl = process.env.DIRECT_URL || databaseUrl;
+  console.log('Using direct database connection for Prisma');
+}
+
 export const prisma = globalForPrisma.prisma ?? new PrismaClient({
   log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
   datasources: {
     db: {
-      url: process.env.DATABASE_URL || '',
+      url: databaseUrl,
     },
   },
   // Add connection pool configuration
