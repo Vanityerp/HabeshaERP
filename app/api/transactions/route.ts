@@ -66,6 +66,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    // Add error handling for database connection
+    if (!prisma) {
+      console.error("❌ Prisma client is not initialized")
+      return NextResponse.json({ error: "Database connection error" }, { status: 500 })
+    }
+
     const data = await request.json()
 
     console.log("💾 Creating transaction in database:", {
