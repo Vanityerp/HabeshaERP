@@ -6,6 +6,12 @@ export async function GET(request: NextRequest) {
   try {
     console.log("🔄 Fetching services from database...")
 
+    // Add error handling for database connection
+    if (!prisma) {
+      console.error("❌ Prisma client is not initialized")
+      return NextResponse.json({ error: "Database connection error" }, { status: 500 })
+    }
+
     // Fetch services with location relationships
     const services = await prisma.service.findMany({
       where: {
