@@ -5,7 +5,7 @@
   "regions": ["iad1"],
   "build": {
     "env": {
-      "PRISMA_GENERATE_DATAPROXY": "true"
+      "PRISMA_GENERATE_DATAPROXY": "false"
     }
   },
   "functions": {
@@ -20,7 +20,7 @@
     "NEXTAUTH_URL": "https://habesha-erp.vercel.app",
     "USE_MOCK_DATA": "false",
     "SKIP_DB_CONNECTION": "false",
-    "PRISMA_GENERATE_DATAPROXY": "true",
+    "PRISMA_GENERATE_DATAPROXY": "false",
     "PGHOST": "ep-crimson-lake-agstmll3-pooler.c-2.eu-central-1.aws.neon.tech",
     "PGHOST_UNPOOLED": "ep-crimson-lake-agstmll3.c-2.eu-central-1.aws.neon.tech",
     "PGUSER": "neondb_owner",
