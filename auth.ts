@@ -2,10 +2,25 @@ import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { authenticateUser, updateLastLogin } from "@/lib/pg-auth"
 import { auditAuth } from "@/lib/security/audit-log"
+import { Redis } from "ioredis"
+import { RedisSessionStore } from "@/lib/auth/redis-session"
+import { configureVercelRedis } from "@/lib/vercel-redis"
+
+// Initialize Redis client for session storage
+const redisClient = configureVercelRedis();
+const sessionStore = redisClient ? new RedisSessionStore(redisClient) : undefined;
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   debug: process.env.NODE_ENV === 'development',
   trustHost: true, // Required for Vercel and other proxied environments
+  session: {
+    strategy: "jwt",
+    maxAge: 24 * 60 * 60, // 24 hours
+  },
+  // Use Redis session store if available
+  ...(sessionStore && { 
+    store: sessionStore 
+  }),
   logger: {
     error(error: Error) {
       console.error('NextAuth Error:', error)

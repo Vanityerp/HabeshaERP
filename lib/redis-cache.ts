@@ -49,14 +49,20 @@ class RedisCacheService {
 
   private initializeRedis() {
     try {
-      if (process.env.REDIS_URL) {
-        this.redis = new Redis(process.env.REDIS_URL, {
+      // Support both standard Redis URL and Vercel/Upstash Redis URL
+      const redisUrl = process.env.REDIS_URL || process.env.UPSTASH_REDIS_REST_URL;
+      
+      if (redisUrl) {
+        this.redis = new Redis(redisUrl, {
           maxRetriesPerRequest: 3,
           lazyConnect: true,
           enableReadyCheck: true,
           enableOfflineQueue: false,
           connectTimeout: 10000,
           commandTimeout: 5000,
+          // Vercel-specific settings for production
+          tls: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined,
+          password: process.env.REDIS_PASSWORD || process.env.UPSTASH_REDIS_REST_TOKEN,
         })
 
         this.redis.on('error', (error) => {
