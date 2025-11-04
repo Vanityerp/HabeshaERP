@@ -47,11 +47,8 @@ export async function GET(request: Request) {
       where,
       include: {
         locations: locationId ? {
-          where: { locationId },
-          include: { location: true } // Include the location relation
-        } : {
-          include: { location: true } // Include the location relation for all locations
-        }
+          where: { locationId }
+        } : true
       },
       orderBy: { name: 'asc' }
     });
@@ -148,61 +145,55 @@ export async function POST(request: Request) {
 
     // Process each item in the cart
     const processedItems = [];
-
-    // Fetch all products involved in the order from the database
-    const productIds = data.items.map((item: { id: string; }) => item.id);
-    const productsInDb = await prisma.product.findMany({
-      where: { id: { in: productIds } },
-      include: { locations: true } // Include locations to check stock
+    
+    // Fetch products from database instead of using mock data
+    const productIds = data.items.map((item: any) => item.id);
+    const dbProducts = await prisma.product.findMany({
+      where: {
+        id: {
+          in: productIds
+        }
+      },
+      include: {
+        locations: true
+      }
     });
 
-    // Map products to a more accessible format
-    const productMap = new Map(productsInDb.map(product => [product.id, product]));
+    // Create a map for quick lookup
+    const productMap = new Map(dbProducts.map(product => [product.id, product]));
 
     for (const item of data.items) {
       const { id, quantity } = item;
 
-      // Find the product from the fetched products
+      // Find the product in database
       const product = productMap.get(id);
       if (!product) {
         return NextResponse.json({ error: `Product not found: ${id}` }, { status: 400 });
       }
 
-      // Calculate total stock across all locations for the product
-      const totalStock = product.locations.reduce((sum, loc) => sum + loc.stock, 0);
+      // Get stock from locations (assuming first location or sum of all locations)
+      const stock = product.locations.reduce((total, loc) => total + loc.stock, 0);
 
       // Check stock
-      if (totalStock < quantity) {
+      if (stock < quantity) {
         return NextResponse.json({
-          error: `Insufficient stock for ${product.name}. Available: ${totalStock}`
+          error: `Insufficient stock for ${product.name}. Available: ${stock}`
         }, { status: 400 });
       }
-
-      // For simplicity, we'll assume stock is deducted from a generic pool.
-      // In a real application, you'd manage stock per location.
-      // This part would involve updating the database for stock levels.
 
       // Add to processed items
       processedItems.push({
         id: product.id,
         name: product.name,
-        price: parseFloat(product.price.toString()),
-        salePrice: product.salePrice ? parseFloat(product.salePrice.toString()) : undefined,
+        price: product.isSale && product.salePrice ? product.salePrice : product.price,
         quantity,
-        total: (product.isSale && product.salePrice ? parseFloat(product.salePrice.toString()) : parseFloat(product.price.toString())) * quantity
+        total: (product.isSale && product.salePrice ? product.salePrice : product.price) * quantity
       });
     }
 
     // Get checkout settings for dynamic calculations
-    const checkoutSettings = await prisma.setting.findUnique({
-      where: { name: 'checkoutSettings' },
-    });
-
-    if (!checkoutSettings || !checkoutSettings.value) {
-      return NextResponse.json({ error: "Checkout settings not found" }, { status: 500 });
-    }
-
-    const parsedCheckoutSettings = JSON.parse(checkoutSettings.value as string);
+    const { SettingsStorage } = await import("@/lib/settings-storage");
+    const checkoutSettings = SettingsStorage.getCheckoutSettings();
 
     // Calculate totals using dynamic settings
     const subtotal = processedItems.reduce((sum, item) => sum + item.total, 0);
@@ -218,18 +209,18 @@ export async function POST(request: Request) {
     const discountedSubtotal = Math.max(0, subtotal - promoDiscount);
 
     // Calculate tax using dynamic rate
-    const tax = discountedSubtotal * (parsedCheckoutSettings.taxRate / 100);
+    const tax = discountedSubtotal * (checkoutSettings.taxRate / 100);
 
     // Calculate shipping using dynamic settings
     let shipping = 0;
-    if (parsedCheckoutSettings.shippingType === 'flat') {
-      shipping = parsedCheckoutSettings.shippingAmount;
-    } else if (parsedCheckoutSettings.shippingType === 'percentage') {
-      shipping = discountedSubtotal * (parsedCheckoutSettings.shippingAmount / 100);
+    if (checkoutSettings.shippingType === 'flat') {
+      shipping = checkoutSettings.shippingAmount;
+    } else if (checkoutSettings.shippingType === 'percentage') {
+      shipping = discountedSubtotal * (checkoutSettings.shippingAmount / 100);
     }
 
     // Apply free shipping threshold
-    if (discountedSubtotal >= parsedCheckoutSettings.freeShippingThreshold) {
+    if (discountedSubtotal >= checkoutSettings.freeShippingThreshold) {
       shipping = 0;
     }
 
@@ -238,7 +229,7 @@ export async function POST(request: Request) {
     // Determine order status based on payment method and settings
     let orderStatus = "completed";
     if (data.paymentMethod === "cod") {
-      orderStatus = parsedCheckoutSettings.orderProcessing.codConfirmationRequired ? "pending_confirmation" : "confirmed";
+      orderStatus = checkoutSettings.orderProcessing.codConfirmationRequired ? "pending_confirmation" : "confirmed";
     }
 
     // In a real app, we would save this order to a database
@@ -260,9 +251,8 @@ export async function POST(request: Request) {
       notes: data.paymentMethod === "cod" ? "Cash on Delivery order" : undefined
     };
 
-    // Update the global products array with new stock levels
-    // In a real app, this would be a database update
-    // beautyProducts = updatedProducts;
+    // Note: In a real implementation, we would also update the product stock in the database
+    // This would require a transaction to ensure consistency
 
     return NextResponse.json({
       success: true,
