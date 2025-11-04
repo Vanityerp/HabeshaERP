@@ -90,7 +90,9 @@ export async function POST(request: Request) {
       name: reward.name,
       redeemedAt: new Date().toISOString(),
       usedAt: null,
-      pointsCost: reward.pointsCost
+      pointsCost: reward.pointsCost,
+      status: "active" as const,
+      expiresAt: reward.expiresAt || new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString() // Default 90 days if not specified
     };
 
     // Update client's loyalty data
