@@ -47,8 +47,15 @@ export async function GET(request: Request) {
       where,
       include: {
         locations: locationId ? {
-          where: { locationId }
-        } : true
+          where: { locationId },
+          include: {
+            location: true
+          }
+        } : {
+          include: {
+            location: true
+          }
+        }
       },
       orderBy: { name: 'asc' }
     });
@@ -155,7 +162,11 @@ export async function POST(request: Request) {
         }
       },
       include: {
-        locations: true
+        locations: {
+          include: {
+            location: true
+          }
+        }
       }
     });
 
