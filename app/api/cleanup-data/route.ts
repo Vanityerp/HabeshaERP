@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
         role: staff.role || 'stylist',
         locations: Array.isArray(staff.locations) ? staff.locations : [],
         status: staff.status || 'Active',
-        avatar: staff.avatar || staff.name.split(' ').map(n => n[0]).join(''),
+        avatar: staff.avatar || staff.name.split(' ').map((n: string) => n[0]).join(''),
         color: staff.color || 'bg-purple-100 text-purple-800',
         homeService: Boolean(staff.homeService),
         // Optional fields
