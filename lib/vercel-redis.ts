@@ -1,6 +1,5 @@
 // Vercel Redis Integration for HabeshaERP
 import { Redis } from 'ioredis';
-import { redisCache } from './redis-cache';
 
 // Configuration for Vercel Redis
 export const configureVercelRedis = () => {
@@ -8,6 +7,7 @@ export const configureVercelRedis = () => {
   const redisUrl = process.env.REDIS_URL || process.env.UPSTASH_REDIS_REST_URL;
   
   if (!redisUrl) {
+    // eslint-disable-next-line no-console
     console.warn('No Redis URL found in environment variables. Using fallback cache.');
     return null;
   }
@@ -24,15 +24,18 @@ export const configureVercelRedis = () => {
 
     // Set up event handlers
     redisClient.on('error', (error) => {
+      // eslint-disable-next-line no-console
       console.error('Vercel Redis connection error:', error);
     });
 
     redisClient.on('connect', () => {
+      // eslint-disable-next-line no-console
       console.log('Vercel Redis connected successfully');
     });
 
     return redisClient;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('Failed to initialize Vercel Redis:', error);
     return null;
   }
@@ -46,9 +49,11 @@ export const initializeVercelRedis = async () => {
     try {
       // Test connection
       await redisClient.ping();
+      // eslint-disable-next-line no-console
       console.log('✅ Vercel Redis connection successful');
       return redisClient;
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('❌ Vercel Redis connection test failed:', error);
       return null;
     }

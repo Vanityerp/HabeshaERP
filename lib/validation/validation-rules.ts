@@ -457,9 +457,9 @@ export const validatorUtils = {
   /**
    * Create a cross-field validator
    */
-  crossField: <T>(
+  crossField: (
     fields: string[],
-    validator: (values: any[]) => boolean,
+    validator: (values: unknown[]) => boolean,
     message: string
   ) => {
     return z.any().refine((data) => {
