@@ -26,7 +26,11 @@ export async function POST() {
       { id: 'online', name: 'Online store' }
     ]
 
-    const cleanupResults = {
+    const cleanupResults: {
+      deleted: Array<{ id: string; name: string; reason: string }>;
+      kept: Array<{ id: string; name: string }>;
+      errors: Array<{ location: string; error: string }>;
+    } = {
       deleted: [],
       kept: [],
       errors: []
