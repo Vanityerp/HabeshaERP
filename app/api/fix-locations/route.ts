@@ -75,9 +75,9 @@ export async function POST() {
     ]
 
     const results = {
-      upserted: [],
-      deleted: [],
-      errors: []
+      upserted: <{ id: string; name: string; action: string }[]>[],
+      deleted: <{ id: string; name: string; reason: string }[]>[],
+      errors: <{ location: string; error: string }[]>[]
     }
 
     // Step 1: Upsert each required location
