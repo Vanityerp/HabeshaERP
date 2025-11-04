@@ -42,7 +42,7 @@ async function seedDatabase(adminPasswordHash: string) {
     RETURNING id
   `)
 
-  const locationIds = locationsResult.rows.map((row) => row.id)
+  const locationIds = locationsResult.rows.map((row: any) => row.id)
 
   // Create users
   const usersResult = await query(
@@ -62,7 +62,7 @@ async function seedDatabase(adminPasswordHash: string) {
     [adminPasswordHash],
   )
 
-  const userIds = usersResult.rows.map((row) => row.id)
+  const userIds = usersResult.rows.map((row: any) => row.id)
 
   // Assign users to locations
   await query(
@@ -96,7 +96,7 @@ async function seedDatabase(adminPasswordHash: string) {
     RETURNING id
   `)
 
-  const categoryIds = categoriesResult.rows.map((row) => row.id)
+  const categoryIds = categoriesResult.rows.map((row: any) => row.id)
 
   // Create services
   const servicesResult = await query(
@@ -114,7 +114,7 @@ async function seedDatabase(adminPasswordHash: string) {
     [categoryIds[0], categoryIds[1], categoryIds[2], categoryIds[3]],
   )
 
-  const serviceIds = servicesResult.rows.map((row) => row.id)
+  const serviceIds = servicesResult.rows.map((row: any) => row.id)
 
   // Assign services to locations
   await query(
@@ -161,7 +161,7 @@ async function seedDatabase(adminPasswordHash: string) {
     RETURNING id
   `)
 
-  const invCategoryIds = invCategoriesResult.rows.map((row) => row.id)
+  const invCategoryIds = invCategoriesResult.rows.map((row: any) => row.id)
 
   // Create products
   const productsResult = await query(
@@ -179,7 +179,7 @@ async function seedDatabase(adminPasswordHash: string) {
     [invCategoryIds[0], invCategoryIds[1], invCategoryIds[2]],
   )
 
-  const productIds = productsResult.rows.map((row) => row.id)
+  const productIds = productsResult.rows.map((row: any) => row.id)
 
   // Set up inventory for each location
   for (const locationId of locationIds) {
@@ -231,7 +231,7 @@ async function seedDatabase(adminPasswordHash: string) {
     [locationIds[0], locationIds[1], locationIds[2]],
   )
 
-  const clientIds = clientsResult.rows.map((row) => row.id)
+  const clientIds = clientsResult.rows.map((row: any) => row.id)
 
   // Assign clients to locations
   await query(
