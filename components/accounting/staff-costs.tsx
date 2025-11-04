@@ -226,7 +226,7 @@ export function StaffCosts({ dateRange }: StaffCostsProps) {
           case 'staff-costs':
             reportSections.push(...costToCompanyData)
             break
-          case 'summary':
+          case 'summary': {
             const summary = {
               totalMonthlyCosts,
               totalAnnualCosts,
@@ -236,6 +236,7 @@ export function StaffCosts({ dateRange }: StaffCostsProps) {
             }
             reportSections.push(summary)
             break
+          }
         }
       }
 

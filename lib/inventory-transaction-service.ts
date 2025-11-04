@@ -107,7 +107,7 @@ export class InventoryTransactionService {
   /**
    * Record a product sale and create corresponding financial transactions
    */
-  recordProductSale(
+  async recordProductSale(
     productId: string,
     productName: string,
     locationId: string,
@@ -120,7 +120,7 @@ export class InventoryTransactionService {
     staffId?: string,
     staffName?: string,
     reference?: { type: string; id: string }
-  ): { inventoryTransaction: InventoryTransaction; financialTransactions: Transaction[] } {
+  ): Promise<{ inventoryTransaction: InventoryTransaction; financialTransactions: Transaction[] }> {
 
     const totalCost = costPrice * quantity;
     const totalRevenue = retailPrice * quantity;
@@ -157,6 +157,16 @@ export class InventoryTransactionService {
     // Create financial transactions
     const financialTransactions: Transaction[] = [];
 
+    // Fetch the client's userId
+    let userIdForTransaction: string | undefined;
+    if (clientId) {
+      const client = await prisma.client.findUnique({
+        where: { id: clientId },
+        select: { userId: true }
+      });
+      userIdForTransaction = client?.userId;
+    }
+
     // 1. Revenue transaction
     const revenueTransaction: Transaction = {
       id: generateShortId(),
@@ -169,7 +179,7 @@ export class InventoryTransactionService {
       status: TransactionStatus.COMPLETED,
       location: locationId,
       source: TransactionSource.POS,
-      clientId,
+      clientId: userIdForTransaction, // Use userId here
       clientName,
       staffId,
       staffName,
@@ -197,6 +207,7 @@ export class InventoryTransactionService {
       status: TransactionStatus.COMPLETED,
       location: locationId,
       source: TransactionSource.SYSTEM,
+      clientId: userIdForTransaction, // Use userId here
       productId,
       productName,
       quantity,
@@ -224,7 +235,7 @@ export class InventoryTransactionService {
   /**
    * Record inventory sale (for client portal purchases)
    */
-  recordInventorySale(
+  async recordInventorySale(
     productId: string,
     productName: string,
     locationId: string,
@@ -234,7 +245,7 @@ export class InventoryTransactionService {
     clientId: string,
     clientName: string,
     reference?: { type: string; id: string }
-  ): Transaction {
+  ): Promise<Transaction> {
     const totalAmount = quantity * salePrice
     const totalCost = quantity * costPrice
 
@@ -246,6 +257,16 @@ export class InventoryTransactionService {
       return `${last6Digits}${random2Digits.toString().padStart(2, '0')}`;
     };
 
+    // Fetch the client's userId
+    let userIdForTransaction: string | undefined;
+    if (clientId) {
+      const client = await prisma.client.findUnique({
+        where: { id: clientId },
+        select: { userId: true }
+      });
+      userIdForTransaction = client?.userId;
+    }
+
     // Create the main transaction
     const transaction: Transaction = {
       id: generateShortId(),
@@ -255,7 +276,7 @@ export class InventoryTransactionService {
       status: TransactionStatus.COMPLETED,
       amount: totalAmount,
       paymentMethod: PaymentMethod.CREDIT_CARD, // Default for online orders
-      clientId,
+      clientId: userIdForTransaction, // Use userId here
       clientName,
       location: locationId,
       category: "Online Product Sale",

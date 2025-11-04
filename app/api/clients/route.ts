@@ -43,11 +43,23 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
     const locationId = searchParams.get("locationId")
+    const clientName = searchParams.get("name")
+    const clientEmail = searchParams.get("email")
+    const clientPhone = searchParams.get("phone")
 
-    // Build where clause for location filtering
+    // Build where clause for filtering
     const where: any = {}
     if (locationId) {
       where.preferredLocationId = locationId
+    }
+    if (clientName) {
+      where.name = { contains: clientName, mode: 'insensitive' }
+    }
+    if (clientEmail) {
+      where.email = { contains: clientEmail, mode: 'insensitive' }
+    }
+    if (clientPhone) {
+      where.phone = { contains: clientPhone, mode: 'insensitive' }
     }
 
     // Get all clients from Prisma (SINGLE SOURCE OF TRUTH)

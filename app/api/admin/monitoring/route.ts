@@ -122,7 +122,7 @@ export const GET = withAuth(async (req: NextRequest) => {
     )
   }
 }, {
-  requiredRole: 'admin',
+  requiredRole: ['admin'],
   rateLimit: { windowMs: 60 * 1000, maxRequests: 60 } // 60 requests per minute
 })
 
@@ -136,7 +136,7 @@ export const POST = withAuth(async (req: NextRequest) => {
     let result: any = {}
 
     switch (action) {
-      case 'update-alert':
+      case 'update-alert': {
         const alertUpdate = alertUpdateSchema.parse(body)
         const alertUpdated = monitoringService.updateAlertRule(alertUpdate.ruleId, alertUpdate)
         
@@ -149,12 +149,13 @@ export const POST = withAuth(async (req: NextRequest) => {
           )
         }
         break
+      }
 
-      case 'error-action':
+      case 'error-action': {
         const errorAction = errorActionSchema.parse(body)
         
         switch (errorAction.action) {
-          case 'resolve':
+          case 'resolve': {
             const resolved = errorTracking.resolveErrorGroup(
               errorAction.fingerprint, 
               errorAction.resolvedBy
@@ -168,8 +169,9 @@ export const POST = withAuth(async (req: NextRequest) => {
               )
             }
             break
+          }
 
-          case 'ignore':
+          case 'ignore': {
             const errorGroup = errorTracking.getErrorGroup(errorAction.fingerprint)
             if (errorGroup) {
               errorGroup.status = 'ignored'
@@ -181,8 +183,9 @@ export const POST = withAuth(async (req: NextRequest) => {
               )
             }
             break
+          }
 
-          case 'reopen':
+          case 'reopen': {
             const reopenGroup = errorTracking.getErrorGroup(errorAction.fingerprint)
             if (reopenGroup) {
               reopenGroup.status = 'unresolved'
@@ -196,8 +199,11 @@ export const POST = withAuth(async (req: NextRequest) => {
               )
             }
             break
+          }
         }
         break
+      }
+
 
       case 'test-alert':
         // Trigger a test alert
@@ -212,8 +218,8 @@ export const POST = withAuth(async (req: NextRequest) => {
         result = { message: 'Test alert triggered successfully' }
         break
 
-      case 'record-event':
-        // Record a custom monitoring event
+
+      case 'record-event': {
         const eventData = z.object({
           type: z.nativeEnum(MonitoringEventType),
           category: z.string(),
@@ -229,6 +235,8 @@ export const POST = withAuth(async (req: NextRequest) => {
         
         result = { message: 'Event recorded successfully', eventId }
         break
+      }
+
 
       default:
         return NextResponse.json(
@@ -259,7 +267,7 @@ export const POST = withAuth(async (req: NextRequest) => {
     )
   }
 }, {
-  requiredRole: 'admin',
+  requiredRole: ['admin'],
   rateLimit: { windowMs: 60 * 1000, maxRequests: 30 } // 30 requests per minute
 })
 
@@ -316,7 +324,7 @@ export const DELETE = withAuth(async (req: NextRequest) => {
     )
   }
 }, {
-  requiredRole: 'admin',
+  requiredRole: ['admin'],
   rateLimit: { windowMs: 60 * 1000, maxRequests: 10 } // 10 requests per minute
 })
 
@@ -330,20 +338,18 @@ export const PUT = withAuth(async (req: NextRequest) => {
     let result: any = {}
 
     switch (configType) {
-      case 'alerts':
-        // Update alert configuration
+      case 'alerts': {
         const alertConfig = z.object({
           globalEnabled: z.boolean().optional(),
           defaultChannels: z.array(z.enum(['email', 'slack', 'webhook'])).optional(),
           defaultCooldown: z.number().min(1).max(1440).optional()
         }).parse(body)
 
-        // This would update global alert configuration
         result = { message: 'Alert configuration updated successfully', config: alertConfig }
         break
+      }
 
-      case 'retention':
-        // Update data retention settings
+      case 'retention': {
         const retentionConfig = z.object({
           eventRetentionDays: z.number().min(1).max(365).optional(),
           metricsRetentionDays: z.number().min(1).max(365).optional(),
@@ -352,6 +358,7 @@ export const PUT = withAuth(async (req: NextRequest) => {
 
         result = { message: 'Retention configuration updated successfully', config: retentionConfig }
         break
+      }
 
       default:
         return NextResponse.json(
@@ -382,6 +389,6 @@ export const PUT = withAuth(async (req: NextRequest) => {
     )
   }
 }, {
-  requiredRole: 'admin',
+  requiredRole: ['admin'],
   rateLimit: { windowMs: 60 * 1000, maxRequests: 20 } // 20 requests per minute
 })

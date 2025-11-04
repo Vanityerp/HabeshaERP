@@ -1,59 +1,20 @@
-import { NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
-import { getServerSession } from "next-auth"
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { auth } from "@/auth";
 
-// GET /api/inventory/batches/[id] - Get a specific product batch
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  try {
-    console.log(`🔄 Fetching product batch: ${params.id}`)
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
-    const batch = await prisma.productBatch.findUnique({
-      where: { id: params.id },
-      include: {
-        product: {
-          select: {
-            id: true,
-            name: true,
-            category: true,
-            sku: true,
-            price: true
-          }
-        },
-        location: {
-          select: {
-            id: true,
-            name: true
-          }
-        }
-      }
-    })
-
-    if (!batch) {
-      return NextResponse.json({ error: "Product batch not found" }, { status: 404 })
-    }
-
-    console.log(`✅ Found product batch: ${batch.batchNumber}`)
-    return NextResponse.json({ batch })
-  } catch (error) {
-    console.error("❌ Error fetching product batch:", error)
-    return NextResponse.json({ error: "Failed to fetch product batch" }, { status: 500 })
-  }
-}
-
-// PUT /api/inventory/batches/[id] - Update a product batch
 export async function PUT(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    // Check user session and permissions
-    const session = await getServerSession()
+    const session = await auth();
     if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
+
 
     const data = await request.json()
     console.log(`🔄 Updating product batch: ${params.id}`)
@@ -121,7 +82,7 @@ export async function DELETE(
 ) {
   try {
     // Check user session and permissions
-    const session = await getServerSession()
+    const session = await auth()
     if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }

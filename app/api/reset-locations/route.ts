@@ -10,12 +10,15 @@ export async function POST() {
   try {
     console.log("🔄 Starting complete location reset...")
 
+    let deletedCount = 0;
+
     // Step 1: Delete ALL existing locations (handle foreign key constraints)
     try {
       // First, try to delete related records if any exist
       // Note: In a production system, you'd want to handle this more carefully
       const deleteResult = await prisma.location.deleteMany({})
-      console.log(`Deleted ${deleteResult.count} existing locations`)
+      deletedCount = deleteResult.count;
+      console.log(`Deleted ${deletedCount} existing locations`)
     } catch (error) {
       console.log("Note: Some locations might have related records, continuing with creation...")
       // If deletion fails due to foreign keys, we'll just create with different IDs
@@ -114,7 +117,7 @@ export async function POST() {
     return NextResponse.json({
       success: true,
       message: "Location reset completed successfully",
-      deletedCount: deleteResult.count,
+      deletedCount: deletedCount,
       createdCount: createdLocations.length,
       finalLocationCount: finalCount,
       createdLocations: createdLocations.map(loc => ({

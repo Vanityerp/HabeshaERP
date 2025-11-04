@@ -1,13 +1,14 @@
-import { NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { seedComprehensiveBeautyProducts } from "@/scripts/seed-comprehensive-beauty-products"
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { auth } from "@/auth";
+import { seedComprehensiveBeautyProducts } from "@/scripts/seed-comprehensive-beauty-products";
 
-export async function POST(request: Request) {
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession()
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
+    const session = await auth();
 
     console.log('🌱 Starting comprehensive beauty product seeding...')
     
@@ -16,7 +17,6 @@ export async function POST(request: Request) {
     console.log('✅ Comprehensive product seeding completed successfully')
     return NextResponse.json({ 
       message: "Comprehensive beauty products seeded successfully",
-      success: true,
       ...result
     })
   } catch (error) {

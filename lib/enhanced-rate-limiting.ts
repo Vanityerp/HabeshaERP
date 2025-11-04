@@ -372,7 +372,7 @@ export const RATE_LIMIT_CONFIGS = {
 
 // Export rate limiting decorators for API routes
 export function withRateLimit(config: RateLimitConfig) {
-  return function (handler: Function) {
+  return function (handler: (...args: any[]) => any) {
     return async function (request: NextRequest, ...args: any[]) {
       const rateLimitResponse = await enhancedRateLimit.createMiddleware(config)(request)
       

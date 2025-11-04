@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, act, waitFor } from '@testing-library/react';
-import { TransactionProvider, useTransactionContext } from '../../lib/transaction-provider';
+import { TransactionProvider, useTransactions } from '../../lib/transaction-provider';
 import {
   Transaction,
   TransactionCreate,
@@ -10,6 +10,7 @@ import {
   PaymentMethod
 } from '../../lib/transaction-types';
 import { be } from 'date-fns/locale';
+
 
 // Mock localStorage
 const mockLocalStorage = (() => {
@@ -61,10 +62,11 @@ afterEach(() => {
 
 // Helper component to access the context in tests
 function TestComponent({ testFn }: { testFn: (context: any) => void }) {
-  const context = useTransactionContext();
+  const context = useTransactions();
   testFn(context);
   return null;
 }
+
 
 // Helper function to render the provider with a test component
 function renderWithProvider(testFn: (context: any) => void) {
@@ -118,11 +120,13 @@ describe('TransactionProvider - findExistingTransactionsForAppointment', () => {
       status: TransactionStatus.COMPLETED,
       location: 'Main Salon',
       source: TransactionSource.POS,
+      date: new Date(),
       reference: {
         type: 'appointment',
         id: appointmentId
       }
     };
+
     
     // Act & Assert
     await act(async () => {
@@ -169,6 +173,7 @@ describe('TransactionProvider - findExistingTransactionsForAppointment', () => {
       status: TransactionStatus.COMPLETED,
       location: 'Main Salon',
       source: TransactionSource.POS,
+      date: new Date(),
       metadata: {
         appointmentId: appointmentId
       }
@@ -219,6 +224,7 @@ describe('TransactionProvider - findExistingTransactionsForAppointment', () => {
       status: TransactionStatus.COMPLETED,
       location: 'Main Salon',
       source: TransactionSource.POS,
+      date: new Date(),
       metadata: {
         bookingReference: bookingReference
       }
@@ -288,6 +294,7 @@ describe('TransactionProvider - findExistingTransactionsForAppointment', () => {
       status: TransactionStatus.COMPLETED,
       location: 'Main Salon',
       source: TransactionSource.POS,
+      date: new Date(),
       reference: {
         type: 'appointment',
         id: appointmentId
@@ -335,6 +342,7 @@ describe('TransactionProvider - findExistingTransactionsForAppointment', () => {
     // Create a new transaction with no appointment ID or booking reference
     const newTransaction: TransactionCreate = {
       type: TransactionType.SERVICE_SALE,
+      date: new Date().toISOString(),
       category: 'Haircut',
       description: 'Another haircut service',
       amount: 60,
@@ -343,6 +351,7 @@ describe('TransactionProvider - findExistingTransactionsForAppointment', () => {
       location: 'Main Salon',
       source: TransactionSource.POS
     };
+
     
     // Act & Assert
     await act(async () => {
@@ -390,6 +399,7 @@ describe('TransactionProvider - findExistingTransactionsForAppointment', () => {
       status: TransactionStatus.COMPLETED,
       location: 'Main Salon',
       source: TransactionSource.POS,
+      date: new Date(),
       reference: {
         type: 'appointment',
         id: appointmentId
@@ -441,6 +451,7 @@ describe('TransactionProvider - findExistingTransactionsForAppointment', () => {
       status: TransactionStatus.COMPLETED,
       location: 'Main Salon',
       source: TransactionSource.POS,
+      date: new Date(),
       reference: {
         type: 'appointment',
         id: ''
@@ -492,6 +503,7 @@ describe('TransactionProvider - findExistingTransactionsForAppointment', () => {
       status: TransactionStatus.COMPLETED,
       location: 'Main Salon',
       source: TransactionSource.POS,
+      date: new Date(),
       reference: {
         type: 'appointment',
         id: appointmentId
@@ -545,6 +557,7 @@ describe('TransactionProvider - addTransaction duplicate prevention', () => {
       status: TransactionStatus.COMPLETED,
       location: 'Main Salon',
       source: TransactionSource.POS,
+      date: new Date(),
       reference: {
         type: 'appointment',
         id: 'appt-456' // Different appointment ID
@@ -599,6 +612,7 @@ describe('TransactionProvider - addTransaction duplicate prevention', () => {
       status: TransactionStatus.COMPLETED,
       location: 'Main Salon',
       source: TransactionSource.POS,
+      date: new Date(),
       reference: {
         type: 'appointment',
         id: appointmentId
@@ -654,6 +668,7 @@ describe('TransactionProvider - addTransaction duplicate prevention', () => {
       status: TransactionStatus.COMPLETED,
       location: 'Main Salon',
       source: TransactionSource.POS,
+      date: new Date(),
       reference: {
         type: 'appointment',
         id: appointmentId
@@ -716,6 +731,7 @@ describe('TransactionProvider - addTransaction duplicate prevention', () => {
       status: TransactionStatus.COMPLETED,
       location: 'Main Salon',
       source: TransactionSource.POS,
+      date: new Date(),
       reference: {
         type: 'appointment',
         id: appointmentId
@@ -766,18 +782,20 @@ describe('TransactionProvider - addTransaction duplicate prevention', () => {
     // Create a new transaction with the same appointment ID but from POS
     const newTransaction: TransactionCreate = {
       type: TransactionType.SERVICE_SALE,
+      date: new Date().toISOString(),
       category: 'Haircut',
       description: 'Haircut service from POS',
       amount: 50,
       paymentMethod: PaymentMethod.CREDIT_CARD,
       status: TransactionStatus.COMPLETED,
       location: 'Main Salon',
-      source: TransactionSource.POS, // Different source
+      source: TransactionSource.POS,
       reference: {
         type: 'appointment',
         id: appointmentId
       }
     };
+
     
     // Act & Assert
     await act(async () => {
@@ -824,6 +842,7 @@ describe('TransactionProvider - addTransaction duplicate prevention', () => {
       status: TransactionStatus.COMPLETED,
       location: 'Main Salon',
       source: TransactionSource.POS,
+      date: new Date(),
       metadata: {
         bookingReference: bookingReference
       }
@@ -1136,7 +1155,7 @@ describe('TransactionProvider - cleanupAllDuplicates', () => {
           expect(context.transactions.length).toBe(3);
           
           // Check that the correct transactions were kept
-          const remainingIds = context.transactions.map(tx => tx.id);
+          const remainingIds = context.transactions.map((tx: Transaction) => tx.id);
           expect(remainingIds).toContain('tx1-newer'); // Newer of same-amount duplicates
           expect(remainingIds).toContain('tx2-discounted'); // Discounted transaction
           expect(remainingIds).toContain('tx3-unique'); // Unique transaction

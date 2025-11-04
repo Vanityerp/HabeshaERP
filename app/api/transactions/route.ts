@@ -30,10 +30,22 @@ export async function GET(request: Request) {
         user: {
           select: {
             id: true,
-            name: true,
+            email: true,
+            clientProfile: {
+              select: {
+                name: true
+              }
+            },
+            staffProfile: {
+              select: {
+                name: true
+              }
+            },
+            email: true,
             email: true
           }
         },
+
         location: {
           select: {
             id: true,
@@ -111,7 +123,16 @@ export async function POST(request: Request) {
         user: {
           select: {
             id: true,
-            name: true,
+            clientProfile: {
+              select: {
+                name: true
+              }
+            },
+            staffProfile: {
+              select: {
+                name: true
+              }
+            },
             email: true
           }
         },

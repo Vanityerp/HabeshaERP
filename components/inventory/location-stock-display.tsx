@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { useLocations } from "@/lib/location-provider"
 import { ChevronDown, ChevronRight, MapPin } from "lucide-react"
-import type { Product } from "@/lib/types"
+import type { Product } from "@/lib/types/product"
 
 interface LocationStockDisplayProps {
   product: Product

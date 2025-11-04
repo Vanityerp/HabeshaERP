@@ -82,7 +82,7 @@ export async function PUT(
         data: {
           name,
           phone,
-          avatar: name.split(' ').map(n => n[0]).join(''),
+          avatar: name.split(' ').map((n: string) => n[0]).join(''),
           jobRole: role, // Update the specific job role
           dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
           homeService: homeService || false,
@@ -119,7 +119,7 @@ export async function PUT(
         // Add new associations
         if (locations.length > 0) {
           await Promise.all(
-            locations.map(locationId =>
+            locations.map((locationId: string) =>
               prisma.staffLocation.create({
                 data: {
                   staffId: id,

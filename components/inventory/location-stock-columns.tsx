@@ -4,7 +4,7 @@ import React from "react"
 import { Badge } from "@/components/ui/badge"
 import { TableCell } from "@/components/ui/table"
 import { useLocations } from "@/lib/location-provider"
-import type { Product } from "@/lib/types"
+import type { Product } from "@/lib/types/product"
 
 interface LocationStockColumnsProps {
   product: Product

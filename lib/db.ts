@@ -881,11 +881,11 @@ export const reportsRepository = {
       WHERE s.created_at >= $1 AND s.created_at <= $2
     `
 
-    const params = [new Date(startDate), new Date(endDate)]
+    const params = [startDate.toISOString(), endDate.toISOString()]
 
     if (locationId) {
       queryText += ` AND s.location_id = $3`
-      params.push(new Date(locationId))
+      params.push(locationId)
     }
 
     queryText += ` GROUP BY DATE(s.created_at) ORDER BY date`
@@ -922,7 +922,7 @@ export const reportsRepository = {
     return result.rows
   },
 
-  getServicePopularity: async (startDate: number, endDate: number, locationId?: number) => {
+  getServicePopularity: async (startDate: Date, endDate: Date, locationId?: number) => {
     let queryText = `
       SELECT
         s.id as service_id,
@@ -935,20 +935,23 @@ export const reportsRepository = {
       LEFT JOIN sale_items si ON sa.id = si.sale_id AND si.service_id = s.id
     `
 
-    const params = [new Date(startDate), new Date(endDate)]
+    const params: (string | number)[] = [startDate.toISOString(), endDate.toISOString()]
 
     if (locationId) {
-      queryText += ` AND (a.location_id = $3 OR a.location_id IS NULL)`
-      params.push(new Date(locationId))
+      queryText += ` AND a.location_id = $3`
+      params.push(locationId)
     }
 
-    queryText += ` GROUP BY s.id, s.name ORDER BY appointment_count DESC NULLS LAST`
+    queryText += `
+      GROUP BY s.id, s.name
+      ORDER BY appointment_count DESC, total_revenue DESC
+    `
 
-    const result = await query(query.toString(), params)
+    const result = await query(queryText, params)
     return result.rows
   },
 
-  getProductSales: async (startDate: number, endDate: number, locationId?: number) => {
+  getProductSales: async (startDate: Date, endDate: Date, locationId?: number) => {
     let queryText = `
       SELECT
         p.id as product_id,
@@ -961,16 +964,16 @@ export const reportsRepository = {
       WHERE s.created_at >= $1 AND s.created_at <= $2
     `
 
-    const params = [new Date(startDate), new Date(endDate)]
+    const params = [startDate.toISOString(), endDate.toISOString()]
 
     if (locationId) {
       queryText += ` AND s.location_id = $3`
-      params.push(new Date(locationId))
+      params.push(locationId)
     }
 
     queryText += ` GROUP BY p.id, p.name ORDER BY quantity_sold DESC`
 
-    const result = await query(query.toString(), params)
+    const result = await query(queryText, params)
     return result.rows
   },
 }

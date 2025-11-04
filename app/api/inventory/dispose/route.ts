@@ -1,12 +1,14 @@
-import { NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
-import { getServerSession } from "next-auth"
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { auth } from "@/auth";
 
-// POST /api/inventory/dispose - Mark products for disposal and adjust inventory
-export async function POST(request: Request) {
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+export async function POST(request: NextRequest) {
   try {
-    // Check user session and permissions
-    const session = await getServerSession()
+    const session = await auth();
+
     if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }

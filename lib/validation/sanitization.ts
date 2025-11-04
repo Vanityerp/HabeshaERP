@@ -114,6 +114,7 @@ class SanitizationService {
     // Remove control characters
     if (options.removeControlChars) {
       const original = sanitized
+      // eslint-disable-next-line no-control-regex
       sanitized = sanitized.replace(/[\x00-\x1F\x7F]/g, '')
       if (original !== sanitized) {
         warnings.push('Removed control characters')

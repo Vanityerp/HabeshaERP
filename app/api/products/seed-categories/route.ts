@@ -1,13 +1,14 @@
-import { NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { seedComprehensiveCategories } from "@/scripts/seed-comprehensive-categories"
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { auth } from "@/auth";
+import { seedComprehensiveCategories } from "@/scripts/seed-comprehensive-categories";
 
-export async function POST(request: Request) {
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession()
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
+    const session = await auth();
 
     console.log('🌱 Starting comprehensive category seeding...')
     

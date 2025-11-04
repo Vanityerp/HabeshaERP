@@ -12,7 +12,7 @@ export async function GET() {
     
     const staffWithoutCredentials = await prisma.staffMember.findMany({
       where: {
-        userId: null // Staff members without user accounts
+        user: { is: null } // Staff members without user accounts
       },
       include: {
         locations: {

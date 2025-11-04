@@ -1,28 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+// TODO: ProductCategory model needs to be added to Prisma schema
+// This route is currently non-functional until the model is defined
+
 // DELETE /api/products/categories/[id] - Delete a product category
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  return NextResponse.json(
+    { error: 'ProductCategory model not implemented in Prisma schema' },
+    { status: 501 }
+  );
+  
+  /* Original implementation - requires ProductCategory model in Prisma schema
   try {
     const { id } = await params;
 
     // Check if category exists
     const existingCategory = await prisma.productCategory.findUnique({
-      where: { id },
-      include: {
-        _count: {
-          select: {
-            products: true
-          }
-        }
-      }
-    });
 
-    if (!existingCategory) {
-      return NextResponse.json(
         { error: 'Category not found' },
         { status: 404 }
       );
@@ -57,6 +55,7 @@ export async function DELETE(
       { status: 500 }
     );
   }
+  */
 }
 
 // GET /api/products/categories/[id] - Get a specific category
@@ -64,6 +63,12 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  return NextResponse.json(
+    { error: 'ProductCategory model not implemented in Prisma schema' },
+    { status: 501 }
+  );
+  
+  /* Original implementation - requires ProductCategory model
   try {
     const { id } = await params;
 
@@ -102,6 +107,7 @@ export async function GET(
       { status: 500 }
     );
   }
+  */
 }
 
 // PUT /api/products/categories/[id] - Update a category
@@ -109,6 +115,12 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  return NextResponse.json(
+    { error: 'ProductCategory model not implemented in Prisma schema' },
+    { status: 501 }
+  );
+  
+  /* Original implementation - requires ProductCategory model
   try {
     const { id } = await params;
     const body = await request.json();
@@ -170,4 +182,5 @@ export async function PUT(
       { status: 500 }
     );
   }
+  */
 }

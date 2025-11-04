@@ -1,12 +1,16 @@
-import { NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
-import { getServerSession } from "next-auth"
-import { PERMISSIONS } from "@/lib/permissions"
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { auth } from "@/auth";
+import { Prisma } from "@prisma/client";
 
-export async function GET(request: Request) {
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const locationId = searchParams.get("locationId")
+    const session = await auth();
+    const { searchParams } = new URL(request.url);
+    const locationId = searchParams.get("locationId");
 
     if (!locationId) {
       return NextResponse.json({ error: "Location ID is required" }, { status: 400 })
@@ -14,8 +18,8 @@ export async function GET(request: Request) {
 
     console.log(`🔄 Fetching inventory for location: ${locationId}`)
 
-    // Get inventory data from Prisma database
     const productLocations = await prisma.productLocation.findMany({
+
       where: {
         locationId: locationId,
         isActive: true
@@ -57,7 +61,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     // Check user session and permissions
-    const session = await getServerSession()
+    const session = await auth()
 
     // If no session or user, return unauthorized
     if (!session || !session.user) {

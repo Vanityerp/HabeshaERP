@@ -174,11 +174,21 @@ export async function POST(request: Request) {
     try {
       console.log("💾 Saving appointment to Prisma database...");
 
+      // Get the client's userId from the clientId
+      const client = await prisma.client.findUnique({
+        where: { id: data.clientId },
+        select: { userId: true }
+      });
+
+      if (!client) {
+        return NextResponse.json({ error: "Client not found" }, { status: 404 });
+      }
+
       // Create appointment in Prisma
       const prismaAppointment = await prisma.appointment.create({
         data: {
           bookingReference: newAppointment.bookingReference,
-          clientId: data.clientId,
+          clientId: client.userId, // Use the client's userId
           staffId: data.staffId,
           locationId: data.location, // location is the locationId
           date: new Date(data.date),

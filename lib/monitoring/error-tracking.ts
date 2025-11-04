@@ -70,9 +70,12 @@ export interface ErrorGroup {
   severity: 'low' | 'medium' | 'high' | 'critical'
   status: 'unresolved' | 'resolved' | 'ignored'
   assignee?: string
+  resolvedAt?: Date
+  resolvedBy?: string
   tags: string[]
   events: ErrorReport[]
 }
+
 
 class ErrorTrackingService {
   private errors: Map<string, ErrorReport> = new Map()
@@ -484,9 +487,10 @@ export function addBreadcrumb(category: string, message: string, level: 'info' |
   errorTracking.addBreadcrumb({ category, message, level, data })
 }
 
+import React from 'react'
+
 // Error boundary integration
 export function withErrorTracking(Component: React.ComponentType<any>) {
-  const React = require('react')
 
   return class extends React.Component {
     componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {

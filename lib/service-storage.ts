@@ -10,7 +10,10 @@ export interface Service {
   duration: number
   locations: string[]
   description?: string
+  showPrices?: boolean
+  additionalInfo?: string
 }
+
 
 export interface ServiceCategory {
   id: string

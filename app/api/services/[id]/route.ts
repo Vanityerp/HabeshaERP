@@ -50,7 +50,7 @@ export async function GET(
 
     console.log(`✅ Successfully fetched service: ${service.name}`)
     return NextResponse.json({ service: transformedService })
-  } catch (error) {
+  } catch (error: any) {
     console.error("❌ Error fetching service:", error)
     return NextResponse.json({ error: "Failed to fetch service" }, { status: 500 })
   }
@@ -121,7 +121,7 @@ export async function PUT(
 
     console.log(`✅ Successfully updated service: ${service.name}`)
     return NextResponse.json({ service: transformedService })
-  } catch (error) {
+  } catch (error: any) {
     console.error("❌ Error updating service:", error)
     return NextResponse.json({ error: "Failed to update service" }, { status: 500 })
   }
@@ -157,7 +157,7 @@ export async function DELETE(
 
     console.log(`✅ Successfully deleted service: ${deletedService.name}`)
     return NextResponse.json({ success: true })
-  } catch (error) {
+  } catch (error: any) {
     if (error.code === 'P2025') {
       // Prisma error code for record not found
       return NextResponse.json({ error: "Service not found" }, { status: 404 })

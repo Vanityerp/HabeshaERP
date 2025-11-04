@@ -42,7 +42,7 @@ export async function PUT(
     let result: any = { success: true }
 
     switch (action) {
-      case 'reset_password':
+      case 'reset_password': {
         const tempPassword = generateTemporaryPassword()
         const hashedPassword = hashPassword(tempPassword)
         
@@ -54,8 +54,9 @@ export async function PUT(
         result.temporaryPassword = tempPassword
         console.log(`✅ Password reset for ${staffMember.name}`)
         break
+      }
 
-      case 'update_password':
+      case 'update_password': {
         if (!newPassword) {
           return NextResponse.json({ error: "New password is required" }, { status: 400 })
         }
@@ -78,8 +79,9 @@ export async function PUT(
 
         console.log(`✅ Password updated for ${staffMember.name}`)
         break
+      }
 
-      case 'update_locations':
+      case 'update_locations': {
         if (!locationIds || !Array.isArray(locationIds)) {
           return NextResponse.json({ error: "Location IDs array is required" }, { status: 400 })
         }
@@ -106,8 +108,9 @@ export async function PUT(
 
         console.log(`✅ Location assignments updated for ${staffMember.name}`)
         break
+      }
 
-      case 'toggle_active':
+      case 'toggle_active': {
         await prisma.user.update({
           where: { id: staffMember.user.id },
           data: { isActive: !staffMember.user.isActive }
@@ -116,6 +119,7 @@ export async function PUT(
         result.isActive = !staffMember.user.isActive
         console.log(`✅ Account status toggled for ${staffMember.name}: ${result.isActive ? 'Active' : 'Inactive'}`)
         break
+      }
 
       default:
         return NextResponse.json({ error: "Invalid action" }, { status: 400 })

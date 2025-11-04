@@ -43,9 +43,13 @@ export async function GET(request: NextRequest) {
         client: {
           select: {
             id: true,
-            name: true,
             email: true,
-            phone: true
+            clientProfile: {
+              select: {
+                name: true,
+                phone: true
+              }
+            }
           }
         },
         staff: {
@@ -54,12 +58,16 @@ export async function GET(request: NextRequest) {
             name: true
           }
         },
-        service: {
-          select: {
-            id: true,
-            name: true,
-            duration: true,
-            price: true
+        services: {
+          include: {
+            service: {
+              select: {
+                id: true,
+                name: true,
+                duration: true,
+                price: true
+              }
+            }
           }
         },
         location: {
@@ -73,6 +81,7 @@ export async function GET(request: NextRequest) {
         date: 'asc'
       }
     });
+
 
     console.log("API: Retrieved appointments from database", appointments.length);
 
@@ -88,24 +97,18 @@ export async function GET(request: NextRequest) {
     const transformedAppointments = appointments.map(appointment => ({
       id: appointment.id,
       clientId: appointment.clientId,
-      clientName: appointment.client?.name || "Unknown Client",
+      clientName: appointment.client?.clientProfile?.name || "Unknown Client",
       staffId: appointment.staffId,
       staffName: appointment.staff?.name || "Unknown Staff",
-      service: appointment.service?.name || "Unknown Service",
-      serviceId: appointment.serviceId,
+      service: appointment.services?.[0]?.service?.name || "Unknown Service",
+      serviceId: appointment.services?.[0]?.serviceId,
       date: appointment.date.toISOString(),
-      duration: appointment.service?.duration || 0,
+      duration: appointment.services?.[0]?.service?.duration || 0,
       location: appointment.locationId,
       locationName: appointment.location?.name || "Unknown Location",
-      price: Number(appointment.service?.price) || 0,
+      price: Number(appointment.services?.[0]?.service?.price) || 0,
       notes: appointment.notes || "",
-      status: appointment.status,
-      statusHistory: appointment.statusHistory ? JSON.parse(appointment.statusHistory as string) : [],
-      type: appointment.type || "service",
-      paymentStatus: appointment.paymentStatus || "unpaid",
-      paymentMethod: appointment.paymentMethod || "",
-      createdAt: appointment.createdAt.toISOString(),
-      updatedAt: appointment.updatedAt.toISOString()
+      status: appointment.status
     }));
 
     console.log(`API: Final filtered appointments: ${transformedAppointments.length}`);

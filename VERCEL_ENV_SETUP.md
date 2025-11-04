@@ -177,3 +177,31 @@ Use these exact values when adding environment variables:
 ---
 
 **Total Setup Time: ~10 minutes to fully working production! 🎉**
+### Optional: Redis/Vercel KV (for caching)
+
+If you want to enable Redis-based caching (recommended for performance), add one of the following configurations:
+
+Standard Redis:
+
+```
+REDIS_URL
+redis://<user>:<password>@<host>:<port>
+
+REDIS_PASSWORD
+<password> (optional; only if not embedded in REDIS_URL)
+```
+
+Upstash/Vercel KV:
+
+```
+UPSTASH_REDIS_REST_URL
+https://<your-upstash-url>
+
+UPSTASH_REDIS_REST_TOKEN
+<your-upstash-token>
+```
+
+Notes:
+- Provide either `REDIS_URL` or `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN`.
+- Redis is optional; if not configured, the app falls back to an in-memory cache.
+- In production, TLS is configured automatically with `rejectUnauthorized: false` to avoid SSL issues.

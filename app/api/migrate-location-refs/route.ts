@@ -29,7 +29,13 @@ export async function POST() {
       }
     ]
 
-    const migrationResults = {
+    const migrationResults: {
+      appointmentsMigrated: number;
+      staffLocationsMigrated: number;
+      transactionsMigrated: number;
+      locationsDeleted: { id: string; name: string }[];
+      errors: { location: string; error: string }[];
+    } = {
       appointmentsMigrated: 0,
       staffLocationsMigrated: 0,
       transactionsMigrated: 0,

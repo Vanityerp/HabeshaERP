@@ -183,7 +183,7 @@ export async function POST(request: Request) {
           const service = await prisma.service.create({
             data: {
               name: serviceData.name,
-              description: serviceData.description,
+
               duration: serviceData.duration,
               price: serviceData.price,
               category: serviceData.category,
@@ -194,7 +194,7 @@ export async function POST(request: Request) {
           // Associate service with all locations except "Online store"
           for (const location of locations) {
             if (location.name !== 'Online store') {
-              await prisma.serviceLocation.create({
+              await prisma.locationService.create({
                 data: {
                   serviceId: service.id,
                   locationId: location.id,

@@ -54,7 +54,8 @@ const GENERAL_REPORT_TYPES: ReportType[] = [
   { id: 'staff', name: 'Staff Performance', description: 'Individual staff metrics' },
   { id: 'inventory', name: 'Inventory Reports', description: 'Stock levels and movements' },
   { id: 'financial', name: 'Financial Reports', description: 'Profit & loss, expenses' },
-  { id: 'client', name: 'Client Reports', description: 'Customer analytics and retention' }
+  { id: 'client', name: 'Client Reports', description: 'Customer analytics and retention' },
+  { id: 'services', name: 'Service Popularity', description: 'Most popular services and revenue' }
 ]
 
 export default function ReportsPage() {
@@ -62,10 +63,13 @@ export default function ReportsPage() {
   const { transactions, filterTransactions } = useTransactions()
   const { staff } = useStaff()
   const { toast } = useToast()
-  const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: subDays(new Date(), 30),
-    to: new Date(),
-  })
+  const [dateRange, setDateRange] = useState<{
+    from: Date | undefined;
+    to: Date | undefined;
+  }>({
+    from: startOfDay(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)),
+    to: endOfDay(new Date()),
+  });
   const [selectedSource, setSelectedSource] = useState<string>("all")
   const [analytics, setAnalytics] = useState<any>(null)
   const [realtimeStats, setRealtimeStats] = useState({
@@ -94,7 +98,13 @@ export default function ReportsPage() {
 
   // Get available export sections
   const getAvailableExportSections = (): ExportSection[] => {
-    const filteredTransactions = filterTransactions(transactions, dateRange, selectedSource, currentLocation)
+   const filter: TransactionFilter = {
+     startDate: dateRange?.from,
+     endDate: dateRange?.to,
+     source: selectedSource,
+     location: currentLocation
+   }
+    const filteredTransactions = filterTransactions(filter)
     const salesData = aggregateSalesData(filteredTransactions, dateRange, 'day', currentLocation)
     const appointmentData = aggregateAppointmentData(filteredTransactions, dateRange, currentLocation)
     const staffData = aggregateStaffPerformanceData(filteredTransactions, staff || [], dateRange, currentLocation)
@@ -166,7 +176,13 @@ export default function ReportsPage() {
   const handleExport = async (options: ExportOptions) => {
     setIsExporting(true)
     try {
-      const filteredTransactions = filterTransactions(transactions, options.dateRange || dateRange, selectedSource, options.location || currentLocation)
+      const filter: TransactionFilter = {
+        startDate: (options.dateRange || dateRange)?.from,
+        endDate: (options.dateRange || dateRange)?.to,
+        source: selectedSource,
+        location: options.location || currentLocation
+      }
+      const filteredTransactions = filterTransactions(filter)
       const reportSections: ReportData[] = []
 
       // Prepare data for selected sections
@@ -179,30 +195,36 @@ export default function ReportsPage() {
               realtimeStats
             ))
             break
-          case 'sales':
+          case 'sales': {
             const salesData = aggregateSalesData(filteredTransactions, options.dateRange, 'day', options.location)
             reportSections.push(prepareTableDataForExport(salesData, 'Sales Data'))
             break
-          case 'appointments':
+          }
+          case 'appointments': {
             const appointmentData = aggregateAppointmentData(filteredTransactions, options.dateRange, options.location)
             reportSections.push(prepareTableDataForExport(appointmentData, 'Appointments'))
             break
-          case 'staff':
+          }
+          case 'staff': {
             const staffData = aggregateStaffPerformanceData(filteredTransactions, staff || [], options.dateRange, options.location)
             reportSections.push(prepareTableDataForExport(staffData, 'Staff Performance'))
             break
-          case 'services':
+          }
+          case 'services': {
             const serviceData = aggregateServicePopularityData(filteredTransactions, options.dateRange, options.location)
             reportSections.push(prepareTableDataForExport(serviceData, 'Service Popularity'))
             break
-          case 'payments':
+          }
+          case 'payments': {
             const paymentData = aggregatePaymentMethodData(filteredTransactions, options.dateRange, options.location)
             reportSections.push(prepareTableDataForExport(paymentData, 'Payment Methods'))
             break
-          case 'clients':
+          }
+          case 'clients': {
             const clientData = aggregateClientRetentionData(filteredTransactions, options.dateRange, options.location)
             reportSections.push(prepareTableDataForExport(clientData, 'Client Retention'))
             break
+          }
           case 'transactions':
             reportSections.push(prepareTableDataForExport(filteredTransactions, 'Transaction Details'))
             break
@@ -382,12 +404,13 @@ export default function ReportsPage() {
           switch (reportType) {
             case 'sales':
               const salesData = aggregateSalesData(filteredTransactions, dateRange, 'day', currentLocation)
-              reportData = prepareTableDataForExport(salesData, 'Sales Report', realtimeStats)
+              reportData = { title: 'Sales Report', data: salesData, dateRange, location: getLocationName(currentLocation) }
               break
-            case 'appointments':
+            case 'appointments': {
               const appointmentData = aggregateAppointmentData(filteredTransactions, dateRange, currentLocation)
               reportData = prepareTableDataForExport(appointmentData, 'Appointments Report')
               break
+            }
             case 'staff':
               const staffData = aggregateStaffPerformanceData(filteredTransactions, staff || [], dateRange, currentLocation)
               reportData = prepareTableDataForExport(staffData, 'Staff Performance Report')
@@ -403,6 +426,10 @@ export default function ReportsPage() {
             case 'client':
               const clientData = aggregateClientRetentionData(filteredTransactions, dateRange, currentLocation)
               reportData = prepareTableDataForExport(clientData, 'Client Report')
+              break
+            case 'services':
+              const serviceData = aggregateServicePopularityData(filteredTransactions, dateRange, currentLocation)
+              reportData = prepareTableDataForExport(serviceData, 'Service Popularity Report')
               break
             default:
               continue
@@ -609,7 +636,10 @@ export default function ReportsPage() {
               <SelectItem value="manual">Manual Entry</SelectItem>
             </SelectContent>
           </Select>
-          <DatePickerWithRange dateRange={dateRange} onDateRangeChange={setDateRange} />
+          <DatePickerWithRange
+             dateRange={dateRange as DateRange | undefined}
+             onDateRangeChange={setDateRange}
+           />
 
           {/* Enhanced Export Dropdown */}
           <DropdownMenu>
@@ -1154,7 +1184,7 @@ export default function ReportsPage() {
               </CardHeader>
               <CardContent className="h-[350px]">
                 <ClientRetentionChart
-                  dateRange={dateRange}
+                  dateRange={dateRange as { from: Date; to: Date } | undefined}
                   transactions={transactions}
                   currentLocation={currentLocation}
                 />
@@ -1267,4 +1297,3 @@ export default function ReportsPage() {
     </div>
   )
 }
-

@@ -26,9 +26,10 @@ export async function GET() {
     const dbInfo = databaseUrl 
       ? {
           type: databaseUrl.startsWith('postgres') ? 'PostgreSQL' : 'SQLite',
-          host: databaseUrl.match(/@([^:\/]+)/)?.[1] || 'unknown',
+          host: databaseUrl.match(/@([^:/]+)/)?.[1] || 'unknown',
         }
       : { type: 'unknown', host: 'unknown' }
+
     
     return NextResponse.json({
       status: 'success',

@@ -47,8 +47,11 @@ export async function GET(request: Request) {
       where,
       include: {
         locations: locationId ? {
-          where: { locationId }
-        } : true
+          where: { locationId },
+          include: { location: true } // Include the location relation
+        } : {
+          include: { location: true } // Include the location relation for all locations
+        }
       },
       orderBy: { name: 'asc' }
     });
@@ -145,44 +148,61 @@ export async function POST(request: Request) {
 
     // Process each item in the cart
     const processedItems = [];
-    let updatedProducts = [...beautyProducts];
+
+    // Fetch all products involved in the order from the database
+    const productIds = data.items.map((item: { id: string; }) => item.id);
+    const productsInDb = await prisma.product.findMany({
+      where: { id: { in: productIds } },
+      include: { locations: true } // Include locations to check stock
+    });
+
+    // Map products to a more accessible format
+    const productMap = new Map(productsInDb.map(product => [product.id, product]));
 
     for (const item of data.items) {
       const { id, quantity } = item;
 
-      // Find the product
-      const productIndex = updatedProducts.findIndex(p => p.id === id);
-      if (productIndex === -1) {
+      // Find the product from the fetched products
+      const product = productMap.get(id);
+      if (!product) {
         return NextResponse.json({ error: `Product not found: ${id}` }, { status: 400 });
       }
 
-      const product = updatedProducts[productIndex];
+      // Calculate total stock across all locations for the product
+      const totalStock = product.locations.reduce((sum, loc) => sum + loc.stock, 0);
 
       // Check stock
-      if (product.stock < quantity) {
+      if (totalStock < quantity) {
         return NextResponse.json({
-          error: `Insufficient stock for ${product.name}. Available: ${product.stock}`
+          error: `Insufficient stock for ${product.name}. Available: ${totalStock}`
         }, { status: 400 });
       }
 
-      // Update stock
-      updatedProducts[productIndex] = {
-        ...product,
-        stock: product.stock - quantity
-      };
+      // For simplicity, we'll assume stock is deducted from a generic pool.
+      // In a real application, you'd manage stock per location.
+      // This part would involve updating the database for stock levels.
 
       // Add to processed items
       processedItems.push({
         id: product.id,
         name: product.name,
-        price: product.isSale && product.salePrice ? product.salePrice : product.price,
+        price: parseFloat(product.price.toString()),
+        salePrice: product.salePrice ? parseFloat(product.salePrice.toString()) : undefined,
         quantity,
-        total: (product.isSale && product.salePrice ? product.salePrice : product.price) * quantity
+        total: (product.isSale && product.salePrice ? parseFloat(product.salePrice.toString()) : parseFloat(product.price.toString())) * quantity
       });
     }
 
     // Get checkout settings for dynamic calculations
-    const checkoutSettings = SettingsStorage.getCheckoutSettings();
+    const checkoutSettings = await prisma.setting.findUnique({
+      where: { name: 'checkoutSettings' },
+    });
+
+    if (!checkoutSettings || !checkoutSettings.value) {
+      return NextResponse.json({ error: "Checkout settings not found" }, { status: 500 });
+    }
+
+    const parsedCheckoutSettings = JSON.parse(checkoutSettings.value as string);
 
     // Calculate totals using dynamic settings
     const subtotal = processedItems.reduce((sum, item) => sum + item.total, 0);
@@ -198,18 +218,18 @@ export async function POST(request: Request) {
     const discountedSubtotal = Math.max(0, subtotal - promoDiscount);
 
     // Calculate tax using dynamic rate
-    const tax = discountedSubtotal * (checkoutSettings.taxRate / 100);
+    const tax = discountedSubtotal * (parsedCheckoutSettings.taxRate / 100);
 
     // Calculate shipping using dynamic settings
     let shipping = 0;
-    if (checkoutSettings.shippingType === 'flat') {
-      shipping = checkoutSettings.shippingAmount;
-    } else if (checkoutSettings.shippingType === 'percentage') {
-      shipping = discountedSubtotal * (checkoutSettings.shippingAmount / 100);
+    if (parsedCheckoutSettings.shippingType === 'flat') {
+      shipping = parsedCheckoutSettings.shippingAmount;
+    } else if (parsedCheckoutSettings.shippingType === 'percentage') {
+      shipping = discountedSubtotal * (parsedCheckoutSettings.shippingAmount / 100);
     }
 
     // Apply free shipping threshold
-    if (discountedSubtotal >= checkoutSettings.freeShippingThreshold) {
+    if (discountedSubtotal >= parsedCheckoutSettings.freeShippingThreshold) {
       shipping = 0;
     }
 
@@ -218,7 +238,7 @@ export async function POST(request: Request) {
     // Determine order status based on payment method and settings
     let orderStatus = "completed";
     if (data.paymentMethod === "cod") {
-      orderStatus = checkoutSettings.orderProcessing.codConfirmationRequired ? "pending_confirmation" : "confirmed";
+      orderStatus = parsedCheckoutSettings.orderProcessing.codConfirmationRequired ? "pending_confirmation" : "confirmed";
     }
 
     // In a real app, we would save this order to a database

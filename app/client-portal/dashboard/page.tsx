@@ -196,7 +196,14 @@ export default function ClientDashboardPage() {
 
   // Get past appointments for this client
   // TODO: Replace with real API call to fetch client appointment history
-  const pastAppointments = useMemo(() => [], [client?.id])
+  const pastAppointments = useMemo<Array<{
+    id: string
+    service: string
+    date: string
+    staffName: string
+    status: string
+  }>>(() => [], [client?.id])
+
 
   // Get recent orders for this client
   const recentOrders = useMemo(() => {

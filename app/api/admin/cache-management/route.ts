@@ -77,9 +77,10 @@ export const GET = withAuth(async (req: NextRequest) => {
     )
   }
 }, {
-  requiredRole: 'admin',
+  requiredRole: ['admin'],
   rateLimit: { windowMs: 60 * 1000, maxRequests: 30 } // 30 requests per minute
 })
+
 
 // POST - Perform cache management actions
 export const POST = withAuth(async (req: NextRequest) => {
@@ -138,15 +139,17 @@ export const POST = withAuth(async (req: NextRequest) => {
           result = { message: `${target} cache invalidated successfully` }
           break
 
-        case 'stats':
+        case 'stats': {
           const stats = await redisCache.getStats()
           result = { stats }
           break
+        }
 
-        case 'health':
+        case 'health': {
           const health = await redisCache.healthCheck()
           result = { health }
           break
+        }
       }
     }
 
@@ -154,17 +157,19 @@ export const POST = withAuth(async (req: NextRequest) => {
       const { action, key } = rateLimitActionSchema.parse(body)
 
       switch (action) {
-        case 'stats':
+        case 'stats': {
           const stats = await enhancedRateLimit.getStats()
           result = { stats }
           break
+        }
 
-        case 'reset':
+        case 'reset': {
           if (key) {
             // Note: This would need to be implemented in the rate limiting service
             result = { message: `Rate limit reset for key: ${key}` }
           }
           break
+        }
       }
     }
 
@@ -172,28 +177,33 @@ export const POST = withAuth(async (req: NextRequest) => {
       const { action, limit } = dbActionSchema.parse(body)
 
       switch (action) {
-        case 'stats':
+        case 'stats': {
           const queryStats = dbOptimization.getQueryStats()
           result = { queryStats }
           break
+        }
 
-        case 'slow-queries':
+        case 'slow-queries': {
           const slowQueries = dbOptimization.getSlowQueries(limit || 10)
           result = { slowQueries }
           break
+        }
 
-        case 'indexes':
+        case 'indexes': {
           const recommendations = dbOptimization.getRecommendedIndexes()
           const sqlStatements = dbOptimization.generateIndexSQL()
           result = { recommendations, sqlStatements }
           break
+        }
 
-        case 'optimize':
+        case 'optimize': {
           const optimizedQueries = dbOptimization.getOptimizedQueries()
           result = { optimizedQueries }
           break
+        }
       }
     }
+
 
     return NextResponse.json({
       success: true,
@@ -217,9 +227,10 @@ export const POST = withAuth(async (req: NextRequest) => {
     )
   }
 }, {
-  requiredRole: 'admin',
+  requiredRole: ['admin'],
   rateLimit: { windowMs: 60 * 1000, maxRequests: 20 } // 20 requests per minute
 })
+
 
 // DELETE - Clear specific cache entries or reset rate limits
 export const DELETE = withAuth(async (req: NextRequest) => {
@@ -265,9 +276,10 @@ export const DELETE = withAuth(async (req: NextRequest) => {
     )
   }
 }, {
-  requiredRole: 'admin',
+  requiredRole: ['admin'],
   rateLimit: { windowMs: 60 * 1000, maxRequests: 10 } // 10 requests per minute
 })
+
 
 // PUT - Update cache or rate limiting configurations
 export const PUT = withAuth(async (req: NextRequest) => {
@@ -297,6 +309,6 @@ export const PUT = withAuth(async (req: NextRequest) => {
     )
   }
 }, {
-  requiredRole: 'admin',
+  requiredRole: ['admin'],
   rateLimit: { windowMs: 60 * 1000, maxRequests: 10 } // 10 requests per minute
 })

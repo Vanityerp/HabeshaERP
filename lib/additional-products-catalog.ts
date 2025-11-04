@@ -381,3 +381,4 @@ export const specialtyProducts: EnhancedProduct[] = [
     size: "1 device"
   }
 ]
+

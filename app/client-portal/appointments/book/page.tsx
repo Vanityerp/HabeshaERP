@@ -1310,12 +1310,13 @@ export default function BookAppointmentPage() {
             bookingReference: result.appointment.bookingReference,
             clientName: clientName,
             serviceName: service.name,
-            staffName: staff.name,
+            staffName: staffDetails?.name || "Unknown Staff",
             date: selectedDate,
             time: selectedTime,
             location: getLocationName(selectedLocation),
             amount: service.price
           }
+
         };
 
         // Add to notification service for persistent notifications
@@ -1325,7 +1326,7 @@ export default function BookAppointmentPage() {
         realTimeService.emitEvent(RealTimeEventType.APPOINTMENT_CREATED, {
           appointment: result.appointment,
           clientName: clientName,
-          staffName: staff.name,
+          staffName: staffDetails?.name || "Unknown Staff",
           service: service.name,
           date: result.appointment.date,
           location: getLocationName(selectedLocation),
@@ -1336,6 +1337,7 @@ export default function BookAppointmentPage() {
           userId: result.appointment.staffId,
           locationId: selectedLocation
         });
+
 
         // Show real-time notification for admin users
         realTimeService.showNotification({
