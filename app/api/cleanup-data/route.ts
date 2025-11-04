@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
       success: true,
       originalCount: staffData.length,
       cleanedCount: cleanedStaff.length,
-      duplicatesRemoved: duplicatesRemoved.length,
+      duplicatesRemovedCount: duplicatesRemoved.length,
       cleanedStaff,
       duplicatesRemoved,
       message: `Cleaned ${staffData.length} staff members. Removed ${duplicatesRemoved.length} duplicates/invalid entries.`
