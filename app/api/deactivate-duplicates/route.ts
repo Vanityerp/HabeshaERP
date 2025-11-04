@@ -18,8 +18,8 @@ export async function POST() {
     ]
 
     const results = {
-      deactivated: [],
-      errors: []
+      deactivated: [] as { id: string; name: string }[],
+      errors: [] as { id: string; error: string }[]
     }
 
     for (const id of duplicateIds) {
