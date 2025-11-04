@@ -13,7 +13,13 @@ let reviews = [
     rating: 5,
     comment: "This shampoo is amazing! My hair feels so soft and hydrated after using it.",
     date: "2025-03-15T10:30:00",
-    status: "published"
+    status: "published",
+    title: "Amazing Hydration!",
+    isAnonymous: false,
+    wouldRecommend: true,
+    tags: [],
+    images: [],
+    updatedAt: "2025-03-15T10:30:00"
   },
   {
     id: "pr2",
@@ -25,7 +31,13 @@ let reviews = [
     rating: 4,
     comment: "Good hold without making my hair stiff. Would recommend!",
     date: "2025-02-20T14:45:00",
-    status: "published"
+    status: "published",
+    title: "Great Hold Without Stiffness",
+    isAnonymous: false,
+    wouldRecommend: true,
+    tags: [],
+    images: [],
+    updatedAt: "2025-02-20T14:45:00"
   },
 
   // Service reviews
@@ -41,7 +53,13 @@ let reviews = [
     rating: 5,
     comment: "Emma did an amazing job with my haircut! She really understood what I wanted.",
     date: "2025-03-10T11:15:00",
-    status: "published"
+    status: "published",
+    title: "Perfect Haircut!",
+    isAnonymous: false,
+    wouldRecommend: true,
+    tags: [],
+    images: [],
+    updatedAt: "2025-03-10T11:15:00"
   },
 
   // Staff reviews
@@ -55,7 +73,13 @@ let reviews = [
     rating: 5,
     comment: "Emma is always professional and does amazing work. She listens carefully to what I want.",
     date: "2025-03-05T15:20:00",
-    status: "published"
+    status: "published",
+    title: "Professional and Amazing!",
+    isAnonymous: false,
+    wouldRecommend: true,
+    tags: [],
+    images: [],
+    updatedAt: "2025-03-05T15:20:00"
   }
 ];
 
@@ -129,6 +153,8 @@ export async function POST(request: Request) {
       }, { status: 400 });
     }
 
+    const now = new Date().toISOString();
+
     // Create the new review
     const newReview = {
       id: `r${reviews.length + 1}`,
@@ -141,8 +167,14 @@ export async function POST(request: Request) {
       staffName: data.staffName,
       rating: data.rating,
       comment: data.comment,
-      date: new Date().toISOString(),
-      status: "published"
+      date: now,
+      status: "published",
+      title: data.title || "",
+      isAnonymous: data.isAnonymous || false,
+      wouldRecommend: data.wouldRecommend !== false,
+      tags: data.tags || [],
+      images: data.images || [],
+      updatedAt: now
     };
 
     // In a real app, we would save this to a database
@@ -176,17 +208,19 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: "Review not found" }, { status: 404 });
     }
 
+    const now = new Date().toISOString();
+
     // Update the review with enhanced fields
     reviews[reviewIndex] = {
       ...reviews[reviewIndex],
       rating: data.rating,
-      title: data.title || reviews[reviewIndex].title,
+      title: data.title || reviews[reviewIndex].title || "",
       comment: data.comment,
-      isAnonymous: data.isAnonymous || false,
-      wouldRecommend: data.wouldRecommend !== false,
-      tags: data.tags || [],
-      images: data.images || [],
-      updatedAt: new Date().toISOString()
+      isAnonymous: data.isAnonymous !== undefined ? data.isAnonymous : reviews[reviewIndex].isAnonymous,
+      wouldRecommend: data.wouldRecommend !== undefined ? data.wouldRecommend : reviews[reviewIndex].wouldRecommend,
+      tags: data.tags || reviews[reviewIndex].tags || [],
+      images: data.images || reviews[reviewIndex].images || [],
+      updatedAt: now
     };
 
     return NextResponse.json({
