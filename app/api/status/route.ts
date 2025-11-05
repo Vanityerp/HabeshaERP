@@ -41,7 +41,7 @@ export async function GET() {
           locationCount: p.locations.length
         }))
       },
-      recommendations: []
+      recommendations: [] as string[]
     }
     
     // Add recommendations based on status

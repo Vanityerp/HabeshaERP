@@ -397,7 +397,7 @@ export default function ClientProfilePage({ params }: ClientProfilePageProps) {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex flex-col items-center text-center">
-                <Avatar className={`h-24 w-24 mb-2 ${client.color || "bg-primary/10"}`}>
+                <Avatar className="h-24 w-24 mb-2 bg-primary/10">
                   <AvatarFallback className="text-2xl">{client.avatar}</AvatarFallback>
                 </Avatar>
                 <h2 className="text-xl font-bold">{client.name}</h2>
@@ -696,7 +696,7 @@ export default function ClientProfilePage({ params }: ClientProfilePageProps) {
             </TabsContent>
 
             <TabsContent value="communication">
-              <IndividualClientCommunication client={client} />
+              <IndividualClientCommunication client={{...client, segment: client.segment || 'Regular'}} />
             </TabsContent>
           </Tabs>
         </div>

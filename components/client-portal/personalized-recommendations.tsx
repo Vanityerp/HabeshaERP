@@ -87,9 +87,10 @@ export function PersonalizedRecommendations({
     let score = 0
 
     // Base score for popular/featured services
-    if (service.isPopular) score += 30
-    if (service.isFeatured) score += 20
-    if (service.isNew) score += 10
+    // Note: These properties don't exist in the current Service type
+    // if (service.isPopular) score += 30
+    // if (service.isFeatured) score += 20
+    // if (service.isNew) score += 10
 
     // Score based on price range (mid-range services get higher scores)
     if (service.price >= 50 && service.price <= 200) score += 15
@@ -118,9 +119,10 @@ export function PersonalizedRecommendations({
       "Great value for the quality"
     ]
 
-    if (service.isPopular) return "Popular with clients like you"
-    if (service.isFeatured) return "Featured service this month"
-    if (service.isNew) return "New service - try something different"
+    // Note: These properties don't exist in the current Service type
+    // if (service.isPopular) return "Popular with clients like you"
+    // if (service.isFeatured) return "Featured service this month"
+    // if (service.isNew) return "New service - try something different"
 
     return reasons[index % reasons.length]
   }
@@ -188,7 +190,7 @@ export function PersonalizedRecommendations({
           .map(service => ({
             ...service,
             score: calculateRecommendationScore(service),
-            image: service.imageUrl || serviceImages[service.category as keyof typeof serviceImages] || serviceImages["1"],
+            image: serviceImages[service.category as keyof typeof serviceImages] || serviceImages["1"],
             categoryName: getCategoryName(service.category),
             rating: 4.2 + (Math.random() * 0.8), // Random rating between 4.2-5.0
             reason: getRecommendationReason(service, parseInt(service.id) || 0)

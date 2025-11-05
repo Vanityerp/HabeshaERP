@@ -21,7 +21,9 @@ function CustomCalendar({
   onDateSelect,
   ...props
 }: CustomCalendarProps) {
-  const handleSelect = (date: Date | undefined) => {
+  const handleSelect = (selected: any) => {
+    // Handle both single date and date range
+    const date = selected instanceof Date ? selected : selected?.from || selected;
     console.log("Date selected in custom calendar:", date);
 
     // Call the onDateSelect prop if provided
@@ -30,8 +32,8 @@ function CustomCalendar({
     }
 
     // Call the onSelect prop from props if provided
-    if (props.onSelect && typeof props.onSelect === 'function') {
-      props.onSelect(date);
+    if ('onSelect' in props && props.onSelect && typeof props.onSelect === 'function') {
+      (props.onSelect as any)(selected);
     }
 
     // Force a re-render to ensure the UI updates
@@ -235,19 +237,7 @@ function CustomCalendar({
           disabled: "rdp-day_disabled",
           outside: "rdp-day_outside",
         }}
-        components={{
-          IconLeft: ({ ...props }) => (
-            <div
-              className="flex items-center justify-center"
-              onClick={props.onClick}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  props.onClick && props.onClick();
-                }
-              }}
-              tabIndex={0}
-              role="button"
-              aria-label="Previous month"
+        /* components={{
             >
               <ChevronLeft className="h-5 w-5" />
             </div>
@@ -289,8 +279,8 @@ function CustomCalendar({
               <div className="rdp-day-content">{props.children}</div>
             </td>
           )
-        }}
-        onSelect={handleSelect}
+        }} */
+        {...('mode' in props ? { onSelect: handleSelect as any } : {})}
         defaultMonth={new Date()}
         initialFocus={true}
         numberOfMonths={1}

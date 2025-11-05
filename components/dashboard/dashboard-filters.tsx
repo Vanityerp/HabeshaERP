@@ -50,13 +50,14 @@ export function DashboardFilters({ onDateRangeChange, className }: DashboardFilt
           to: endOfDay(today)
         }
         break
-      case "yesterday":
+      case "yesterday": {
         const yesterday = subDays(today, 1)
         newRange = {
           from: startOfDay(yesterday),
           to: endOfDay(yesterday)
         }
         break
+      }
       case "week":
         newRange = {
           from: startOfWeek(today, { weekStartsOn: 1 }),

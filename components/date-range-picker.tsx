@@ -81,7 +81,7 @@ export function DatePickerWithRange({
           to: endOfDay(today)
         }
         break
-      case "yesterday":
+      case "yesterday": {
         const yesterday = new Date(today)
         yesterday.setDate(yesterday.getDate() - 1)
         newDateRange = {
@@ -89,13 +89,14 @@ export function DatePickerWithRange({
           to: endOfDay(yesterday)
         }
         break
+      }
       case "thisWeek":
         newDateRange = {
           from: startOfWeek(today, { weekStartsOn: 1 }),
           to: endOfWeek(today, { weekStartsOn: 1 })
         }
         break
-      case "lastWeek":
+      case "lastWeek": {
         const lastWeekStart = new Date(today)
         lastWeekStart.setDate(lastWeekStart.getDate() - 7)
         newDateRange = {
@@ -103,13 +104,14 @@ export function DatePickerWithRange({
           to: endOfWeek(lastWeekStart, { weekStartsOn: 1 })
         }
         break
+      }
       case "thisMonth":
         newDateRange = {
           from: startOfMonth(today),
           to: endOfMonth(today)
         }
         break
-      case "lastMonth":
+      case "lastMonth": {
         const lastMonth = new Date(today)
         lastMonth.setMonth(lastMonth.getMonth() - 1)
         newDateRange = {
@@ -117,6 +119,7 @@ export function DatePickerWithRange({
           to: endOfMonth(lastMonth)
         }
         break
+      }
       default:
         newDateRange = undefined
     }

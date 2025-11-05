@@ -143,7 +143,7 @@ export default function NotificationsPage() {
   const documentNotifications = useMemo(() => rawDocumentNotifications, [rawDocumentNotifications.length])
 
   // Real-time updates
-  const { emitEvent, showNotification } = useRealTimeUpdates({
+  const { emitEvent, showNotification } = useRealTimeUpdates(undefined, {
     enableNotifications: true,
     enableCrossTab: true
   })
@@ -176,7 +176,7 @@ export default function NotificationsPage() {
                  orderNotif.type === 'payment_received' ? 'Payment Received' :
                  orderNotif.type === 'status_update' ? 'Order Status Updated' : 'Order Notification',
           message: orderNotif.message,
-          timestamp: orderNotif.timestamp.toISOString(),
+          timestamp: typeof orderNotif.timestamp === 'string' ? orderNotif.timestamp : orderNotif.timestamp.toISOString(),
           read: orderNotif.read,
           actionRequired: !orderNotif.acknowledged,
           source: "order",

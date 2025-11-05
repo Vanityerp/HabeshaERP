@@ -36,8 +36,7 @@ export async function POST(request: NextRequest) {
           name: true, 
           sku: true, 
           cost: true,
-          category: true,
-          minStock: true
+          category: true
         }
       })
 
@@ -87,8 +86,8 @@ export async function POST(request: NextRequest) {
           adjustmentType: "add", // This will be the expected addition
           quantity: parseInt(quantity),
           reason: `REORDER: ${reorderId} - ${urgency.toUpperCase()} priority`,
-          notes: notes || `Reorder request for ${product.name} at ${location.name}. Current stock: ${currentStock}, Min stock: ${product.minStock || 5}`,
-          performedBy: session.user.email || "Unknown User",
+          notes: notes || `Reorder request for ${product.name} at ${location.name}. Current stock: ${currentStock}`,
+          userId: session.user.id || "unknown",
           previousStock: currentStock,
           newStock: currentStock // Will be updated when stock actually arrives
         }
@@ -203,7 +202,7 @@ export async function GET(request: Request) {
         status: "pending", // In a real system, this would be tracked separately
         createdAt: record.createdAt,
         notes: record.notes,
-        performedBy: record.performedBy
+        performedBy: record.userId
       }
     })
 

@@ -70,7 +70,7 @@ export function ClientSegments() {
     if (!editingClient || !newSegment) return
 
     try {
-      await updateClient(editingClient.id, { segment: newSegment })
+      await updateClient(editingClient.id, { segment: newSegment as "VIP" | "Regular" | "New" | "At Risk" })
       toast({
         title: "Segment updated",
         description: `${editingClient.name} has been moved to ${newSegment} segment.`

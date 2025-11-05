@@ -273,7 +273,9 @@ export default function LoyaltyPage() {
             ...prev.redeemedRewards,
             {
               ...selectedReward,
+              rewardId: selectedReward.id,
               redeemedAt: new Date().toISOString(),
+              usedAt: null,
               status: 'active'
             }
           ]

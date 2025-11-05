@@ -128,7 +128,7 @@ export default function SettingsPage() {
   // Filter tabs based on search query and permissions
   const filteredTabs = React.useMemo(() => {
     let tabs = settingTabs.filter(tab => {
-      if (tab.requiresPermission === "super_admin" && user?.role !== "super_admin") {
+      if (tab.requiresPermission === "super_admin" && user?.role !== "ADMIN") {
         return false
       }
       return true
@@ -227,7 +227,7 @@ export default function SettingsPage() {
         <TabsList className="h-auto p-1 bg-muted/50 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-1">
           {settingTabs
             .filter(tab => {
-              if (tab.requiresPermission === "super_admin" && user?.role !== "super_admin") {
+              if (tab.requiresPermission === "super_admin" && user?.role !== "ADMIN") {
                 return false
               }
               return true
@@ -266,7 +266,7 @@ export default function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="locations">
-          {console.log("⚙️ Settings: Rendering Locations tab")}
+
           <LocationSettings />
         </TabsContent>
 
@@ -294,7 +294,7 @@ export default function SettingsPage() {
           <CarouselSettings />
         </TabsContent>
 
-        {user?.role === "super_admin" && (
+        {user?.role === "ADMIN" && (
           <TabsContent value="loyalty">
             <LoyaltySettings />
           </TabsContent>

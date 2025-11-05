@@ -12,6 +12,7 @@ const STORAGE_KEYS = {
 export enum NotificationType {
   DOCUMENT_EXPIRING = 'document_expiring',
   DOCUMENT_EXPIRED = 'document_expired',
+  APPOINTMENT_CREATED = 'appointment_created',
 }
 
 // Notification interface

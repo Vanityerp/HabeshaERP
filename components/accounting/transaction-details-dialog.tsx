@@ -43,7 +43,7 @@ interface TransactionDetailsDialogProps {
 }
 
 // Helper to calculate service subtotal, discount, and product subtotal from items
-function getServiceAndProductTotals(items) {
+function getServiceAndProductTotals(items: any[]) {
   let serviceSubtotal = 0;
   let productSubtotal = 0;
   let serviceOriginal = 0;
@@ -77,7 +77,7 @@ export function TransactionDetailsDialog({
 
   if (!transaction) return null
 
-  const { serviceSubtotal, productSubtotal, serviceOriginal, serviceDiscount, discountPercentage } = getServiceAndProductTotals(transaction.items);
+  const { serviceSubtotal, productSubtotal, serviceOriginal, serviceDiscount, discountPercentage } = getServiceAndProductTotals(transaction.items || []);
 
   // Helper function to get source icon
   const getSourceIcon = (source: TransactionSource) => {

@@ -23,20 +23,13 @@ export async function GET(request: NextRequest) {
 
     console.log(`🔄 Fetching sales for location: ${locationId}`)
 
-    const sales = await prisma.sale.findMany({
+    const sales = await prisma.transaction.findMany({
       where: {
         locationId: locationId
       },
       include: {
-        client: true,
-        staff: true,
-        location: true,
-        items: {
-          include: {
-            product: true,
-            service: true
-          }
-        }
+        user: true,
+        location: true
       },
       orderBy: {
         createdAt: 'desc'
@@ -71,43 +64,27 @@ export async function POST(request: Request) {
     const tipAmount = data.tipAmount || 0
     const totalAmount = subtotal + taxAmount - discountAmount + tipAmount
 
-    const sale = await prisma.sale.create({
+    const sale = await prisma.transaction.create({
       data: {
-        clientId: data.clientId || null,
-        staffId: data.staffId,
+        userId: data.staffId || data.clientId || "unknown",
+        amount: totalAmount,
+        type: "SALE",
+        status: data.paymentStatus || "PENDING",
+        method: data.paymentMethod || "CASH",
+        reference: data.reference || null,
+        description: data.notes || "Sale transaction",
         locationId: data.locationId,
         appointmentId: data.appointmentId || null,
-        subtotal,
-        taxAmount,
-        discountAmount,
-        tipAmount,
-        totalAmount,
-        paymentMethod: data.paymentMethod,
-        paymentStatus: data.paymentStatus,
-        notes: data.notes || null,
-        items: {
-          create: data.items.map((item: any) => ({
-            itemType: item.type,
-            serviceId: item.type === "service" ? item.id : null,
-            productId: item.type === "product" ? item.id : null,
-            quantity: item.quantity,
-            unitPrice: item.price,
-            discountAmount: item.discountAmount || 0,
-            taxAmount: item.taxAmount || 0,
-            totalAmount: item.price * item.quantity + (item.taxAmount || 0) - (item.discountAmount || 0),
-          }))
-        }
+        serviceAmount: data.serviceAmount || null,
+        productAmount: data.productAmount || null,
+        originalServiceAmount: subtotal,
+        discountPercentage: data.discountPercentage || null,
+        discountAmount: discountAmount,
+        items: JSON.stringify(data.items)
       },
       include: {
-        client: true,
-        staff: true,
-        location: true,
-        items: {
-          include: {
-            product: true,
-            service: true
-          }
-        }
+        user: true,
+        location: true
       }
     })
 

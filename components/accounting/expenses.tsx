@@ -201,7 +201,7 @@ export function Expenses({ search, dateRange, selectedLocation = "all" }: Expens
           case 'expenses':
             reportSections.push(...filteredExpenses)
             break
-          case 'summary':
+          case 'summary': {
             const summary = {
               totalExpenses: filteredExpenses.length,
               totalAmount: filteredExpenses.reduce((sum, e) => sum + e.amount, 0),
@@ -212,6 +212,7 @@ export function Expenses({ search, dateRange, selectedLocation = "all" }: Expens
             }
             reportSections.push(summary)
             break
+          }
         }
       }
 
@@ -224,7 +225,10 @@ export function Expenses({ search, dateRange, selectedLocation = "all" }: Expens
         } : undefined
       )
 
-      reportData.dateRange = options.dateRange || dateRange
+      reportData.dateRange = {
+        from: options.dateRange?.from || dateRange?.from || new Date(),
+        to: options.dateRange?.to || dateRange?.to || new Date()
+      }
       reportData.location = selectedLocation
 
       switch (options.format) {

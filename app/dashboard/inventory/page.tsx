@@ -722,8 +722,8 @@ export default function InventoryPage() {
                             </TableCell>
                             <LocationStockColumns
                               key={`stock-${product.id}-${refreshKey}`}
-                              product={product}
-                              getMinStock={getMinStock}
+                              product={{...product, createdAt: product.createdAt?.toISOString(), updatedAt: product.updatedAt?.toISOString()}}
+                              getMinStock={(p) => getMinStock(product)}
                             />
                             <TableCell>
                               <Badge variant={product.isRetail ? "default" : "secondary"}>
@@ -897,8 +897,8 @@ export default function InventoryPage() {
                             </TableCell>
                             <LocationStockColumns
                               key={`stock-${product.id}-${refreshKey}`}
-                              product={product}
-                              getMinStock={getMinStock}
+                              product={{...product, createdAt: product.createdAt?.toISOString(), updatedAt: product.updatedAt?.toISOString()}}
+                              getMinStock={(p) => getMinStock(product)}
                             />
                             <TableCell className="text-center">
                               <div className="flex items-center justify-center">
@@ -1122,8 +1122,8 @@ export default function InventoryPage() {
                             </TableCell>
                             <LocationStockColumns
                               key={`stock-${product.id}-${refreshKey}`}
-                              product={product}
-                              getMinStock={getMinStock}
+                              product={{...product, createdAt: product.createdAt?.toISOString(), updatedAt: product.updatedAt?.toISOString()}}
+                              getMinStock={(p) => getMinStock(product)}
                             />
                             <TableCell className="text-center">
                               {formattedExpiryDate ? (
@@ -1304,8 +1304,8 @@ export default function InventoryPage() {
                             <TableCell>{product.category}</TableCell>
                             <LocationStockColumns
                               key={`stock-${product.id}-${refreshKey}`}
-                              product={product}
-                              getMinStock={getMinStock}
+                              product={{...product, createdAt: product.createdAt?.toISOString(), updatedAt: product.updatedAt?.toISOString()}}
+                              getMinStock={(p) => getMinStock(product)}
                             />
                             <TableCell className="text-center">
                               <Badge variant="outline" className="w-16">
@@ -1544,14 +1544,16 @@ export default function InventoryPage() {
                               case "today":
                                 if (transferDate < today) return false
                                 break
-                              case "week":
+                              case "week": {
                                 const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
                                 if (transferDate < weekAgo) return false
                                 break
-                              case "month":
+                              }
+                              case "month": {
                                 const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
                                 if (transferDate < monthAgo) return false
                                 break
+                              }
                             }
                           }
 

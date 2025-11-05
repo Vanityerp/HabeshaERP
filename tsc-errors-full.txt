@@ -1,0 +1,812 @@
+__tests__/lib/transaction-provider.test.tsx(343,11): error TS2741: Property 'date' is missing in type '{ type: TransactionType.SERVICE_SALE; category: string; description: string; amount: number; paymentMethod: PaymentMethod.CREDIT_CARD; status: TransactionStatus.COMPLETED; location: string; source: TransactionSource.POS; }' but required in type '{ type: TransactionType; date: string | Date; category: string; amount: number; paymentMethod: PaymentMethod; status: TransactionStatus; ... 14 more ...; updatedAt?: string | ... 1 more ... | undefined; }'.
+__tests__/lib/transaction-provider.test.tsx(781,11): error TS2741: Property 'date' is missing in type '{ type: TransactionType.SERVICE_SALE; category: string; description: string; amount: number; paymentMethod: PaymentMethod.CREDIT_CARD; status: TransactionStatus.COMPLETED; location: string; source: TransactionSource.POS; reference: { ...; }; }' but required in type '{ type: TransactionType; date: string | Date; category: string; amount: number; paymentMethod: PaymentMethod; status: TransactionStatus; ... 14 more ...; updatedAt?: string | ... 1 more ... | undefined; }'.
+__tests__/lib/transaction-provider.test.tsx(1154,57): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+__tests__/lib/utils.test.ts(111,37): error TS2367: This comparison appears to be unintentional because the types '"primary"' and '"secondary"' have no overlap.
+__tests__/lib/utils.test.ts(114,32): error TS2367: This comparison appears to be unintentional because the types '"lg"' and '"sm"' have no overlap.
+__tests__/lib/utils.test.ts(115,34): error TS2367: This comparison appears to be unintentional because the types '"lg"' and '"md"' have no overlap.
+app/api/cleanup-data/route.ts(73,59): error TS7006: Parameter 'n' implicitly has an 'any' type.
+app/api/cleanup-data/route.ts(94,7): error TS1117: An object literal cannot have multiple properties with the same name.
+app/api/cleanup-locations/route.ts(54,41): error TS2345: Argument of type '{ id: string; name: string; reason: string; }' is not assignable to parameter of type 'never'.
+app/api/cleanup-locations/route.ts(63,38): error TS2345: Argument of type '{ id: string; name: string; }' is not assignable to parameter of type 'never'.
+app/api/cleanup-locations/route.ts(69,36): error TS2345: Argument of type '{ id: string; name: string; }' is not assignable to parameter of type 'never'.
+app/api/cleanup-locations/route.ts(76,36): error TS2345: Argument of type '{ location: string; error: string; }' is not assignable to parameter of type 'never'.
+app/api/cleanup-locations/route.ts(93,37): error TS2345: Argument of type '{ id: string; name: string; reason: string; }' is not assignable to parameter of type 'never'.
+app/api/cleanup-locations/route.ts(101,36): error TS2345: Argument of type '{ location: string; error: string; }' is not assignable to parameter of type 'never'.
+app/api/client-portal/loyalty/route.ts(98,40): error TS2345: Argument of type '{ id: string; rewardId: string; name: string; redeemedAt: string; usedAt: null; pointsCost: number; }' is not assignable to parameter of type 'RedeemedReward'.
+  Type '{ id: string; rewardId: string; name: string; redeemedAt: string; usedAt: null; pointsCost: number; }' is missing the following properties from type 'RedeemedReward': status, expiresAt
+app/api/client-portal/products/route.ts(69,29): error TS2551: Property 'location' does not exist on type '{ id: string; createdAt: Date; locationId: string; productId: string; updatedAt: Date; isActive: boolean; price: number | null; stock: number; }'. Did you mean 'locationId'?
+app/api/client-portal/products/route.ts(148,31): error TS2304: Cannot find name 'beautyProducts'.
+app/api/client-portal/products/route.ts(185,30): error TS2304: Cannot find name 'SettingsStorage'.
+app/api/client-portal/reviews/route.ts(183,7): error TS2322: Type '{ rating: any; title: any; comment: any; isAnonymous: any; wouldRecommend: boolean; tags: any; images: any; updatedAt: string; id: string; clientId: string; clientName: string; itemId: string; itemName: string; ... 4 more ...; staffName?: undefined; } | { ...; }' is not assignable to type '{ id: string; clientId: string; clientName: string; itemId: string; itemName: string; itemType: string; rating: number; comment: string; date: string; status: string; staffId?: undefined; staffName?: undefined; } | { ...; }'.
+  Object literal may only specify known properties, and 'title' does not exist in type '{ id: string; clientId: string; clientName: string; itemId: string; itemName: string; itemType: string; rating: number; comment: string; date: string; status: string; staffId?: undefined; staffName?: undefined; }'.
+app/api/client-portal/reviews/route.ts(183,49): error TS2339: Property 'title' does not exist on type '{ id: string; clientId: string; clientName: string; itemId: string; itemName: string; itemType: string; rating: number; comment: string; date: string; status: string; staffId?: undefined; staffName?: undefined; } | { ...; }'.
+  Property 'title' does not exist on type '{ id: string; clientId: string; clientName: string; itemId: string; itemName: string; itemType: string; rating: number; comment: string; date: string; status: string; staffId?: undefined; staffName?: undefined; }'.
+app/api/deactivate-duplicates/route.ts(37,36): error TS2345: Argument of type '{ id: string; name: string; }' is not assignable to parameter of type 'never'.
+app/api/deactivate-duplicates/route.ts(47,29): error TS2345: Argument of type '{ id: string; error: string; }' is not assignable to parameter of type 'never'.
+app/api/fix-locations/route.ts(102,31): error TS2345: Argument of type '{ id: string; name: string; action: string; }' is not assignable to parameter of type 'never'.
+app/api/fix-locations/route.ts(110,29): error TS2345: Argument of type '{ location: string; error: string; }' is not assignable to parameter of type 'never'.
+app/api/fix-locations/route.ts(127,30): error TS2345: Argument of type '{ id: string; name: string; reason: string; }' is not assignable to parameter of type 'never'.
+app/api/fix-locations/route.ts(135,29): error TS2345: Argument of type '{ location: string; error: string; }' is not assignable to parameter of type 'never'.
+app/api/inventory/batches/[id]/route.ts(3,10): error TS2614: Module '"next-auth"' has no exported member 'getServerSession'. Did you mean to use 'import getServerSession from "next-auth"' instead?
+app/api/inventory/dispose/route.ts(3,10): error TS2614: Module '"next-auth"' has no exported member 'getServerSession'. Did you mean to use 'import getServerSession from "next-auth"' instead?
+app/api/inventory/dispose/route.ts(121,11): error TS2353: Object literal may only specify known properties, and 'performedBy' does not exist in type '(Without<InventoryAuditCreateInput, InventoryAuditUncheckedCreateInput> & InventoryAuditUncheckedCreateInput) | (Without<...> & InventoryAuditCreateInput)'.
+app/api/inventory/reorder/route.ts(3,10): error TS2614: Module '"next-auth"' has no exported member 'getServerSession'. Did you mean to use 'import getServerSession from "next-auth"' instead?
+app/api/inventory/reorder/route.ts(38,11): error TS2353: Object literal may only specify known properties, and 'minStock' does not exist in type 'ProductSelect<DefaultArgs>'.
+app/api/inventory/reorder/route.ts(88,138): error TS2339: Property 'minStock' does not exist on type '{ name: string; id: string; createdAt: Date; description: string | null; type: string; updatedAt: Date; isActive: boolean; category: string; sku: string | null; price: number; brand: string | null; ... 14 more ...; howToUse: string | null; }'.
+app/api/inventory/reorder/route.ts(89,11): error TS2353: Object literal may only specify known properties, and 'performedBy' does not exist in type '(Without<InventoryAuditCreateInput, InventoryAuditUncheckedCreateInput> & InventoryAuditUncheckedCreateInput) | (Without<...> & InventoryAuditCreateInput)'.
+app/api/inventory/reorder/route.ts(204,29): error TS2339: Property 'performedBy' does not exist on type '{ location: { name: string; id: string; }; product: { name: string; id: string; sku: string | null; cost: number | null; }; } & { id: string; userId: string; createdAt: Date; timestamp: Date; ... 7 more ...; newStock: number; }'.
+app/api/inventory/route.ts(3,10): error TS2614: Module '"next-auth"' has no exported member 'getServerSession'. Did you mean to use 'import getServerSession from "next-auth"' instead?
+app/api/migrate-data/route.ts(122,63): error TS7006: Parameter 'n' implicitly has an 'any' type.
+app/api/migrate-location-refs/route.ts(60,20): error TS2322: Type 'string' is not assignable to type '(Without<LocationRelationFilter, LocationWhereInput> & LocationWhereInput) | (Without<LocationWhereInput, LocationRelationFilter> & LocationRelationFilter) | undefined'.
+app/api/migrate-location-refs/route.ts(61,19): error TS2561: Object literal may only specify known properties, but 'location' does not exist in type '(Without<AppointmentUpdateManyMutationInput, AppointmentUncheckedUpdateManyInput> & AppointmentUncheckedUpdateManyInput) | (Without<...> & AppointmentUpdateManyMutationInput)'. Did you mean to write 'locationId'?
+app/api/migrate-location-refs/route.ts(95,50): error TS2345: Argument of type '{ id: string; name: string; }' is not assignable to parameter of type 'never'.
+app/api/migrate-location-refs/route.ts(102,40): error TS2345: Argument of type '{ location: string; error: string; }' is not assignable to parameter of type 'never'.
+app/api/migrate-location-refs/route.ts(110,38): error TS2345: Argument of type '{ location: string; error: string; }' is not assignable to parameter of type 'never'.
+app/api/products/seed-categories/route.ts(2,10): error TS2614: Module '"next-auth"' has no exported member 'getServerSession'. Did you mean to use 'import getServerSession from "next-auth"' instead?
+app/api/products/seed-comprehensive/route.ts(2,10): error TS2614: Module '"next-auth"' has no exported member 'getServerSession'. Did you mean to use 'import getServerSession from "next-auth"' instead?
+app/api/products/seed-comprehensive/route.ts(19,7): error TS2783: 'success' is specified more than once, so this usage will be overwritten.
+app/api/reports/products/route.ts(16,7): error TS2345: Argument of type 'Date' is not assignable to parameter of type 'number'.
+app/api/reports/services/route.ts(16,7): error TS2345: Argument of type 'Date' is not assignable to parameter of type 'number'.
+app/api/reset-locations/route.ts(117,21): error TS2304: Cannot find name 'deleteResult'.
+app/api/sales/route.ts(3,10): error TS2614: Module '"next-auth"' has no exported member 'getServerSession'. Did you mean to use 'import getServerSession from "next-auth"' instead?
+app/api/seed-production/route.ts(186,40): error TS2339: Property 'description' does not exist on type '{ name: string; category: string; duration: number; price: number; }'.
+app/api/seed-production/route.ts(197,28): error TS2339: Property 'serviceLocation' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+app/api/services/[id]/route.ts(161,9): error TS18046: 'error' is of type 'unknown'.
+app/api/staff/[id]/route.ts(85,39): error TS7006: Parameter 'n' implicitly has an 'any' type.
+app/api/staff/[id]/route.ts(122,27): error TS7006: Parameter 'locationId' implicitly has an 'any' type.
+app/api/staff/without-credentials/route.ts(15,9): error TS2322: Type 'null' is not assignable to type 'string | StringFilter<"StaffMember"> | undefined'.
+app/api/staff/without-credentials/route.ts(42,24): error TS2339: Property 'locations' does not exist on type '{ name: string; id: string; userId: string; createdAt: Date; status: string; phone: string | null; avatar: string | null; color: string | null; homeService: boolean; specialties: string | null; ... 10 more ...; jobRole: string | null; }'.
+app/api/staff/without-credentials/route.ts(42,38): error TS7006: Parameter 'sl' implicitly has an 'any' type.
+app/api/status/route.ts(49,35): error TS2345: Argument of type '"Initialize database: Create locations first"' is not assignable to parameter of type 'never'.
+app/api/status/route.ts(52,35): error TS2345: Argument of type '"Seed database: Add products to the catalog"' is not assignable to parameter of type 'never'.
+app/api/status/route.ts(55,35): error TS2345: Argument of type '"No retail products found: Check product isRetail flags"' is not assignable to parameter of type 'never'.
+app/api/transactions/route.ts(119,13): error TS2353: Object literal may only specify known properties, and 'name' does not exist in type 'UserSelect<DefaultArgs>'.
+app/client-portal/appointments/book/page.tsx(252,14): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+app/client-portal/appointments/book/page.tsx(253,11): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+app/client-portal/appointments/book/page.tsx(255,9): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+app/client-portal/appointments/book/page.tsx(260,18): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+app/client-portal/appointments/book/page.tsx(261,15): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+app/client-portal/appointments/book/page.tsx(263,13): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+app/client-portal/appointments/book/page.tsx(266,16): error TS7053: Element implicitly has an 'any' type because expression of type '"no-location"' can't be used to index type '{}'.
+  Property 'no-location' does not exist on type '{}'.
+app/client-portal/appointments/book/page.tsx(267,13): error TS7053: Element implicitly has an 'any' type because expression of type '"no-location"' can't be used to index type '{}'.
+  Property 'no-location' does not exist on type '{}'.
+app/client-portal/appointments/book/page.tsx(269,11): error TS7053: Element implicitly has an 'any' type because expression of type '"no-location"' can't be used to index type '{}'.
+  Property 'no-location' does not exist on type '{}'.
+app/client-portal/appointments/book/page.tsx(1038,70): error TS2345: Argument of type '{ id: string; staffId: string; date: string; duration: number; location: string; clientId: any; clientName: any; service: string; serviceId: string; status: string; }' is not assignable to parameter of type 'AppointmentData'.
+  Property 'staffName' is missing in type '{ id: string; staffId: string; date: string; duration: number; location: string; clientId: any; clientName: any; service: string; serviceId: string; status: string; }' but required in type 'AppointmentData'.
+app/client-portal/appointments/book/page.tsx(1313,30): error TS2339: Property 'name' does not exist on type 'StaffMember[]'.
+app/client-portal/appointments/book/page.tsx(1322,45): error TS2345: Argument of type '{ type: "appointment_created"; title: string; message: string; priority: "normal"; category: "appointment"; data: { appointmentId: any; bookingReference: any; clientName: string; serviceName: string; ... 4 more ...; amount: number; }; }' is not assignable to parameter of type 'Omit<Notification, "id" | "timestamp" | "read">'.
+  Types of property 'type' are incompatible.
+    Type '"appointment_created"' is not assignable to type 'NotificationType'.
+app/client-portal/appointments/book/page.tsx(1328,28): error TS2339: Property 'name' does not exist on type 'StaffMember[]'.
+app/client-portal/appointments/book/page.tsx(1990,51): error TS2339: Property 'showPrices' does not exist on type 'Service'.
+app/client-portal/appointments/book/page.tsx(2045,53): error TS2339: Property 'showPrices' does not exist on type 'Service'.
+app/client-portal/appointments/book/page.tsx(2137,45): error TS2339: Property 'additionalInfo' does not exist on type 'Service'.
+app/client-portal/appointments/book/page.tsx(2140,86): error TS2339: Property 'additionalInfo' does not exist on type 'Service'.
+app/client-portal/dashboard/page.tsx(444,43): error TS2339: Property 'id' does not exist on type 'never'.
+app/client-portal/dashboard/page.tsx(450,68): error TS2339: Property 'service' does not exist on type 'never'.
+app/client-portal/dashboard/page.tsx(452,58): error TS2339: Property 'date' does not exist on type 'never'.
+app/client-portal/dashboard/page.tsx(455,80): error TS2339: Property 'staffName' does not exist on type 'never'.
+app/client-portal/dashboard/page.tsx(458,42): error TS2339: Property 'status' does not exist on type 'never'.
+app/client-portal/dashboard/page.tsx(458,87): error TS2339: Property 'status' does not exist on type 'never'.
+app/client-portal/loyalty/page.tsx(267,22): error TS2345: Argument of type '(prev: LoyaltyData | null) => { points: any; redeemedRewards: (RedeemedReward | { redeemedAt: string; status: "active"; id: string; name: string; description: string; ... 11 more ...; image?: string | undefined; })[]; ... 9 more ...; activePromotions: Promotion[]; } | null' is not assignable to parameter of type 'SetStateAction<LoyaltyData | null>'.
+  Type '(prev: LoyaltyData | null) => { points: any; redeemedRewards: (RedeemedReward | { redeemedAt: string; status: "active"; id: string; name: string; description: string; ... 11 more ...; image?: string | undefined; })[]; ... 9 more ...; activePromotions: Promotion[]; } | null' is not assignable to type '(prevState: LoyaltyData | null) => LoyaltyData | null'.
+    Type '{ points: any; redeemedRewards: (RedeemedReward | { redeemedAt: string; status: "active"; id: string; name: string; description: string; pointsCost: number; value?: number | undefined; ... 9 more ...; image?: string | undefined; })[]; ... 9 more ...; activePromotions: Promotion[]; } | null' is not assignable to type 'LoyaltyData | null'.
+      Type '{ points: any; redeemedRewards: (RedeemedReward | { redeemedAt: string; status: "active"; id: string; name: string; description: string; pointsCost: number; value?: number; ... 9 more ...; image?: string; })[]; ... 9 more ...; activePromotions: Promotion[]; }' is not assignable to type 'LoyaltyData'.
+        Types of property 'redeemedRewards' are incompatible.
+          Type '(RedeemedReward | { redeemedAt: string; status: "active"; id: string; name: string; description: string; pointsCost: number; value?: number | undefined; category: string; ... 8 more ...; image?: string | undefined; })[]' is not assignable to type 'RedeemedReward[]'.
+            Type 'RedeemedReward | { redeemedAt: string; status: "active"; id: string; name: string; description: string; pointsCost: number; value?: number | undefined; category: string; ... 8 more ...; image?: string | undefined; }' is not assignable to type 'RedeemedReward'.
+              Type '{ redeemedAt: string; status: "active"; id: string; name: string; description: string; pointsCost: number; value?: number | undefined; category: string; type: "service" | "product" | "discount" | "experience"; ... 7 more ...; image?: string | undefined; }' is missing the following properties from type 'RedeemedReward': rewardId, usedAt
+app/client-portal/orders/[orderId]/page.tsx(279,32): error TS2339: Property 'isError' does not exist on type '{ status: OrderStatus; label: string; date: string | Date | undefined; completed: boolean; icon: Element; } | { status: OrderStatus; label: string; date: string | ... 1 more ... | undefined; completed: boolean; icon: Element; isError: boolean; }'.
+  Property 'isError' does not exist on type '{ status: OrderStatus; label: string; date: string | Date | undefined; completed: boolean; icon: Element; }'.
+app/client-portal/profile/page.tsx(624,30): error TS2304: Cannot find name 'Badge'.
+app/client-portal/profile/page.tsx(626,31): error TS2304: Cannot find name 'Badge'.
+app/client-portal/services/page.tsx(420,31): error TS2339: Property 'showPrices' does not exist on type 'Service'.
+app/client-portal/shop/[id]/page.tsx(252,55): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(253,14): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(256,51): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(257,32): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(260,65): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(269,20): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(269,55): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(270,23): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(271,24): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(271,41): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(272,25): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(275,22): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(283,18): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(286,18): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(289,18): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(295,14): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(295,32): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(297,18): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(309,31): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(328,60): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(332,58): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(332,76): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(335,56): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(338,18): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(338,36): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(340,83): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(341,99): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(343,53): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(343,70): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(347,81): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(352,18): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(356,18): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(356,38): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(360,24): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(400,31): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(403,22): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(443,27): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(450,18): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(453,16): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(453,36): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(457,22): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(474,16): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(474,53): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(476,20): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(482,20): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(489,16): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(489,50): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(491,20): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(497,20): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(510,56): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(515,62): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(519,59): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(525,60): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(526,59): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(527,46): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(528,40): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(528,71): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(546,16): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(546,35): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/[id]/page.tsx(548,20): error TS18047: 'product' is possibly 'null'.
+app/client-portal/shop/page.tsx(653,38): error TS2551: Property 'locations' does not exist on type 'Product'. Did you mean 'location'?
+app/client-portal/shop/page.tsx(653,59): error TS2551: Property 'locations' does not exist on type 'Product'. Did you mean 'location'?
+app/client-portal/shop/page.tsx(655,42): error TS2551: Property 'locations' does not exist on type 'Product'. Did you mean 'location'?
+app/client-portal/shop/page.tsx(655,69): error TS7006: Parameter 'location' implicitly has an 'any' type.
+app/client-portal/shop/page.tsx(655,79): error TS7006: Parameter 'index' implicitly has an 'any' type.
+app/client-portal/shop/page.tsx(663,42): error TS2551: Property 'locations' does not exist on type 'Product'. Did you mean 'location'?
+app/client-portal/shop/page.tsx(664,84): error TS2551: Property 'locations' does not exist on type 'Product'. Did you mean 'location'?
+app/client-portal/wishlist/page.tsx(128,44): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+app/dashboard/clients/[id]/page.tsx(400,61): error TS2339: Property 'color' does not exist on type 'Client'.
+app/dashboard/clients/[id]/page.tsx(699,46): error TS2322: Type 'import("C:/Users/Qhab/Desktop/HabeshaERP/lib/client-data-service").Client' is not assignable to type 'Client'.
+  Types of property 'segment' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+app/dashboard/notifications/page.tsx(147,5): error TS2353: Object literal may only specify known properties, and 'enableNotifications' does not exist in type 'Record<"*" | RealTimeEventType, EventCallback>'.
+app/dashboard/notifications/page.tsx(179,43): error TS2551: Property 'toISOString' does not exist on type 'string | Date'. Did you mean 'toString'?
+  Property 'toISOString' does not exist on type 'string'.
+app/dashboard/page.tsx(87,19): error TS2322: Type 'DateRange' is not assignable to type '{ from: Date; to: Date; }'.
+  Types of property 'from' are incompatible.
+    Type 'Date | undefined' is not assignable to type 'Date'.
+      Type 'undefined' is not assignable to type 'Date'.
+app/dashboard/page.tsx(127,33): error TS2322: Type 'DateRange' is not assignable to type '{ from: Date; to: Date; }'.
+  Types of property 'from' are incompatible.
+    Type 'Date | undefined' is not assignable to type 'Date'.
+      Type 'undefined' is not assignable to type 'Date'.
+app/dashboard/page.tsx(155,33): error TS2322: Type 'DateRange' is not assignable to type '{ from: Date; to: Date; }'.
+  Types of property 'from' are incompatible.
+    Type 'Date | undefined' is not assignable to type 'Date'.
+      Type 'undefined' is not assignable to type 'Date'.
+app/dashboard/reports/page.tsx(97,67): error TS2554: Expected 1 arguments, but got 4.
+app/dashboard/reports/page.tsx(169,69): error TS2554: Expected 1 arguments, but got 4.
+app/dashboard/reports/page.tsx(216,11): error TS2322: Type 'DateRange | undefined' is not assignable to type '{ from: Date; to: Date; } | undefined'.
+  Type 'DateRange' is not assignable to type '{ from: Date; to: Date; }'.
+    Types of property 'from' are incompatible.
+      Type 'Date | undefined' is not assignable to type 'Date'.
+        Type 'undefined' is not assignable to type 'Date'.
+app/dashboard/reports/page.tsx(256,69): error TS2554: Expected 1 arguments, but got 4.
+app/dashboard/reports/page.tsx(306,67): error TS2554: Expected 1 arguments, but got 4.
+app/dashboard/reports/page.tsx(325,67): error TS2554: Expected 1 arguments, but got 4.
+app/dashboard/reports/page.tsx(373,69): error TS2554: Expected 1 arguments, but got 4.
+app/dashboard/reports/page.tsx(415,17): error TS2741: Property 'includeCharts' is missing in type '{ format: "csv" | "excel" | "pdf"; sections: ("client" | "appointments" | "inventory" | "staff" | "sales" | "financial")[]; dateRange: DateRange | undefined; includeSummary: true; customFileName: string; }' but required in type 'ExportOptions'.
+app/dashboard/reports/page.tsx(420,63): error TS2349: This expression is not callable.
+  Type 'String' has no call signatures.
+app/dashboard/reports/page.tsx(425,35): error TS2345: Argument of type 'boolean' is not assignable to parameter of type 'Promise<void>'.
+app/dashboard/reports/page.tsx(428,35): error TS2345: Argument of type 'Promise<boolean>' is not assignable to parameter of type 'Promise<void>'.
+  Type 'boolean' is not assignable to type 'void'.
+app/dashboard/reports/page.tsx(431,35): error TS2345: Argument of type 'Promise<boolean>' is not assignable to parameter of type 'Promise<void>'.
+  Type 'boolean' is not assignable to type 'void'.
+app/dashboard/reports/page.tsx(797,19): error TS2322: Type '{ dateRange: DateRange | undefined; transactions: Transaction[]; currentLocation: string; }' is not assignable to type 'IntrinsicAttributes & SalesChartProps'.
+  Property 'transactions' does not exist on type 'IntrinsicAttributes & SalesChartProps'.
+app/dashboard/reports/page.tsx(811,19): error TS2322: Type '{ dateRange: DateRange | undefined; transactions: Transaction[]; currentLocation: string; }' is not assignable to type 'IntrinsicAttributes & AppointmentsChartProps'.
+  Property 'transactions' does not exist on type 'IntrinsicAttributes & AppointmentsChartProps'.
+app/dashboard/reports/page.tsx(827,17): error TS2322: Type '{ dateRange: DateRange | undefined; limit: number; transactions: Transaction[]; currentLocation: string; }' is not assignable to type 'IntrinsicAttributes & StaffPerformanceTableProps'.
+  Property 'transactions' does not exist on type 'IntrinsicAttributes & StaffPerformanceTableProps'.
+app/dashboard/reports/page.tsx(845,19): error TS2322: Type '{ dateRange: DateRange | undefined; groupBy: "day"; transactions: Transaction[]; currentLocation: string; }' is not assignable to type 'IntrinsicAttributes & SalesChartProps'.
+  Property 'transactions' does not exist on type 'IntrinsicAttributes & SalesChartProps'.
+app/dashboard/reports/page.tsx(860,19): error TS2322: Type '{ dateRange: DateRange | undefined; type: "revenue"; transactions: Transaction[]; currentLocation: string; }' is not assignable to type 'IntrinsicAttributes & ServicePopularityChartProps'.
+  Property 'transactions' does not exist on type 'IntrinsicAttributes & ServicePopularityChartProps'.
+app/dashboard/reports/page.tsx(876,19): error TS2322: Type '{ dateRange: DateRange | undefined; transactions: Transaction[]; currentLocation: string; }' is not assignable to type 'IntrinsicAttributes & PaymentMethodChartProps'.
+  Property 'transactions' does not exist on type 'IntrinsicAttributes & PaymentMethodChartProps'.
+app/dashboard/reports/page.tsx(890,19): error TS2322: Type '{ dateRange: DateRange | undefined; transactions: Transaction[]; currentLocation: string; }' is not assignable to type 'IntrinsicAttributes & PaymentMethodTableProps'.
+  Property 'transactions' does not exist on type 'IntrinsicAttributes & PaymentMethodTableProps'.
+app/dashboard/reports/page.tsx(975,13): error TS2322: Type 'DateRange | undefined' is not assignable to type '{ from: Date; to: Date; } | undefined'.
+  Type 'DateRange' is not assignable to type '{ from: Date; to: Date; }'.
+    Types of property 'from' are incompatible.
+      Type 'Date | undefined' is not assignable to type 'Date'.
+        Type 'undefined' is not assignable to type 'Date'.
+app/dashboard/reports/page.tsx(983,13): error TS2322: Type 'DateRange | undefined' is not assignable to type '{ from: Date; to: Date; } | undefined'.
+  Type 'DateRange' is not assignable to type '{ from: Date; to: Date; }'.
+    Types of property 'from' are incompatible.
+      Type 'Date | undefined' is not assignable to type 'Date'.
+        Type 'undefined' is not assignable to type 'Date'.
+app/dashboard/reports/page.tsx(999,19): error TS2322: Type '{ dateRange: DateRange | undefined; transactions: Transaction[]; currentLocation: string; }' is not assignable to type 'IntrinsicAttributes & AppointmentsChartProps'.
+  Property 'transactions' does not exist on type 'IntrinsicAttributes & AppointmentsChartProps'.
+app/dashboard/reports/page.tsx(1014,19): error TS2322: Type '{ dateRange: DateRange | undefined; type: "count"; transactions: Transaction[]; currentLocation: string; }' is not assignable to type 'IntrinsicAttributes & ServicePopularityChartProps'.
+  Property 'transactions' does not exist on type 'IntrinsicAttributes & ServicePopularityChartProps'.
+app/dashboard/reports/page.tsx(1067,17): error TS2322: Type '{ dateRange: DateRange | undefined; transactions: Transaction[]; currentLocation: string; }' is not assignable to type 'IntrinsicAttributes & StaffPerformanceTableProps'.
+  Property 'transactions' does not exist on type 'IntrinsicAttributes & StaffPerformanceTableProps'.
+app/dashboard/reports/page.tsx(1158,19): error TS2322: Type '{ dateRange: DateRange | undefined; transactions: Transaction[]; currentLocation: string; }' is not assignable to type 'IntrinsicAttributes & ClientRetentionChartProps'.
+  Property 'transactions' does not exist on type 'IntrinsicAttributes & ClientRetentionChartProps'.
+app/dashboard/settings/page.tsx(131,55): error TS2367: This comparison appears to be unintentional because the types '"ADMIN" | "STAFF" | "CLIENT" | "MANAGER" | "receptionist" | undefined' and '"super_admin"' have no overlap.
+app/dashboard/settings/page.tsx(230,63): error TS2367: This comparison appears to be unintentional because the types '"ADMIN" | "STAFF" | "CLIENT" | "MANAGER" | "receptionist" | undefined' and '"super_admin"' have no overlap.
+app/dashboard/settings/page.tsx(269,11): error TS2322: Type 'void' is not assignable to type 'ReactNode'.
+app/dashboard/settings/page.tsx(297,10): error TS2367: This comparison appears to be unintentional because the types '"ADMIN" | "STAFF" | "CLIENT" | "MANAGER" | "receptionist" | undefined' and '"super_admin"' have no overlap.
+auth.ts(129,3): error TS1117: An object literal cannot have multiple properties with the same name.
+components/accounting/expenses.tsx(227,7): error TS2322: Type 'DateRange | undefined' is not assignable to type '{ from: Date; to: Date; } | undefined'.
+  Type 'DateRange' is not assignable to type '{ from: Date; to: Date; }'.
+    Types of property 'from' are incompatible.
+      Type 'Date | undefined' is not assignable to type 'Date'.
+        Type 'undefined' is not assignable to type 'Date'.
+components/accounting/hr-management.tsx(219,7): error TS2322: Type 'DateRange | undefined' is not assignable to type '{ from: Date; to: Date; } | undefined'.
+  Type 'DateRange' is not assignable to type '{ from: Date; to: Date; }'.
+    Types of property 'from' are incompatible.
+      Type 'Date | undefined' is not assignable to type 'Date'.
+        Type 'undefined' is not assignable to type 'Date'.
+components/accounting/transaction-details-dialog.tsx(46,37): error TS7006: Parameter 'items' implicitly has an 'any' type.
+components/accounting/transactions.tsx(40,30): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+components/admin/buffer-time-settings.tsx(13,35): error TS2865: Import 'BufferTimeSettings' conflicts with local value, so must be declared with a type-only import when 'isolatedModules' is enabled.
+components/chat/activity-feed.tsx(259,31): error TS2339: Property 'amount' does not exist on type '{ source: "activity"; id: string; type: "client" | "appointment" | "inventory" | "system" | "sale" | "chat"; title: string; description: string; user?: string | undefined; amount?: number | undefined; timestamp: Date; metadata?: Record<...> | undefined; } | { ...; }'.
+  Property 'amount' does not exist on type '{ id: string; type: "chat"; title: string; description: string; user: string; timestamp: Date; metadata: { messageType: "system" | "text" | "file" | "product_request" | "help_request"; }; source: "chat"; }'.
+components/chat/activity-feed.tsx(261,36): error TS2339: Property 'amount' does not exist on type '{ source: "activity"; id: string; type: "client" | "appointment" | "inventory" | "system" | "sale" | "chat"; title: string; description: string; user?: string | undefined; amount?: number | undefined; timestamp: Date; metadata?: Record<...> | undefined; } | { ...; }'.
+  Property 'amount' does not exist on type '{ id: string; type: "chat"; title: string; description: string; user: string; timestamp: Date; metadata: { messageType: "system" | "text" | "file" | "product_request" | "help_request"; }; source: "chat"; }'.
+components/client-portal/custom-calendar.tsx(33,15): error TS2339: Property 'onSelect' does not exist on type '{ mode: "single"; required?: false | undefined; modifiersClassNames?: ModifiersClassNames | undefined; style?: CSSProperties | undefined; ... 69 more ...; onSelect?: OnSelectHandler<...> | undefined; } | ... 5 more ... | { ...; }'.
+  Property 'onSelect' does not exist on type '{ mode?: undefined; required?: undefined; modifiersClassNames?: ModifiersClassNames | undefined; style?: CSSProperties | undefined; styles?: (Partial<...> & Partial<...>) | undefined; ... 66 more ...; onDayTouchStart?: DayEventHandler<...> | undefined; }'.
+components/client-portal/custom-calendar.tsx(33,40): error TS2339: Property 'onSelect' does not exist on type '{ mode: "single"; required?: false | undefined; modifiersClassNames?: ModifiersClassNames | undefined; style?: CSSProperties | undefined; ... 69 more ...; onSelect?: OnSelectHandler<...> | undefined; } | ... 5 more ... | { ...; }'.
+  Property 'onSelect' does not exist on type '{ mode?: undefined; required?: undefined; modifiersClassNames?: ModifiersClassNames | undefined; style?: CSSProperties | undefined; styles?: (Partial<...> & Partial<...>) | undefined; ... 66 more ...; onDayTouchStart?: DayEventHandler<...> | undefined; }'.
+components/client-portal/custom-calendar.tsx(34,13): error TS2339: Property 'onSelect' does not exist on type '{ mode: "single"; required?: false | undefined; modifiersClassNames?: ModifiersClassNames | undefined; style?: CSSProperties | undefined; ... 69 more ...; onSelect?: OnSelectHandler<...> | undefined; } | ... 5 more ... | { ...; }'.
+  Property 'onSelect' does not exist on type '{ mode?: undefined; required?: undefined; modifiersClassNames?: ModifiersClassNames | undefined; style?: CSSProperties | undefined; styles?: (Partial<...> & Partial<...>) | undefined; ... 66 more ...; onDayTouchStart?: DayEventHandler<...> | undefined; }'.
+components/client-portal/custom-calendar.tsx(239,11): error TS2353: Object literal may only specify known properties, and 'IconLeft' does not exist in type 'Partial<CustomComponents>'.
+components/client-portal/custom-calendar.tsx(277,42): error TS2554: Expected 1 arguments, but got 0.
+components/client-portal/custom-calendar.tsx(282,52): error TS2339: Property 'selected' does not exist on type '{ day: CalendarDay; modifiers: Modifiers; } & HTMLAttributes<HTMLDivElement>'.
+components/client-portal/custom-calendar.tsx(282,96): error TS2339: Property 'disabled' does not exist on type '{ day: CalendarDay; modifiers: Modifiers; } & HTMLAttributes<HTMLDivElement>'.
+components/client-portal/custom-calendar.tsx(282,140): error TS2551: Property 'today' does not exist on type '{ day: CalendarDay; modifiers: Modifiers; } & HTMLAttributes<HTMLDivElement>'. Did you mean 'day'?
+components/client-portal/custom-calendar.tsx(282,178): error TS2339: Property 'outside' does not exist on type '{ day: CalendarDay; modifiers: Modifiers; } & HTMLAttributes<HTMLDivElement>'.
+components/client-portal/custom-calendar.tsx(283,38): error TS2339: Property 'disabled' does not exist on type '{ day: CalendarDay; modifiers: Modifiers; } & HTMLAttributes<HTMLDivElement>'.
+components/client-portal/custom-calendar.tsx(287,36): error TS2339: Property 'disabled' does not exist on type '{ day: CalendarDay; modifiers: Modifiers; } & HTMLAttributes<HTMLDivElement>'.
+components/client-portal/custom-calendar.tsx(293,9): error TS2322: Type '(date: Date | undefined) => void' is not assignable to type 'OnSelectHandler<DateRange>'.
+  Types of parameters 'date' and 'selected' are incompatible.
+    Type 'DateRange' is missing the following properties from type 'Date': toDateString, toTimeString, toLocaleDateString, toLocaleTimeString, and 37 more.
+components/client-portal/dynamic-quick-actions.tsx(42,13): error TS7006: Parameter 'action' implicitly has an 'any' type.
+components/client-portal/dynamic-quick-actions.tsx(43,12): error TS7006: Parameter 'a' implicitly has an 'any' type.
+components/client-portal/dynamic-quick-actions.tsx(43,15): error TS7006: Parameter 'b' implicitly has an 'any' type.
+components/client-portal/dynamic-quick-actions.tsx(118,32): error TS7006: Parameter 'action' implicitly has an 'any' type.
+components/client-portal/enhanced-product-card.tsx(120,36): error TS18048: 'product.salePrice' is possibly 'undefined'.
+components/client-portal/enhanced-product-card.tsx(131,17): error TS2322: Type 'string | undefined' is not assignable to type 'string | string[]'.
+  Type 'undefined' is not assignable to type 'string | string[]'.
+components/client-portal/enhanced-product-card.tsx(208,13): error TS2322: Type 'string | undefined' is not assignable to type 'string | string[]'.
+  Type 'undefined' is not assignable to type 'string | string[]'.
+components/client-portal/gift-card-purchase-dialog.tsx(49,27): error TS2339: Property 'phone' does not exist on type 'User'.
+components/client-portal/gift-card-purchase-dialog.tsx(139,31): error TS2339: Property 'phone' does not exist on type 'User'.
+components/client-portal/personalized-recommendations.tsx(90,17): error TS2339: Property 'isPopular' does not exist on type 'Service'.
+components/client-portal/personalized-recommendations.tsx(91,17): error TS2339: Property 'isFeatured' does not exist on type 'Service'.
+components/client-portal/personalized-recommendations.tsx(92,17): error TS2339: Property 'isNew' does not exist on type 'Service'.
+components/client-portal/personalized-recommendations.tsx(121,17): error TS2339: Property 'isPopular' does not exist on type 'Service'.
+components/client-portal/personalized-recommendations.tsx(122,17): error TS2339: Property 'isFeatured' does not exist on type 'Service'.
+components/client-portal/personalized-recommendations.tsx(123,17): error TS2339: Property 'isNew' does not exist on type 'Service'.
+components/client-portal/personalized-recommendations.tsx(191,28): error TS2339: Property 'imageUrl' does not exist on type 'Service'.
+components/clients/client-directory.tsx(37,39): error TS18048: 'client.locations' is possibly 'undefined'.
+components/clients/client-directory.tsx(133,38): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+components/clients/client-preferences-form.tsx(25,11): error TS2339: Property 'staff' does not exist on type 'ServiceContextType'.
+components/clients/client-preferences-form.tsx(82,72): error TS2367: This comparison appears to be unintentional because the types '"Active" | "Inactive"' and '"ACTIVE"' have no overlap.
+components/clients/client-segments.tsx(73,46): error TS2322: Type 'string' is not assignable to type '"VIP" | "Regular" | "New" | "At Risk" | undefined'.
+components/clients/edit-client-dialog.tsx(170,35): error TS2322: Type 'Dispatch<SetStateAction<"basic" | "review" | "preferences">>' is not assignable to type '(value: string) => void'.
+  Types of parameters 'value' and 'value' are incompatible.
+    Type 'string' is not assignable to type 'SetStateAction<"basic" | "review" | "preferences">'.
+components/clients/edit-client-dialog.tsx(420,40): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+components/clients/enhanced-client-details-dialog.tsx(336,83): error TS2339: Property 'status' does not exist on type '{ id: any; date: any; type: string; title: any; description: any; status: any; amount: any; icon: Element; color: any; } | { id: any; date: any; type: string; title: string; description: any; amount: any; icon: Element; color: string; } | { ...; }'.
+  Property 'status' does not exist on type '{ id: any; date: any; type: string; title: string; description: any; amount: any; icon: Element; color: string; }'.
+components/clients/enhanced-client-details-dialog.tsx(337,64): error TS2339: Property 'status' does not exist on type '{ id: any; date: any; type: string; title: any; description: any; status: any; amount: any; icon: Element; color: any; } | { id: any; date: any; type: string; title: string; description: any; amount: any; icon: Element; color: string; } | { ...; }'.
+  Property 'status' does not exist on type '{ id: any; date: any; type: string; title: string; description: any; amount: any; icon: Element; color: string; }'.
+components/clients/enhanced-new-client-dialog.tsx(80,9): error TS2741: Property 'preferredProducts' is missing in type '{ preferredStylists: never[]; preferredServices: never[]; allergies: never[]; notes: string; }' but required in type 'ClientPreferences'.
+components/currency/currency-integration.tsx(84,62): error TS2339: Property 'decimalPlaces' does not exist on type 'Currency'.
+components/currency/currency-integration.tsx(116,64): error TS2339: Property 'decimalPlaces' does not exist on type 'Currency'.
+components/dashboard/document-alerts.tsx(52,17): error TS2339: Property 'qidValidity' does not exist on type 'StaffMember'.
+components/dashboard/document-alerts.tsx(53,59): error TS2339: Property 'qidValidity' does not exist on type 'StaffMember'.
+components/dashboard/document-alerts.tsx(61,35): error TS2339: Property 'qidNumber' does not exist on type 'StaffMember'.
+components/dashboard/document-alerts.tsx(63,56): error TS2339: Property 'qidValidity' does not exist on type 'StaffMember'.
+components/dashboard/document-alerts.tsx(72,17): error TS2339: Property 'passportValidity' does not exist on type 'StaffMember'.
+components/dashboard/document-alerts.tsx(73,64): error TS2339: Property 'passportValidity' does not exist on type 'StaffMember'.
+components/dashboard/document-alerts.tsx(81,35): error TS2339: Property 'passportNumber' does not exist on type 'StaffMember'.
+components/dashboard/document-alerts.tsx(83,56): error TS2339: Property 'passportValidity' does not exist on type 'StaffMember'.
+components/dashboard/document-alerts.tsx(92,17): error TS2339: Property 'medicalValidity' does not exist on type 'StaffMember'.
+components/dashboard/document-alerts.tsx(93,63): error TS2339: Property 'medicalValidity' does not exist on type 'StaffMember'.
+components/dashboard/document-alerts.tsx(103,56): error TS2339: Property 'medicalValidity' does not exist on type 'StaffMember'.
+components/dashboard/document-alerts.tsx(304,17): error TS2339: Property 'qidValidity' does not exist on type 'StaffMember'.
+components/dashboard/document-alerts.tsx(305,59): error TS2339: Property 'qidValidity' does not exist on type 'StaffMember'.
+components/dashboard/document-alerts.tsx(313,35): error TS2339: Property 'qidNumber' does not exist on type 'StaffMember'.
+components/dashboard/document-alerts.tsx(315,65): error TS2339: Property 'qidValidity' does not exist on type 'StaffMember'.
+components/dashboard/document-alerts.tsx(324,17): error TS2339: Property 'passportValidity' does not exist on type 'StaffMember'.
+components/dashboard/document-alerts.tsx(325,64): error TS2339: Property 'passportValidity' does not exist on type 'StaffMember'.
+components/dashboard/document-alerts.tsx(333,35): error TS2339: Property 'passportNumber' does not exist on type 'StaffMember'.
+components/dashboard/document-alerts.tsx(335,65): error TS2339: Property 'passportValidity' does not exist on type 'StaffMember'.
+components/dashboard/document-alerts.tsx(344,17): error TS2339: Property 'medicalValidity' does not exist on type 'StaffMember'.
+components/dashboard/document-alerts.tsx(345,63): error TS2339: Property 'medicalValidity' does not exist on type 'StaffMember'.
+components/dashboard/document-alerts.tsx(355,65): error TS2339: Property 'medicalValidity' does not exist on type 'StaffMember'.
+components/dashboard/integrated-overview.tsx(38,28): error TS2339: Property 'id' does not exist on type 'string'.
+components/dashboard/inventory-alerts.tsx(681,50): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+components/dashboard/location-performance.tsx(100,9): error TS2353: Object literal may only specify known properties, and 'isOnline' does not exist in type '{ id: string; name: string; revenue: number; appointments: number; utilization: number; color: string; }'.
+components/dashboard/optimized-clients-list.tsx(54,22): error TS7006: Parameter 'client' implicitly has an 'any' type.
+components/dashboard/optimized-clients-list.tsx(137,40): error TS7006: Parameter 'client' implicitly has an 'any' type.
+components/dashboard/optimized-services-list.tsx(25,32): error TS7006: Parameter 'service' implicitly has an 'any' type.
+components/dashboard/optimized-services-list.tsx(31,25): error TS7006: Parameter 'service' implicitly has an 'any' type.
+components/dashboard/optimized-services-list.tsx(58,13): error TS2322: Type 'unknown' is not assignable to type 'Key | null | undefined'.
+components/dashboard/optimized-services-list.tsx(61,48): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'SetStateAction<string | null>'.
+components/dashboard/optimized-services-list.tsx(63,13): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+components/dashboard/optimized-services-list.tsx(102,34): error TS7006: Parameter 'service' implicitly has an 'any' type.
+components/dashboard/recent-clients.tsx(17,54): error TS18048: 'client.locations' is possibly 'undefined'.
+components/dashboard/sales-analytics.tsx(251,61): error TS18048: 'percent' is possibly 'undefined'.
+components/dashboard/sales-analytics.tsx(280,61): error TS18048: 'percent' is possibly 'undefined'.
+components/dashboard/transaction-overview.tsx(95,30): error TS2339: Property 'FAILED' does not exist on type 'typeof TransactionStatus'.
+components/enhanced-services-list.tsx(24,32): error TS7006: Parameter 'service' implicitly has an 'any' type.
+components/enhanced-services-list.tsx(30,25): error TS7006: Parameter 'service' implicitly has an 'any' type.
+components/enhanced-services-list.tsx(55,13): error TS2322: Type 'unknown' is not assignable to type 'Key | null | undefined'.
+components/enhanced-services-list.tsx(58,48): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'SetStateAction<string | null>'.
+components/enhanced-services-list.tsx(60,13): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+components/enhanced-services-list.tsx(99,34): error TS7006: Parameter 'service' implicitly has an 'any' type.
+components/hr/hr-payroll-management.tsx(180,20): error TS2345: Argument of type '{ id: string; staffId: string; staffName: string; role: string; baseSalary: number; regularHours: number; overtimeHours: number; hourlyRate: number; commissions: number; bonuses: number; allowances: number; ... 9 more ...; notes: string | undefined; }[]' is not assignable to parameter of type 'SetStateAction<PayrollRecord[]>'.
+  Type '{ id: string; staffId: string; staffName: string; role: string; baseSalary: number; regularHours: number; overtimeHours: number; hourlyRate: number; commissions: number; bonuses: number; allowances: number; ... 9 more ...; notes: string | undefined; }[]' is not assignable to type 'PayrollRecord[]'.
+    Type '{ id: string; staffId: string; staffName: string; role: string; baseSalary: number; regularHours: number; overtimeHours: number; hourlyRate: number; commissions: number; bonuses: number; allowances: number; ... 9 more ...; notes: string | undefined; }' is not assignable to type 'PayrollRecord'.
+      Types of property 'status' are incompatible.
+        Type 'string' is not assignable to type '"Cancelled" | "Paid" | "Approved" | "Draft"'.
+components/hr/onboarding-offboarding.tsx(197,7): error TS2345: Argument of type '{ completionDate?: string | undefined; tasks: { completed: boolean; completedDate: string | null; notes: string; taskId: string; }[]; progress: number; status: string; id: string; staffId: string; staffName: string; type: string; startDate: string; targetCompletionDate: string; }[]' is not assignable to parameter of type 'SetStateAction<({ id: string; staffId: string; staffName: string; type: string; startDate: string; targetCompletionDate: string; status: string; progress: number; tasks: ({ taskId: string; completed: boolean; completedDate: string; notes: string; } | { ...; })[]; completionDate?: undefined; } | { ...; })[]>'.
+  Type '{ completionDate?: string | undefined; tasks: { completed: boolean; completedDate: string | null; notes: string; taskId: string; }[]; progress: number; status: string; id: string; staffId: string; staffName: string; type: string; startDate: string; targetCompletionDate: string; }[]' is not assignable to type '({ id: string; staffId: string; staffName: string; type: string; startDate: string; targetCompletionDate: string; status: string; progress: number; tasks: ({ taskId: string; completed: boolean; completedDate: string; notes: string; } | { ...; })[]; completionDate?: undefined; } | { ...; })[]'.
+    Type '{ completionDate?: string | undefined; tasks: { completed: boolean; completedDate: string | null; notes: string; taskId: string; }[]; progress: number; status: string; id: string; staffId: string; staffName: string; type: string; startDate: string; targetCompletionDate: string; }' is not assignable to type '{ id: string; staffId: string; staffName: string; type: string; startDate: string; targetCompletionDate: string; status: string; progress: number; tasks: ({ taskId: string; completed: boolean; completedDate: string; notes: string; } | { ...; })[]; completionDate?: undefined; } | { ...; }'.
+      Type '{ completionDate?: string | undefined; tasks: { completed: boolean; completedDate: string | null; notes: string; taskId: string; }[]; progress: number; status: string; id: string; staffId: string; staffName: string; type: string; startDate: string; targetCompletionDate: string; }' is not assignable to type '{ id: string; staffId: string; staffName: string; type: string; startDate: string; targetCompletionDate: string; status: string; progress: number; completionDate: string; tasks: { taskId: string; completed: boolean; completedDate: string; notes: string; }[]; }'.
+        Types of property 'completionDate' are incompatible.
+          Type 'string | undefined' is not assignable to type 'string'.
+            Type 'undefined' is not assignable to type 'string'.
+components/hr/onboarding-offboarding.tsx(537,46): error TS2345: Argument of type '({ id: string; staffId: string; staffName: string; type: string; startDate: string; targetCompletionDate: string; status: string; progress: number; tasks: ({ taskId: string; completed: boolean; completedDate: string; notes: string; } | { ...; })[]; completionDate?: undefined; } | { ...; })[]' is not assignable to parameter of type 'SetStateAction<({ id: string; staffId: string; staffName: string; type: string; startDate: string; targetCompletionDate: string; status: string; progress: number; tasks: ({ taskId: string; completed: boolean; completedDate: string; notes: string; } | { ...; })[]; completionDate?: undefined; } | { ...; })[]>'.
+  Type '({ id: string; staffId: string; staffName: string; type: string; startDate: string; targetCompletionDate: string; status: string; progress: number; tasks: ({ taskId: string; completed: boolean; completedDate: string; notes: string; } | { ...; })[]; completionDate?: undefined; } | { ...; })[]' is not assignable to type '({ id: string; staffId: string; staffName: string; type: string; startDate: string; targetCompletionDate: string; status: string; progress: number; tasks: ({ taskId: string; completed: boolean; completedDate: string; notes: string; } | { ...; })[]; completionDate?: undefined; } | { ...; })[]'. Two different types with this name exist, but they are unrelated.
+    Type '{ id: string; staffId: string; staffName: string; type: string; startDate: string; targetCompletionDate: string; status: string; progress: number; tasks: ({ taskId: string; completed: boolean; completedDate: string; notes: string; } | { ...; })[]; completionDate?: undefined; } | { ...; }' is not assignable to type '{ id: string; staffId: string; staffName: string; type: string; startDate: string; targetCompletionDate: string; status: string; progress: number; tasks: ({ taskId: string; completed: boolean; completedDate: string; notes: string; } | { ...; })[]; completionDate?: undefined; } | { ...; }'. Two different types with this name exist, but they are unrelated.
+      Type '{ tasks: ({ taskId: string; completed: boolean; completedDate: string; notes: string; } | { taskId: string; completed: boolean; completedDate: null; notes: string; })[]; id: string; staffId: string; staffName: string; ... 5 more ...; completionDate: string; }' is not assignable to type '{ id: string; staffId: string; staffName: string; type: string; startDate: string; targetCompletionDate: string; status: string; progress: number; tasks: ({ taskId: string; completed: boolean; completedDate: string; notes: string; } | { ...; })[]; completionDate?: undefined; } | { ...; }'.
+        Type '{ tasks: ({ taskId: string; completed: boolean; completedDate: string; notes: string; } | { taskId: string; completed: boolean; completedDate: null; notes: string; })[]; id: string; staffId: string; staffName: string; ... 5 more ...; completionDate: string; }' is not assignable to type '{ id: string; staffId: string; staffName: string; type: string; startDate: string; targetCompletionDate: string; status: string; progress: number; completionDate: string; tasks: { taskId: string; completed: boolean; completedDate: string; notes: string; }[]; }'.
+          Types of property 'tasks' are incompatible.
+            Type '({ taskId: string; completed: boolean; completedDate: string; notes: string; } | { taskId: string; completed: boolean; completedDate: null; notes: string; })[]' is not assignable to type '{ taskId: string; completed: boolean; completedDate: string; notes: string; }[]'.
+              Type '{ taskId: string; completed: boolean; completedDate: string; notes: string; } | { taskId: string; completed: boolean; completedDate: null; notes: string; }' is not assignable to type '{ taskId: string; completed: boolean; completedDate: string; notes: string; }'.
+                Type '{ taskId: string; completed: boolean; completedDate: null; notes: string; }' is not assignable to type '{ taskId: string; completed: boolean; completedDate: string; notes: string; }'.
+                  Types of property 'completedDate' are incompatible.
+                    Type 'null' is not assignable to type 'string'.
+components/inventory/category-management-dialog.tsx(463,57): error TS2345: Argument of type 'import("C:/Users/Qhab/Desktop/HabeshaERP/lib/product-provider").ProductType' is not assignable to parameter of type 'import("C:/Users/Qhab/Desktop/HabeshaERP/lib/products-data").ProductType'.
+  Types of property 'productCount' are incompatible.
+    Type 'number | undefined' is not assignable to type 'number'.
+      Type 'undefined' is not assignable to type 'number'.
+components/inventory/category-management-dialog.tsx(470,59): error TS2345: Argument of type 'import("C:/Users/Qhab/Desktop/HabeshaERP/lib/product-provider").ProductType' is not assignable to parameter of type 'import("C:/Users/Qhab/Desktop/HabeshaERP/lib/products-data").ProductType'.
+  Types of property 'productCount' are incompatible.
+    Type 'number | undefined' is not assignable to type 'number'.
+      Type 'undefined' is not assignable to type 'number'.
+components/inventory/location-stock-columns.tsx(7,30): error TS2307: Cannot find module '@/lib/types' or its corresponding type declarations.
+components/inventory/location-stock-columns.tsx(45,47): error TS7006: Parameter 'ls' implicitly has an 'any' type.
+components/inventory/location-stock-columns.tsx(51,32): error TS7006: Parameter 'ls' implicitly has an 'any' type.
+components/inventory/location-stock-columns.tsx(98,45): error TS7006: Parameter 'total' implicitly has an 'any' type.
+components/inventory/location-stock-columns.tsx(98,52): error TS7006: Parameter 'ls' implicitly has an 'any' type.
+components/inventory/location-stock-columns.tsx(103,47): error TS7006: Parameter 'ls' implicitly has an 'any' type.
+components/inventory/location-stock-columns.tsx(139,53): error TS7006: Parameter 'ls' implicitly has an 'any' type.
+components/inventory/location-stock-display.tsx(10,30): error TS2307: Cannot find module '@/lib/types' or its corresponding type declarations.
+components/inventory/location-stock-display.tsx(96,36): error TS7006: Parameter 'locationStock' implicitly has an 'any' type.
+components/inventory/location-stock-display.tsx(124,40): error TS7006: Parameter 'ls' implicitly has an 'any' type.
+components/inventory/location-stock-display.tsx(186,42): error TS7006: Parameter 'locationStock' implicitly has an 'any' type.
+components/inventory/multi-location-stock-dialog.tsx(354,57): error TS2322: Type 'Dispatch<SetStateAction<"set" | "add" | "remove">>' is not assignable to type '(value: string) => void'.
+  Types of parameters 'value' and 'value' are incompatible.
+    Type 'string' is not assignable to type 'SetStateAction<"set" | "add" | "remove">'.
+components/inventory/new-product-dialog.tsx(305,25): error TS2352: Conversion of type '{ target: { files: File[]; value: string; }; }' to type 'ChangeEvent<HTMLInputElement>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type '{ target: { files: File[]; value: string; }; }' is missing the following properties from type 'ChangeEvent<HTMLInputElement>': nativeEvent, currentTarget, bubbles, cancelable, and 10 more.
+components/inventory/new-product-dialog.tsx(400,9): error TS2322: Type '{ locationId: string; stock: number; price: number | null; }[]' is not assignable to type 'ProductLocation[]'.
+  Type '{ locationId: string; stock: number; price: number | null; }' is missing the following properties from type 'ProductLocation': id, productId, isActive
+components/inventory/new-professional-product-dialog.tsx(57,26): error TS2339: Property 'id' does not exist on type 'string'.
+components/inventory/new-professional-product-dialog.tsx(57,53): error TS2339: Property 'id' does not exist on type 'string'.
+components/inventory/new-professional-product-dialog.tsx(439,29): error TS2345: Argument of type '{ id: string; createdAt: Date | undefined; updatedAt: Date; name: string; sku: string | null; barcode: string | null; category: string; type: string; description: string | null; ... 23 more ...; location?: string; }' is not assignable to parameter of type 'Product'.
+  Types of property 'description' are incompatible.
+    Type 'string | null' is not assignable to type 'string | undefined'.
+      Type 'null' is not assignable to type 'string | undefined'.
+components/inventory/new-professional-product-dialog.tsx(448,26): error TS2345: Argument of type '{ name: string; sku: string | null; barcode: string | null; category: string; type: string; description: string | null; brand: string | null; price: number; salePrice: null; cost: number; stock: number; ... 13 more ...; metadata: { ...; }; }' is not assignable to parameter of type 'Omit<Product, "id" | "createdAt" | "updatedAt">'.
+  Types of property 'description' are incompatible.
+    Type 'string | null' is not assignable to type 'string | undefined'.
+      Type 'null' is not assignable to type 'string | undefined'.
+components/inventory/product-edit-dialog.tsx(190,17): error TS2554: Expected 1 arguments, but got 0.
+components/inventory/product-edit-dialog.tsx(190,17): error TS7009: 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type.
+components/inventory/product-edit-dialog.tsx(287,25): error TS2352: Conversion of type '{ target: { files: File[]; value: string; }; }' to type 'ChangeEvent<HTMLInputElement>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type '{ target: { files: File[]; value: string; }; }' is missing the following properties from type 'ChangeEvent<HTMLInputElement>': nativeEvent, currentTarget, bubbles, cancelable, and 10 more.
+components/inventory/product-transfer-dialog.tsx(35,11): error TS2339: Property 'currentUser' does not exist on type 'AuthContextType'.
+components/inventory/product-transfer-dialog.tsx(79,17): error TS2551: Property 'locations' does not exist on type 'Product'. Did you mean 'location'?
+components/inventory/product-transfer-dialog.tsx(79,38): error TS2551: Property 'locations' does not exist on type 'Product'. Did you mean 'location'?
+components/inventory/product-transfer-dialog.tsx(81,68): error TS2551: Property 'locations' does not exist on type 'Product'. Did you mean 'location'?
+components/inventory/product-transfer-dialog.tsx(85,35): error TS2551: Property 'locations' does not exist on type 'Product'. Did you mean 'location'?
+components/inventory/product-transfer-dialog.tsx(85,50): error TS7006: Parameter 'loc' implicitly has an 'any' type.
+components/inventory/product-transfer-dialog.tsx(95,35): error TS2551: Property 'locations' does not exist on type 'Product'. Did you mean 'location'?
+components/inventory/product-transfer-dialog.tsx(95,50): error TS7006: Parameter 'loc' implicitly has an 'any' type.
+components/inventory/product-transfer-dialog.tsx(265,45): error TS2551: Property 'locations' does not exist on type 'Product'. Did you mean 'location'?
+components/inventory/product-transfer-dialog.tsx(265,64): error TS7006: Parameter 'total' implicitly has an 'any' type.
+components/inventory/product-transfer-dialog.tsx(265,71): error TS7006: Parameter 'loc' implicitly has an 'any' type.
+components/inventory/product-transfer-dialog.tsx(414,15): error TS2322: Type 'boolean | "" | undefined' is not assignable to type 'boolean | undefined'.
+  Type '""' is not assignable to type 'boolean | undefined'.
+components/memberships/membership-enrollment-dialog.tsx(171,37): error TS2339: Property 'totalVisits' does not exist on type 'Client'.
+components/new-appointment-dialog.tsx(103,13): error TS2304: Cannot find name 'user'.
+components/new-appointment-dialog.tsx(103,21): error TS2304: Cannot find name 'user'.
+components/new-staff-dialog.tsx(176,20): error TS2367: This comparison appears to be unintentional because the types '"ADMIN" | "STAFF" | "CLIENT" | "MANAGER" | "receptionist" | undefined' and '"super_admin"' have no overlap.
+components/new-staff-dialog.tsx(177,21): error TS2367: This comparison appears to be unintentional because the types '"ADMIN" | "STAFF" | "CLIENT" | "MANAGER" | "receptionist" | undefined' and '"super_admin"' have no overlap.
+components/new-staff-dialog.tsx(177,53): error TS2367: This comparison appears to be unintentional because the types '"ADMIN" | "STAFF" | "CLIENT" | "MANAGER" | "receptionist" | undefined' and '"org_admin"' have no overlap.
+components/new-staff-dialog.tsx(211,18): error TS2367: This comparison appears to be unintentional because the types '"ADMIN" | "STAFF" | "CLIENT" | "MANAGER" | "receptionist" | undefined' and '"super_admin"' have no overlap.
+components/orders/order-details-dialog.tsx(368,13): error TS2322: Type '(status: OrderStatus, tracking?: any, notes?: string) => void' is not assignable to type '(orderId: string, status: OrderStatus, tracking?: Partial<TrackingInfo> | undefined, notes?: string | undefined) => void'.
+  Types of parameters 'status' and 'orderId' are incompatible.
+    Type 'string' is not assignable to type 'OrderStatus'.
+components/orders/order-status-update-dialog.tsx(136,44): error TS2322: Type 'Dispatch<SetStateAction<"" | OrderStatus>>' is not assignable to type '(value: string) => void'.
+  Types of parameters 'value' and 'value' are incompatible.
+    Type 'string' is not assignable to type 'SetStateAction<"" | OrderStatus>'.
+components/pos/payment-dialog.tsx(20,30): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+components/reports/export-options-dialog.tsx(218,19): error TS2322: Type 'Dispatch<SetStateAction<boolean>>' is not assignable to type '(checked: CheckedState) => void'.
+  Types of parameters 'value' and 'checked' are incompatible.
+    Type 'CheckedState' is not assignable to type 'SetStateAction<boolean>'.
+      Type '"indeterminate"' is not assignable to type 'SetStateAction<boolean>'.
+components/reports/export-options-dialog.tsx(231,23): error TS2322: Type 'Dispatch<SetStateAction<boolean>>' is not assignable to type '(checked: CheckedState) => void'.
+  Types of parameters 'value' and 'checked' are incompatible.
+    Type 'CheckedState' is not assignable to type 'SetStateAction<boolean>'.
+      Type '"indeterminate"' is not assignable to type 'SetStateAction<boolean>'.
+components/reports/payment-method-chart.tsx(34,53): error TS18048: 'percent' is possibly 'undefined'.
+components/reports/service-popularity-chart.tsx(48,53): error TS18048: 'percent' is possibly 'undefined'.
+components/scheduling/add-service-dialog.tsx(64,25): error TS2304: Cannot find name 'mockAppointments'.
+components/scheduling/add-service-dialog.tsx(64,47): error TS7006: Parameter 'a' implicitly has an 'any' type.
+components/scheduling/add-service-dialog.tsx(183,14): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+components/scheduling/add-service-dialog.tsx(184,11): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+components/scheduling/add-service-dialog.tsx(186,9): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+components/scheduling/add-service-dialog.tsx(428,62): error TS2339: Property 'jobRole' does not exist on type 'StaffMember'.
+components/scheduling/appointment-calendar.tsx(48,48): error TS2304: Cannot find name 'StaffMember'.
+components/scheduling/appointment-calendar.tsx(58,48): error TS2304: Cannot find name 'StaffMember'.
+components/scheduling/appointment-calendar.tsx(89,46): error TS2304: Cannot find name 'StaffMember'.
+components/scheduling/appointment-calendar.tsx(116,50): error TS2304: Cannot find name 'StaffMember'.
+components/scheduling/appointment-calendar.tsx(130,76): error TS2304: Cannot find name 'StaffMember'.
+components/scheduling/appointment-calendar.tsx(131,74): error TS2304: Cannot find name 'StaffMember'.
+components/scheduling/appointment-calendar.tsx(202,45): error TS2304: Cannot find name 'StaffMember'.
+components/scheduling/appointment-details-dialog.tsx(213,39): error TS7053: Element implicitly has an 'any' type because expression of type 'AppointmentStatus' can't be used to index type '{ pending: string; confirmed: string; "checked-in": string; completed: string; cancelled: string; "no-show": string; }'.
+  Property 'arrived' does not exist on type '{ pending: string; confirmed: string; "checked-in": string; completed: string; cancelled: string; "no-show": string; }'.
+components/scheduling/change-staff-dialog.tsx(58,34): error TS2551: Property 'serviceId' does not exist on type 'Appointment'. Did you mean 'service'?
+components/scheduling/change-staff-dialog.tsx(165,30): error TS2345: Argument of type 'AppointmentData' is not assignable to parameter of type 'Appointment'.
+  Types of property 'statusHistory' are incompatible.
+    Type '{ status: string; timestamp: string; updatedBy?: string | undefined; }[] | undefined' is not assignable to type 'AppointmentStatusHistory[]'.
+      Type 'undefined' is not assignable to type 'AppointmentStatusHistory[]'.
+components/scheduling/edit-appointment-details-dialog.tsx(71,30): error TS2551: Property 'serviceId' does not exist on type 'Appointment'. Did you mean 'service'?
+components/scheduling/edit-appointment-details-dialog.tsx(78,9): error TS2322: Type '{ id?: string | undefined; name: string; price?: number | undefined; duration?: number | undefined; }[]' is not assignable to type '{ id?: string | undefined; name: string; price: number; duration: number; }[]'.
+  Type '{ id?: string | undefined; name: string; price?: number | undefined; duration?: number | undefined; }' is not assignable to type '{ id?: string | undefined; name: string; price: number; duration: number; }'.
+    Types of property 'price' are incompatible.
+      Type 'number | undefined' is not assignable to type 'number'.
+        Type 'undefined' is not assignable to type 'number'.
+components/scheduling/edit-appointment-details-dialog.tsx(79,9): error TS2322: Type '{ id?: string | undefined; name: string; price?: number | undefined; quantity?: number | undefined; }[]' is not assignable to type '{ id?: string | undefined; name: string; price: number; quantity: number; }[]'.
+  Type '{ id?: string | undefined; name: string; price?: number | undefined; quantity?: number | undefined; }' is not assignable to type '{ id?: string | undefined; name: string; price: number; quantity: number; }'.
+    Types of property 'price' are incompatible.
+      Type 'number | undefined' is not assignable to type 'number'.
+        Type 'undefined' is not assignable to type 'number'.
+components/scheduling/edit-appointment-details-dialog.tsx(86,47): error TS2339: Property 'isActive' does not exist on type 'Service'.
+components/scheduling/edit-appointment-details-dialog.tsx(195,30): error TS2345: Argument of type 'AppointmentData' is not assignable to parameter of type 'Appointment'.
+  Types of property 'statusHistory' are incompatible.
+    Type '{ status: string; timestamp: string; updatedBy?: string | undefined; }[] | undefined' is not assignable to type 'AppointmentStatusHistory[]'.
+      Type 'undefined' is not assignable to type 'AppointmentStatusHistory[]'.
+components/scheduling/enhanced-appointment-details-dialog.tsx(279,30): error TS2345: Argument of type '{ status: string; paymentStatus: string; paymentMethod: string; paymentDate: string; transactionRecorded: boolean; statusHistory: (AppointmentStatusHistory | { ...; })[]; ... 16 more ...; products?: Array<{ id?: string; name: string; price?: number; quantity?: number; }>; }' is not assignable to parameter of type 'Appointment'.
+  Types of property 'statusHistory' are incompatible.
+    Type '(AppointmentStatusHistory | { status: string; timestamp: string; updatedBy: string; })[]' is not assignable to type 'AppointmentStatusHistory[]'.
+      Type 'AppointmentStatusHistory | { status: string; timestamp: string; updatedBy: string; }' is not assignable to type 'AppointmentStatusHistory'.
+        Type '{ status: string; timestamp: string; updatedBy: string; }' is not assignable to type 'AppointmentStatusHistory'.
+          Types of property 'status' are incompatible.
+            Type 'string' is not assignable to type 'AppointmentStatus'.
+components/scheduling/enhanced-appointment-details-dialog.tsx(418,63): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+components/scheduling/enhanced-appointment-details-dialog.tsx(426,62): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+components/scheduling/enhanced-appointment-details-dialog.tsx(760,36): error TS2339: Property 'paymentStatus' does not exist on type 'Appointment'.
+components/scheduling/enhanced-appointment-details-dialog.tsx(760,76): error TS2339: Property 'discountPercentage' does not exist on type 'Appointment'.
+components/scheduling/enhanced-appointment-details-dialog.tsx(760,110): error TS2339: Property 'discountAmount' does not exist on type 'Appointment'.
+components/scheduling/enhanced-appointment-details-dialog.tsx(765,64): error TS2339: Property 'discountPercentage' does not exist on type 'Appointment'.
+components/scheduling/enhanced-appointment-details-dialog.tsx(768,71): error TS2339: Property 'discountAmount' does not exist on type 'Appointment'.
+components/scheduling/enhanced-appointment-details-dialog.tsx(771,42): error TS2339: Property 'originalAmount' does not exist on type 'Appointment'.
+components/scheduling/enhanced-appointment-details-dialog.tsx(775,72): error TS2339: Property 'originalAmount' does not exist on type 'Appointment'.
+components/scheduling/enhanced-appointment-details-dialog.tsx(785,40): error TS2339: Property 'paymentStatus' does not exist on type 'Appointment'.
+components/scheduling/enhanced-appointment-details-dialog.tsx(785,80): error TS2339: Property 'discountAmount' does not exist on type 'Appointment'.
+components/scheduling/enhanced-appointment-details-dialog.tsx(789,41): error TS2339: Property 'paymentStatus' does not exist on type 'Appointment'.
+components/scheduling/enhanced-appointment-details-dialog.tsx(789,81): error TS2339: Property 'finalAmount' does not exist on type 'Appointment'.
+components/scheduling/enhanced-appointment-details-dialog.tsx(790,45): error TS2339: Property 'finalAmount' does not exist on type 'Appointment'.
+components/scheduling/enhanced-appointment-details-dialog.tsx(797,36): error TS2339: Property 'paymentStatus' does not exist on type 'Appointment'.
+components/scheduling/enhanced-appointment-details-dialog.tsx(802,51): error TS2339: Property 'paymentMethod' does not exist on type 'Appointment'.
+components/scheduling/enhanced-booking-summary.tsx(27,30): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+components/scheduling/enhanced-salon-calendar.tsx(234,26): error TS2322: Type '{ id: string; name: string; email: string; phone: string; role: "ADMIN" | "STAFF" | "CLIENT" | "MANAGER" | "receptionist"; locations: string[]; status: string; homeService: boolean; employeeNumber: string; ... 13 more ...; updatedAt: string; }' is not assignable to type 'StaffMember'.
+  Types of property 'status' are incompatible.
+    Type 'string' is not assignable to type '"Active" | "Inactive"'.
+components/scheduling/enhanced-salon-calendar.tsx(290,9): error TS7034: Variable 'timeSlots' implicitly has type 'any[]' in some locations where its type cannot be determined.
+components/scheduling/enhanced-salon-calendar.tsx(1419,24): error TS7005: Variable 'timeSlots' implicitly has an 'any[]' type.
+components/scheduling/group-appointment-dialog.tsx(214,70): error TS2345: Argument of type '{ id: string; clients: { clientId: string; clientName: string; email: string; phone: string; }[]; staffId: string; staffName: string; service: string; serviceId: string; date: string; duration: number; ... 4 more ...; type: string; }' is not assignable to parameter of type 'AppointmentData'.
+  Type '{ id: string; clients: { clientId: string; clientName: string; email: string; phone: string; }[]; staffId: string; staffName: string; service: string; serviceId: string; date: string; duration: number; ... 4 more ...; type: string; }' is missing the following properties from type 'AppointmentData': clientId, clientName
+components/scheduling/new-appointment-dialog-v2.tsx(148,23): error TS2339: Property 'status' does not exist on type 'Appointment'.
+components/scheduling/new-appointment-dialog-v2.tsx(153,23): error TS2339: Property 'status' does not exist on type 'Appointment'.
+components/scheduling/new-appointment-dialog-v2.tsx(153,61): error TS2339: Property 'status' does not exist on type 'Appointment'.
+components/scheduling/new-appointment-dialog-v2.tsx(393,9): error TS2367: This comparison appears to be unintentional because the types '"ADMIN" | "STAFF" | "CLIENT" | "MANAGER" | "receptionist" | undefined' and '"super_admin"' have no overlap.
+components/scheduling/new-appointment-dialog-v2.tsx(676,41): error TS2339: Property 'userId' does not exist on type 'Client'.
+components/scheduling/new-appointment-dialog-v2.tsx(1176,13): error TS2367: This comparison appears to be unintentional because the types '"ADMIN" | "STAFF" | "CLIENT" | "MANAGER" | "receptionist" | undefined' and '"super_admin"' have no overlap.
+components/scheduling/new-appointment-dialog-v2.tsx(1178,146): error TS2367: This comparison appears to be unintentional because the types '"ADMIN" | "STAFF" | "CLIENT" | "MANAGER" | "receptionist" | undefined' and '"super_admin"' have no overlap.
+components/scheduling/reschedule-appointment-dialog.tsx(169,30): error TS2345: Argument of type 'AppointmentData' is not assignable to parameter of type 'Appointment'.
+  Types of property 'statusHistory' are incompatible.
+    Type '{ status: string; timestamp: string; updatedBy?: string | undefined; }[] | undefined' is not assignable to type 'AppointmentStatusHistory[]'.
+      Type 'undefined' is not assignable to type 'AppointmentStatusHistory[]'.
+components/scheduling/salon-calendar-view.tsx(44,62): error TS2304: Cannot find name 'staff'.
+components/scheduling/salon-calendar-view.tsx(48,62): error TS2304: Cannot find name 'staff'.
+components/scheduling/salon-calendar-view.tsx(48,75): error TS7006: Parameter 's' implicitly has an 'any' type.
+components/scheduling/salon-calendar-view.tsx(48,108): error TS7006: Parameter 's' implicitly has an 'any' type.
+components/scheduling/salon-calendar-view.tsx(53,7): error TS2304: Cannot find name 'staff'.
+components/scheduling/salon-calendar-view.tsx(55,14): error TS2304: Cannot find name 'staff'.
+components/scheduling/salon-calendar-view.tsx(56,81): error TS2304: Cannot find name 'staff'.
+components/scheduling/salon-calendar-view.tsx(82,27): error TS2304: Cannot find name 'staff'.
+components/scheduling/salon-calendar-view.tsx(82,38): error TS7006: Parameter 's' implicitly has an 'any' type.
+components/scheduling/salon-calendar-view.tsx(92,27): error TS2304: Cannot find name 'staff'.
+components/scheduling/salon-calendar-view.tsx(92,38): error TS7006: Parameter 's' implicitly has an 'any' type.
+components/scheduling/salon-calendar-view.tsx(99,25): error TS2304: Cannot find name 'staff'.
+components/scheduling/salon-calendar-view.tsx(99,36): error TS7006: Parameter 'staffMember' implicitly has an 'any' type.
+components/scheduling/salon-calendar-view.tsx(360,31): error TS2304: Cannot find name 'staff'.
+components/scheduling/salon-calendar-view.tsx(360,43): error TS7006: Parameter 's' implicitly has an 'any' type.
+components/services/edit-service-dialog.tsx(213,27): error TS2345: Argument of type '{ id: string; name: string; category: string; price: number; duration: number; locations: string[]; description: string; imageUrl: string; showPrices: boolean; }' is not assignable to parameter of type 'Service'.
+  Property 'type' is missing in type '{ id: string; name: string; category: string; price: number; duration: number; locations: string[]; description: string; imageUrl: string; showPrices: boolean; }' but required in type 'Service'.
+components/services/location-update-notification.tsx(54,57): error TS7006: Parameter 'loc' implicitly has an 'any' type.
+components/services/new-service-dialog.tsx(182,47): error TS2345: Argument of type '{ name: string; category: string; price: number; duration: number; locations: string[]; description: string; imageUrl: string; showPrices: boolean; }' is not assignable to parameter of type 'Omit<Service, "id">'.
+  Property 'type' is missing in type '{ name: string; category: string; price: number; duration: number; locations: string[]; description: string; imageUrl: string; showPrices: boolean; }' but required in type 'Omit<Service, "id">'.
+components/settings/carousel-settings.tsx(185,39): error TS2345: Argument of type 'CarouselItem[]' is not assignable to parameter of type 'import("C:/Users/Qhab/Desktop/HabeshaERP/lib/carousel-storage").CarouselItem[]'.
+  Type 'CarouselItem' is missing the following properties from type 'CarouselItem': order, createdAt, updatedAt
+components/settings/carousel-settings.tsx(1583,44): error TS7006: Parameter 'prev' implicitly has an 'any' type.
+components/settings/carousel-settings.tsx(1594,44): error TS7006: Parameter 'prev' implicitly has an 'any' type.
+components/settings/carousel-settings.tsx(1607,46): error TS7006: Parameter 'prev' implicitly has an 'any' type.
+components/settings/carousel-settings.tsx(1621,46): error TS7006: Parameter 'prev' implicitly has an 'any' type.
+components/settings/checkout-settings.tsx(12,27): error TS2865: Import 'CheckoutSettings' conflicts with local value, so must be declared with a type-only import when 'isolatedModules' is enabled.
+components/settings/enhanced-notification-settings.tsx(401,47): error TS2339: Property 'systemAlerts' does not exist on type 'AdminNotificationSettings'.
+components/settings/enhanced-notification-settings.tsx(413,47): error TS2339: Property 'dailyReports' does not exist on type 'AdminNotificationSettings'.
+components/settings/enhanced-notification-settings.tsx(425,47): error TS2339: Property 'staffUpdates' does not exist on type 'AdminNotificationSettings'.
+components/settings/enhanced-notification-settings.tsx(432,51): error TS2339: Property 'reportTime' does not exist on type 'AdminNotificationSettings'.
+components/settings/enhanced-notification-settings.tsx(876,58): error TS2345: Argument of type '{ name: string; type: "email" | "sms"; category: string; subject: string; content: string; variables: string[]; }' is not assignable to parameter of type 'Partial<MessageTemplate>'.
+  Types of property 'category' are incompatible.
+    Type 'string' is not assignable to type '"system" | "birthday" | "marketing" | "welcome" | "reminder" | "follow_up" | "promotion" | "general" | undefined'.
+components/settings/enhanced-notification-settings.tsx(878,38): error TS2345: Argument of type '{ name: string; type: "email" | "sms"; category: string; subject: string; content: string; variables: string[]; }' is not assignable to parameter of type 'Partial<MessageTemplate>'.
+  Types of property 'category' are incompatible.
+    Type 'string' is not assignable to type '"system" | "birthday" | "marketing" | "welcome" | "reminder" | "follow_up" | "promotion" | "general" | undefined'.
+components/settings/gift-card-membership-settings.tsx(15,27): error TS2865: Import 'GiftCardMembershipSettings' conflicts with local value, so must be declared with a type-only import when 'isolatedModules' is enabled.
+components/settings/loyalty-settings.tsx(40,16): error TS2367: This comparison appears to be unintentional because the types '"ADMIN" | "STAFF" | "CLIENT" | "MANAGER" | "receptionist"' and '"super_admin"' have no overlap.
+components/settings/loyalty-settings.tsx(113,11): error TS2353: Object literal may only specify known properties, and 'expiryDate' does not exist in type 'LoyaltyReward'.
+components/settings/loyalty-settings.tsx(113,34): error TS2339: Property 'expiryDate' does not exist on type 'Partial<LoyaltyReward>'.
+components/settings/loyalty-settings.tsx(326,30): error TS2367: This comparison appears to be unintentional because the types '"service" | "product" | "discount" | "experience"' and '"percentage"' have no overlap.
+components/settings/loyalty-settings.tsx(327,30): error TS2367: This comparison appears to be unintentional because the types '"service" | "product" | "discount" | "experience"' and '"fixed_amount"' have no overlap.
+components/settings/loyalty-settings.tsx(327,80): error TS2322: Type 'number | undefined' is not assignable to type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+components/settings/user-settings-fixed.tsx(182,18): error TS2339: Property 'isLoading' does not exist on type 'UnifiedStaffContextType'.
+components/settings/user-settings-fixed.tsx(205,24): error TS2339: Property 'isActive' does not exist on type 'StaffMember'.
+components/settings/user-settings-fixed.tsx(206,53): error TS2339: Property 'id' does not exist on type 'string'.
+components/settings/user-settings-fixed.tsx(316,36): error TS2322: Type '{ name: string; size: "sm"; }' is not assignable to type 'IntrinsicAttributes & StaffAvatarProps'.
+  Property 'name' does not exist on type 'IntrinsicAttributes & StaffAvatarProps'.
+components/staff/edit-staff-dialog.tsx(289,20): error TS2367: This comparison appears to be unintentional because the types '"ADMIN" | "STAFF" | "CLIENT" | "MANAGER" | "receptionist" | undefined' and '"super_admin"' have no overlap.
+components/staff/edit-staff-dialog.tsx(290,21): error TS2367: This comparison appears to be unintentional because the types '"ADMIN" | "STAFF" | "CLIENT" | "MANAGER" | "receptionist" | undefined' and '"super_admin"' have no overlap.
+components/staff/edit-staff-dialog.tsx(290,53): error TS2367: This comparison appears to be unintentional because the types '"ADMIN" | "STAFF" | "CLIENT" | "MANAGER" | "receptionist" | undefined' and '"org_admin"' have no overlap.
+components/staff/edit-staff-dialog.tsx(293,21): error TS2367: This comparison appears to be unintentional because the types '"ADMIN" | "STAFF" | "CLIENT" | "MANAGER" | "receptionist" | undefined' and '"super_admin"' have no overlap.
+components/staff/edit-staff-dialog.tsx(293,53): error TS2367: This comparison appears to be unintentional because the types '"ADMIN" | "STAFF" | "CLIENT" | "MANAGER" | "receptionist" | undefined' and '"org_admin"' have no overlap.
+components/staff/staff-details-dialog.tsx(122,25): error TS2345: Argument of type 'StaffSchedule[]' is not assignable to parameter of type 'SetStateAction<never[]>'.
+  Type 'StaffSchedule[]' is not assignable to type 'never[]'.
+    Type 'StaffSchedule' is not assignable to type 'never'.
+components/staff/staff-details-dialog.tsx(123,26): error TS2345: Argument of type 'TimeOffRequest[]' is not assignable to parameter of type 'SetStateAction<never[]>'.
+  Type 'TimeOffRequest[]' is not assignable to type 'never[]'.
+    Type 'TimeOffRequest' is not assignable to type 'never'.
+components/staff/staff-details-dialog.tsx(194,25): error TS2345: Argument of type 'StaffSchedule[]' is not assignable to parameter of type 'SetStateAction<never[]>'.
+  Type 'StaffSchedule[]' is not assignable to type 'never[]'.
+    Type 'StaffSchedule' is not assignable to type 'never'.
+components/staff/staff-details-dialog.tsx(245,18): error TS2339: Property 'isDayOff' does not exist on type 'never'.
+components/staff/staff-details-dialog.tsx(259,27): error TS2339: Property 'isDayOff' does not exist on type 'never'.
+components/staff/staff-details-dialog.tsx(269,18): error TS2339: Property 'isDayOff' does not exist on type 'never'.
+components/staff/staff-details-dialog.tsx(440,72): error TS2339: Property 'startTime' does not exist on type 'never'.
+components/staff/staff-details-dialog.tsx(440,98): error TS2339: Property 'endTime' does not exist on type 'never'.
+components/staff/staff-directory.tsx(109,13): error TS2304: Cannot find name 'user'.
+components/staff/staff-directory.tsx(109,21): error TS2304: Cannot find name 'user'.
+components/staff/staff-directory.tsx(130,13): error TS2304: Cannot find name 'user'.
+components/staff/staff-directory.tsx(130,21): error TS2304: Cannot find name 'user'.
+components/staff/staff-performance.tsx(451,36): error TS2339: Property 'includes' does not exist on type 'NameType'.
+  Property 'includes' does not exist on type 'number'.
+components/staff/staff-performance.tsx(483,34): error TS2339: Property 'includes' does not exist on type 'NameType'.
+  Property 'includes' does not exist on type 'number'.
+components/staff/staff-performance.tsx(519,70): error TS18048: 'percent' is possibly 'undefined'.
+components/test/transaction-test.tsx(47,9): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+components/test/transaction-test.tsx(89,9): error TS2554: Expected 5-7 arguments, but got 8.
+components/test/transaction-test.tsx(98,26): error TS2339: Property 'id' does not exist on type '{ inventoryTransaction: InventoryTransaction; financialTransactions: Transaction[]; }'.
+components/test/transaction-test.tsx(100,46): error TS2339: Property 'id' does not exist on type '{ inventoryTransaction: InventoryTransaction; financialTransaction: Transaction; }'.
+components/ui/calendar.tsx(57,9): error TS2353: Object literal may only specify known properties, and 'IconLeft' does not exist in type 'Partial<CustomComponents>'.
+components/ui/chart.tsx(119,7): error TS2339: Property 'payload' does not exist on type 'Omit<Omit<Props<ValueType, NameType>, PropertiesReadFromContext> & { active?: boolean | undefined; includeHidden?: boolean | undefined; ... 17 more ...; axisId?: AxisId | undefined; } & ClassAttributes<...> & HTMLAttributes<...> & { ...; }, "ref">'.
+components/ui/chart.tsx(124,7): error TS2339: Property 'label' does not exist on type 'Omit<Omit<Props<ValueType, NameType>, PropertiesReadFromContext> & { active?: boolean | undefined; includeHidden?: boolean | undefined; ... 17 more ...; axisId?: AxisId | undefined; } & ClassAttributes<...> & HTMLAttributes<...> & { ...; }, "ref">'.
+components/ui/chart.tsx(188,25): error TS7006: Parameter 'item' implicitly has an 'any' type.
+components/ui/chart.tsx(188,31): error TS7006: Parameter 'index' implicitly has an 'any' type.
+components/ui/chart.tsx(264,41): error TS2344: Type '"payload" | "verticalAlign"' does not satisfy the constraint '"string" | "max" | "name" | "cursor" | "filter" | "fill" | "values" | "result" | "id" | "type" | "path" | "end" | "key" | "className" | "content" | "crossOrigin" | "height" | "href" | ... 428 more ... | "onBBoxUpdate"'.
+  Type '"payload"' is not assignable to type '"string" | "max" | "name" | "cursor" | "filter" | "fill" | "values" | "result" | "id" | "type" | "path" | "end" | "key" | "className" | "content" | "crossOrigin" | "height" | "href" | ... 428 more ... | "onBBoxUpdate"'.
+components/ui/chart.tsx(275,19): error TS2339: Property 'length' does not exist on type '{}'.
+components/ui/chart.tsx(288,18): error TS2339: Property 'map' does not exist on type '{}'.
+components/ui/chart.tsx(288,23): error TS7006: Parameter 'item' implicitly has an 'any' type.
+components/ui/lazy-chart.tsx(56,3): error TS2345: Argument of type '() => Promise<typeof Legend>' is not assignable to parameter of type 'DynamicOptions<Props> | Loader<Props>'.
+  Type '() => Promise<typeof Legend>' is not assignable to type '() => LoaderComponent<Props>'.
+    Type 'Promise<typeof Legend>' is not assignable to type 'LoaderComponent<Props>'.
+      Type 'typeof Legend' is not assignable to type 'ComponentType<Props> | ComponentModule<Props>'.
+        Type 'typeof Legend' is not assignable to type 'ComponentClass<Props, any>'.
+          The types of 'defaultProps.align' are incompatible between these types.
+            Type 'string' is not assignable to type 'HorizontalAlignmentType | undefined'.
+components/ui/lazy-chart.tsx(128,8): error TS2746: This JSX tag's 'children' prop expects a single child of type 'ReactElement<unknown, string | JSXElementConstructor<any>>', but multiple children were provided.
+components/ui/lazy-chart.tsx(128,8): error TS2769: No overload matches this call.
+  This JSX tag's 'children' prop expects a single child of type 'ReactElement<unknown, string | JSXElementConstructor<any>>', but multiple children were provided.
+  This JSX tag's 'children' prop expects a single child of type 'ReactElement<unknown, string | JSXElementConstructor<any>>', but multiple children were provided.
+e2e/appointment-booking.spec.ts(18,40): error TS2345: Argument of type '{ label: RegExp; }' is not assignable to parameter of type 'string | readonly string[] | ElementHandle<Node> | { value?: string | undefined; label?: string | undefined; index?: number | undefined; } | readonly ElementHandle<Node>[] | readonly { ...; }[] | null'.
+  Types of property 'label' are incompatible.
+    Type 'RegExp' is not assignable to type 'string'.
+e2e/appointment-booking.spec.ts(21,40): error TS2339: Property 'first' does not exist on type 'Promise<void>'.
+e2e/appointment-booking.spec.ts(30,54): error TS2339: Property 'first' does not exist on type 'Promise<void>'.
+e2e/appointment-booking.spec.ts(51,65): error TS2339: Property 'first' does not exist on type 'Promise<void>'.
+e2e/appointment-booking.spec.ts(127,17): error TS2769: No overload matches this call.
+  Overload 1 of 5, '(condition: boolean, description?: string | undefined): void', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'boolean'.
+  Overload 2 of 5, '(callback: ConditionBody<PlaywrightTestArgs & PlaywrightTestOptions & PlaywrightWorkerArgs & PlaywrightWorkerOptions>, description?: string | undefined): void', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'ConditionBody<PlaywrightTestArgs & PlaywrightTestOptions & PlaywrightWorkerArgs & PlaywrightWorkerOptions>'.
+hooks/use-filtered-data.ts(45,24): error TS2345: Argument of type '{ id: string; }[]' is not assignable to parameter of type 'SetStateAction<Location[]>'.
+  Type '{ id: string; }[]' is not assignable to type 'Location[]'.
+    Type '{ id: string; }' is missing the following properties from type 'Location': name, address, city, phone, isActive
+hooks/use-filtered-data.ts(82,20): error TS2345: Argument of type '{ locations: string[]; }[]' is not assignable to parameter of type 'SetStateAction<StaffMember[]>'.
+  Type '{ locations: string[]; }[]' is not assignable to type 'StaffMember[]'.
+    Type '{ locations: string[]; }' is missing the following properties from type 'StaffMember': id, name
+hooks/use-filtered-data.ts(132,27): error TS2345: Argument of type '{ location: string; }[]' is not assignable to parameter of type 'SetStateAction<Appointment[]>'.
+  Type '{ location: string; }[]' is not assignable to type 'Appointment[]'.
+    Property 'id' is missing in type '{ location: string; }' but required in type 'Appointment'.
+hooks/use-real-time-data.tsx(38,5): error TS2339: Property 'lastUpdated' does not exist on type 'ProductContextType'.
+hooks/use-real-time-data.tsx(57,56): error TS2339: Property 'visibleInShop' does not exist on type 'Product'.
+hooks/use-real-time-data.tsx(68,19): error TS18048: 'product.images.length' is possibly 'undefined'.
+hooks/use-real-time-data.tsx(95,36): error TS2339: Property 'isActive' does not exist on type 'Service'.
+hooks/use-real-time-data.tsx(99,26): error TS2339: Property 'imageUrl' does not exist on type 'Service'.
+hooks/use-real-time-data.tsx(99,46): error TS2339: Property 'image' does not exist on type 'Service'.
+hooks/use-real-time-data.tsx(106,27): error TS2339: Property 'imageUrl' does not exist on type 'Service'.
+hooks/use-real-time-data.tsx(106,47): error TS2339: Property 'imageUrl' does not exist on type 'Service'.
+hooks/use-real-time-data.tsx(106,68): error TS2339: Property 'image' does not exist on type 'Service'.
+hooks/use-real-time-data.tsx(116,34): error TS2339: Property 'isPopular' does not exist on type 'Service'.
+hooks/use-real-time-data.tsx(116,56): error TS2339: Property 'rating' does not exist on type 'Service'.
+hooks/use-real-time-data.tsx(116,74): error TS2339: Property 'rating' does not exist on type 'Service'.
+hooks/use-real-time-data.tsx(133,27): error TS2367: This comparison appears to be unintentional because the types '"Active" | "Inactive"' and '"active"' have no overlap.
+hooks/use-real-time-data.tsx(137,48): error TS2339: Property 'image' does not exist on type 'StaffMember'.
+hooks/use-real-time-data.tsx(138,73): error TS2339: Property 'image' does not exist on type 'StaffMember'.
+hooks/use-real-time-data.tsx(142,76): error TS2339: Property 'isTopRated' does not exist on type 'StaffMember'.
+hooks/use-real-time-data.tsx(145,32): error TS2339: Property 'availability' does not exist on type 'StaffMember'.
+hooks/use-real-time-updates.tsx(48,3): error TS2740: Type '{}' is missing the following properties from type 'Record<"*" | RealTimeEventType, EventCallback>': "*", transaction_created, transaction_updated, transaction_deleted, and 28 more.
+hooks/use-real-time-validation.ts(59,23): error TS2554: Expected 1 arguments, but got 0.
+hooks/use-real-time-validation.ts(102,11): error TS2322: Type '(string | undefined)[]' is not assignable to type 'string[]'.
+  Type 'string | undefined' is not assignable to type 'string'.
+    Type 'undefined' is not assignable to type 'string'.
+hooks/use-real-time-validation.ts(229,23): error TS2554: Expected 1 arguments, but got 0.
+lib/additional-products-catalog.ts(4,33): error TS2307: Cannot find module './enhanced-products-data' or its corresponding type declarations.
+lib/additional-products-catalog.ts(113,5): error TS1117: An object literal cannot have multiple properties with the same name.
+lib/additional-products-catalog.ts(212,5): error TS1117: An object literal cannot have multiple properties with the same name.
+lib/additional-products-catalog.ts(379,5): error TS1117: An object literal cannot have multiple properties with the same name.
+lib/appointment-service.ts(358,29): error TS2339: Property 'isReflected' does not exist on type '{ updatedAt: string; id: string; clientId: string; clientName: string; staffId: string; staffName: string; service: string; serviceId?: string | undefined; date: string; duration: number; location: string; ... 10 more ...; paymentDate?: string | undefined; }'.
+lib/auth-provider.tsx(276,13): error TS18048: 'check.permissions' is possibly 'undefined'.
+lib/auth-server.ts(1,10): error TS2305: Module '"next-auth/next"' has no exported member 'getServerSession'.
+lib/auth/redis-session.ts(3,15): error TS2614: Module '"next-auth"' has no exported member 'SessionStore'. Did you mean to use 'import SessionStore from "next-auth"' instead?
+lib/carousel-storage.ts(406,77): error TS7006: Parameter 'item' implicitly has an 'any' type.
+lib/carousel-storage.ts(422,100): error TS7006: Parameter 'item' implicitly has an 'any' type.
+lib/carousel-storage.ts(535,13): error TS2345: Argument of type '() => () => boolean' is not assignable to parameter of type 'EffectCallback'.
+  Type '() => boolean' is not assignable to type 'void | Destructor'.
+    Type '() => boolean' is not assignable to type 'Destructor'.
+      Type 'boolean' is not assignable to type 'void | { [UNDEFINED_VOID_ONLY]: never; }'.
+lib/client-provider.tsx(403,41): error TS2345: Argument of type '{ name: string; email: string; phone: string; address: string; city: string; state: string; birthday: string; preferredLocation: string; locations: string[]; totalSpent: number; referredBy: string; preferences: { ...; }; registrationSource: "client_portal" | ... 1 more ... | "walk_in"; isAutoRegistered: boolean; not...' is not assignable to parameter of type 'Omit<Client, "id" | "status" | "avatar" | "segment">'.
+  Types of property 'preferences' are incompatible.
+    Property 'preferredProducts' is missing in type '{ preferredStylists: never[]; preferredServices: never[]; allergies: never[]; notes: string; }' but required in type 'ClientPreferences'.
+lib/data-cache.ts(146,7): error TS2322: Type 'Promise<T>' is not assignable to type 'T'.
+  'T' could be instantiated with an arbitrary type which could be unrelated to 'Promise<T>'.
+lib/data-cache.ts(255,9): error TS2532: Object is possibly 'undefined'.
+lib/data-cache.ts(259,9): error TS2532: Object is possibly 'undefined'.
+lib/db.ts(639,26): error TS2349: This expression is not callable.
+  Type 'String' has no call signatures.
+lib/enhanced-data-fetching.ts(204,32): error TS2339: Property 'PRODUCTS' does not exist on type '{ CLIENTS: string; SERVICES: string; APPOINTMENTS: string; INVENTORY: string; STAFF: string; STAFF_DIRECTORY: string; STAFF_SCHEDULE: string; STAFF_PERFORMANCE: string; USERS: string; PERMISSIONS: string; SETTINGS: string; }'.
+lib/enhanced-data-fetching.ts(217,28): error TS2339: Property 'PRODUCTS' does not exist on type '{ CLIENTS: string; SERVICES: string; APPOINTMENTS: string; INVENTORY: string; STAFF: string; STAFF_DIRECTORY: string; STAFF_SCHEDULE: string; STAFF_PERFORMANCE: string; USERS: string; PERMISSIONS: string; SETTINGS: string; }'.
+lib/enhanced-data-fetching.ts(240,32): error TS2339: Property 'ANALYTICS' does not exist on type '{ CLIENTS: string; SERVICES: string; APPOINTMENTS: string; INVENTORY: string; STAFF: string; STAFF_DIRECTORY: string; STAFF_SCHEDULE: string; STAFF_PERFORMANCE: string; USERS: string; PERMISSIONS: string; SETTINGS: string; }'.
+lib/enhanced-data-fetching.ts(253,28): error TS2339: Property 'ANALYTICS' does not exist on type '{ CLIENTS: string; SERVICES: string; APPOINTMENTS: string; INVENTORY: string; STAFF: string; STAFF_DIRECTORY: string; STAFF_SCHEDULE: string; STAFF_PERFORMANCE: string; USERS: string; PERMISSIONS: string; SETTINGS: string; }'.
+lib/enhanced-data-fetching.ts(273,32): error TS2339: Property 'TRANSACTIONS' does not exist on type '{ CLIENTS: string; SERVICES: string; APPOINTMENTS: string; INVENTORY: string; STAFF: string; STAFF_DIRECTORY: string; STAFF_SCHEDULE: string; STAFF_PERFORMANCE: string; USERS: string; PERMISSIONS: string; SETTINGS: string; }'.
+lib/enhanced-data-fetching.ts(286,28): error TS2339: Property 'TRANSACTIONS' does not exist on type '{ CLIENTS: string; SERVICES: string; APPOINTMENTS: string; INVENTORY: string; STAFF: string; STAFF_DIRECTORY: string; STAFF_SCHEDULE: string; STAFF_PERFORMANCE: string; USERS: string; PERMISSIONS: string; SETTINGS: string; }'.
+lib/enhanced-rate-limiting.ts(123,32): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ '/api/auth/login': { windowMs: number; maxRequests: number; }; '/api/auth/register': { windowMs: number; maxRequests: number; }; '/api/appointments': { windowMs: number; maxRequests: number; }; '/api/clients': { ...; }; ... 4 more ...; '/api/reports': { ...; }; }'.
+  No index signature with a parameter of type 'string' was found on type '{ '/api/auth/login': { windowMs: number; maxRequests: number; }; '/api/auth/register': { windowMs: number; maxRequests: number; }; '/api/appointments': { windowMs: number; maxRequests: number; }; '/api/clients': { ...; }; ... 4 more ...; '/api/reports': { ...; }; }'.
+lib/enhanced-rate-limiting.ts(124,37): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ '/api/auth/login': { windowMs: number; maxRequests: number; }; '/api/auth/register': { windowMs: number; maxRequests: number; }; '/api/appointments': { windowMs: number; maxRequests: number; }; '/api/clients': { ...; }; ... 4 more ...; '/api/reports': { ...; }; }'.
+  No index signature with a parameter of type 'string' was found on type '{ '/api/auth/login': { windowMs: number; maxRequests: number; }; '/api/auth/register': { windowMs: number; maxRequests: number; }; '/api/appointments': { windowMs: number; maxRequests: number; }; '/api/clients': { ...; }; ... 4 more ...; '/api/reports': { ...; }; }'.
+lib/error-handling/errors.ts(141,12): error TS2416: Property 'statusCode' in type 'RecordNotFoundError' is not assignable to the same property in base type 'DatabaseError'.
+  Type '404' is not assignable to type '500'.
+lib/error-handling/errors.ts(150,12): error TS2416: Property 'statusCode' in type 'DuplicateRecordError' is not assignable to the same property in base type 'DatabaseError'.
+  Type '409' is not assignable to type '500'.
+lib/error-handling/logger.ts(331,15): error TS2484: Export declaration conflicts with exported declaration of 'LogEntry'.
+lib/error-handling/logger.ts(331,25): error TS2484: Export declaration conflicts with exported declaration of 'ErrorContext'.
+lib/location-provider.tsx(74,84): error TS7006: Parameter 'loc' implicitly has an 'any' type.
+lib/membership-provider.tsx(233,45): error TS18047: 'transaction' is possibly 'null'.
+lib/membership-provider.tsx(329,31): error TS18047: 'transaction' is possibly 'null'.
+lib/monitoring/error-tracking.ts(122,7): error TS2353: Object literal may only specify known properties, and 'errorId' does not exist in type 'ErrorContext'.
+lib/monitoring/monitoring-service.ts(198,7): error TS2353: Object literal may only specify known properties, and 'eventId' does not exist in type 'ErrorContext'.
+lib/next-cache.ts(58,7): error TS2345: Argument of type 'string' is not assignable to parameter of type 'string[]'.
+lib/redis-cache.ts(345,18): error TS18046: 'error' is of type 'unknown'.
+lib/security/api-wrapper.ts(246,28): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+lib/service-provider.tsx(39,27): error TS2322: Type 'Promise<{ id: string; name: string; category: string; price: number; duration: number; locations: never[]; }>' is not assignable to type 'Promise<Service>'.
+  Property 'type' is missing in type '{ id: string; name: string; category: string; price: number; duration: number; locations: never[]; }' but required in type 'Service'.
+lib/services/appointment-reflection.ts(107,15): error TS2741: Property 'clientId' is missing in type '{ id: string; originalAppointmentId: string; staffId: string; staffName: string; clientName: string; service: string; date: string; duration: number; location: string; isReflected: true; reflectionType: "home-to-physical"; status: "confirmed"; notes: string; }' but required in type 'ReflectedAppointment'.
+lib/services/appointment-reflection.ts(132,15): error TS2741: Property 'clientId' is missing in type '{ id: string; originalAppointmentId: string; staffId: string; staffName: string; clientName: string; service: string; date: string; duration: number; location: string; isReflected: true; reflectionType: "physical-to-home"; status: "confirmed"; notes: string; }' but required in type 'ReflectedAppointment'.
+lib/services/appointment-sync.ts(256,10): error TS2322: Type '() => void' is not assignable to type 'void'.
+lib/services/services.ts(269,7): error TS2322: Type '{ gte: Date; lte: Date; }' is not assignable to type 'undefined'.
+lib/services/staff-availability.ts(355,7): error TS2322: Type '{ appointmentId: string; location: string; locationType: string; clientName: string; service: string; startTime: Date; endTime: Date; }[]' is not assignable to type '{ appointmentId: string; location: string; locationType: "home" | "physical"; clientName: string; service: string; startTime: Date; endTime: Date; }[]'.
+  Type '{ appointmentId: string; location: string; locationType: string; clientName: string; service: string; startTime: Date; endTime: Date; }' is not assignable to type '{ appointmentId: string; location: string; locationType: "home" | "physical"; clientName: string; service: string; startTime: Date; endTime: Date; }'.
+    Types of property 'locationType' are incompatible.
+      Type 'string' is not assignable to type '"home" | "physical"'.
+lib/staff-provider.tsx(95,45): error TS7006: Parameter 's' implicitly has an 'any' type.
+lib/staff-provider.tsx(157,44): error TS7006: Parameter 's' implicitly has an 'any' type.
+lib/transaction-provider.tsx(437,24): error TS2367: This comparison appears to be unintentional because the types 'TransactionType' and '"SERVICE_SALE"' have no overlap.
+lib/transaction-provider.tsx(437,63): error TS2367: This comparison appears to be unintentional because the types 'TransactionType' and '"CONSOLIDATED_SALE"' have no overlap.
+lib/transaction-provider.tsx(438,24): error TS2367: This comparison appears to be unintentional because the types 'TransactionType' and '"PRODUCT_SALE"' have no overlap.
+lib/transaction-provider.tsx(438,63): error TS2367: This comparison appears to be unintentional because the types 'TransactionType' and '"CONSOLIDATED_SALE"' have no overlap.
+lib/transaction-service-migration.ts(36,27): error TS2339: Property 'serviceId' does not exist on type '{ id: string; name: string; quantity: number; unitPrice: number; totalPrice: number; cost?: number | undefined; category?: string | undefined; sku?: string | undefined; type: "service" | "product"; discountApplied?: boolean | undefined; discountPercentage?: number | undefined; discountAmount?: number | undefined; or...'.
+lib/transaction-service-migration.ts(42,28): error TS2339: Property 'serviceId' does not exist on type '{ id: string; name: string; quantity: number; unitPrice: number; totalPrice: number; cost?: number | undefined; category?: string | undefined; sku?: string | undefined; type: "service" | "product"; discountApplied?: boolean | undefined; discountPercentage?: number | undefined; discountAmount?: number | undefined; or...'.
+lib/transaction-service-migration.ts(45,27): error TS2339: Property 'serviceId' does not exist on type '{ id: string; name: string; quantity: number; unitPrice: number; totalPrice: number; cost?: number | undefined; category?: string | undefined; sku?: string | undefined; type: "service" | "product"; discountApplied?: boolean | undefined; discountPercentage?: number | undefined; discountAmount?: number | undefined; or...'.
+lib/transaction-service-migration.ts(68,93): error TS2339: Property 'serviceId' does not exist on type 'TransactionItem'.
+lib/transaction-service-migration.ts(69,41): error TS2339: Property 'serviceId' does not exist on type 'TransactionItem'.
+lib/transaction-service-migration.ts(70,34): error TS2339: Property 'serviceId' does not exist on type 'TransactionItem'.
+lib/transaction-service-migration.ts(162,51): error TS18048: 'transaction.metadata' is possibly 'undefined'.
+lib/transaction-service-migration.ts(183,21): error TS2339: Property 'serviceId' does not exist on type 'TransactionItem'.
+lib/transaction-service-migration.ts(187,62): error TS2339: Property 'serviceId' does not exist on type 'TransactionItem'.
+lib/transaction-service-migration.ts(189,80): error TS2339: Property 'serviceId' does not exist on type 'TransactionItem'.
+lib/validation/enhanced-validation.ts(100,48): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Error | undefined'.
+lib/validation/enhanced-validation.ts(214,24): error TS2339: Property 'received' does not exist on type 'ZodIssue'.
+  Property 'received' does not exist on type 'ZodCustomIssue & { fatal?: boolean | undefined; message: string; }'.
+lib/validation/sanitization.ts(60,42): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Error | undefined'.
+lib/validation/sanitization.ts(288,7): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Object literal may only specify known properties, and 'REMOVE_DATA_ATTRIBUTES' does not exist in type 'Config'.
+lib/validation/sanitization.ts(316,35): error TS2345: Argument of type 'string' is not assignable to parameter of type 'never'.
+lib/validation/validation-schemas.ts(33,7): error TS2740: Type 'ZodEffects<ZodString, string, string>' is missing the following properties from type 'ZodString': _regex, _addCheck, email, url, and 44 more.
+scripts/assign-staff-locations.ts(30,33): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ "sarah@vanityhub.com": string[]; "ahmed@vanityhub.com": string[]; "maria@vanityhub.com": string[]; }'.
+  No index signature with a parameter of type 'string' was found on type '{ "sarah@vanityhub.com": string[]; "ahmed@vanityhub.com": string[]; "maria@vanityhub.com": string[]; }'.
+scripts/check-all-transactions.ts(21,29): error TS2339: Property 'metadata' does not exist on type '{ id: string; userId: string; createdAt: Date; description: string | null; type: string; status: string; method: string; locationId: string | null; updatedAt: Date; items: string | null; ... 7 more ...; discountAmount: Decimal | null; }'.
+scripts/check-all-transactions.ts(40,9): error TS2353: Object literal may only specify known properties, and 'totalSpent' does not exist in type 'ClientSelect<DefaultArgs>'.
+scripts/check-all-transactions.ts(49,51): error TS2339: Property 'totalSpent' does not exist on type '{ name: string; id: string; userId: string; createdAt: Date; email: string | null; state: string | null; notes: string | null; phone: string | null; dateOfBirth: Date | null; ... 7 more ...; registrationSource: string | null; }'.
+scripts/check-lulu-data.ts(112,52): error TS2339: Property 'name' does not exist on type '{ id: string; createdAt: Date; email: string; role: string; password: string; updatedAt: Date; isActive: boolean; lastLogin: Date | null; }'.
+scripts/check-lulu-data.ts(141,63): error TS2339: Property 'name' does not exist on type '{ id: string; createdAt: Date; email: string; role: string; password: string; updatedAt: Date; isActive: boolean; lastLogin: Date | null; }'.
+scripts/check-luna-transactions.ts(30,60): error TS2339: Property 'totalSpent' does not exist on type '{ name: string; id: string; userId: string; createdAt: Date; email: string | null; state: string | null; notes: string | null; phone: string | null; dateOfBirth: Date | null; ... 7 more ...; registrationSource: string | null; }'.
+scripts/check-luna-transactions.ts(123,27): error TS2339: Property 'metadata' does not exist on type '{ id: string; userId: string; createdAt: Date; description: string | null; type: string; status: string; method: string; locationId: string | null; updatedAt: Date; items: string | null; ... 7 more ...; discountAmount: Decimal | null; }'.
+scripts/check-luna-transactions.ts(136,29): error TS2339: Property 'metadata' does not exist on type '{ id: string; userId: string; createdAt: Date; description: string | null; type: string; status: string; method: string; locationId: string | null; updatedAt: Date; items: string | null; ... 7 more ...; discountAmount: Decimal | null; }'.
+scripts/check-users.ts(19,40): error TS2339: Property 'name' does not exist on type '{ id: string; createdAt: Date; email: string; role: string; password: string; updatedAt: Date; isActive: boolean; lastLogin: Date | null; }'.
+scripts/check-users.ts(21,60): error TS2339: Property 'locations' does not exist on type '{ id: string; createdAt: Date; email: string; role: string; password: string; updatedAt: Date; isActive: boolean; lastLogin: Date | null; }'.
+scripts/cleanup-duplicate-locations.ts(120,32): error TS2552: Cannot find name 'targetLocations'. Did you mean 'Geolocation'?
+scripts/cleanup-duplicate-locations.ts(133,32): error TS2552: Cannot find name 'targetLocations'. Did you mean 'Geolocation'?
+scripts/cleanup-duplicate-locations.ts(142,29): error TS2552: Cannot find name 'targetLocations'. Did you mean 'Geolocation'?
+scripts/create-sample-appointments.ts(98,15): error TS2322: Type '{ serviceId: string; price: number; }' is not assignable to type '(Without<AppointmentServiceCreateWithoutAppointmentInput, AppointmentServiceUncheckedCreateWithoutAppointmentInput> & AppointmentServiceUncheckedCreateWithoutAppointmentInput) | (Without<...> & AppointmentServiceCreateWithoutAppointmentInput) | AppointmentServiceCreateWithoutAppointmentInput[] | AppointmentServiceUn...'.
+  Type '{ serviceId: string; price: number; }' is not assignable to type 'Without<AppointmentServiceCreateWithoutAppointmentInput, AppointmentServiceUncheckedCreateWithoutAppointmentInput> & AppointmentServiceUncheckedCreateWithoutAppointmentInput'.
+    Property 'duration' is missing in type '{ serviceId: string; price: number; }' but required in type 'AppointmentServiceUncheckedCreateWithoutAppointmentInput'.
+scripts/fix-admin-locations.ts(20,67): error TS2339: Property 'locations' does not exist on type '{ id: string; createdAt: Date; email: string; role: string; password: string; updatedAt: Date; isActive: boolean; lastLogin: Date | null; }'.
+scripts/fix-admin-locations.ts(28,9): error TS2353: Object literal may only specify known properties, and 'locations' does not exist in type '(Without<UserUpdateInput, UserUncheckedUpdateInput> & UserUncheckedUpdateInput) | (Without<...> & UserUpdateInput)'.
+scripts/fix-admin-locations.ts(34,64): error TS2339: Property 'locations' does not exist on type '{ id: string; createdAt: Date; email: string; role: string; password: string; updatedAt: Date; isActive: boolean; lastLogin: Date | null; }'.
+scripts/fix-admin-locations.ts(35,40): error TS2339: Property 'name' does not exist on type '{ id: string; createdAt: Date; email: string; role: string; password: string; updatedAt: Date; isActive: boolean; lastLogin: Date | null; }'.
+scripts/fix-database-issues.ts(40,11): error TS2353: Object literal may only specify known properties, and 'emailVerified' does not exist in type '(Without<UserCreateInput, UserUncheckedCreateInput> & UserUncheckedCreateInput) | (Without<...> & UserCreateInput)'.
+scripts/fix-database-issues.ts(50,11): error TS2353: Object literal may only specify known properties, and 'role' does not exist in type 'Without<StaffMemberCreateInput, StaffMemberUncheckedCreateInput> & StaffMemberUncheckedCreateInput'.
+scripts/fix-database-issues.ts(68,9): error TS2322: Type '{ name: string; address: string; phone: string; isActive: true; }' is not assignable to type '(Without<LocationCreateInput, LocationUncheckedCreateInput> & LocationUncheckedCreateInput) | (Without<...> & LocationCreateInput)'.
+  Type '{ name: string; address: string; phone: string; isActive: true; }' is not assignable to type 'Without<LocationUncheckedCreateInput, LocationCreateInput> & LocationCreateInput'.
+    Type '{ name: string; address: string; phone: string; isActive: true; }' is missing the following properties from type 'LocationCreateInput': city, country
+scripts/master-product-seed.ts(34,11): error TS2304: Cannot find name 'seedComprehensiveProducts'.
+scripts/master-product-seed.ts(41,11): error TS2304: Cannot find name 'seedMakeupProducts'.
+scripts/master-product-seed.ts(48,11): error TS2304: Cannot find name 'seedRemainingProducts'.
+scripts/master-product-seed.ts(56,11): error TS2304: Cannot find name 'seedFinalCategories'.
+scripts/master-product-seed.ts(64,11): error TS2304: Cannot find name 'seedToolsBrushes'.

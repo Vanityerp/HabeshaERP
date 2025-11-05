@@ -333,8 +333,8 @@ export function EnhancedClientDetailsDialog({ client, open, onOpenChange }: Clie
                             </div>
                             <div className="flex items-center gap-2">
                               {event.type === "appointment" && (
-                                <Badge variant={getAppointmentStatusVariant(event.status)}>
-                                  {capitalizeFirstLetter(event.status)}
+                                <Badge variant={getAppointmentStatusVariant('status' in event ? event.status : 'pending')}>
+                                  {capitalizeFirstLetter('status' in event ? event.status : 'pending')}
                                 </Badge>
                               )}
                               {event.type === "purchase" && (

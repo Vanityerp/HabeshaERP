@@ -31,7 +31,7 @@ import { useLocations } from "@/lib/location-provider"
 import { useServices } from "@/lib/service-provider"
 import { useApiStaff } from "@/lib/api-staff-service"
 import { realTimeService, RealTimeEventType } from "@/lib/real-time-service"
-import { NotificationService } from "@/lib/notification-service"
+import { NotificationService, NotificationType } from "@/lib/notification-service"
 import {
   Check,
   ChevronLeft,
@@ -246,8 +246,8 @@ export default function BookAppointmentPage() {
     }
 
     if (services.length > 0) {
-      const servicesByCategory = {};
-      const servicesByLocation = {};
+      const servicesByCategory: Record<string, number> = {};
+      const servicesByLocation: Record<string, number> = {};
       services.forEach(service => {
         if (!servicesByCategory[service.category]) {
           servicesByCategory[service.category] = 0;
@@ -1038,6 +1038,7 @@ export default function BookAppointmentPage() {
       const availabilityValidation = await validateStaffAvailability({
         id: `temp-${Date.now()}`, // Temporary ID for validation
         staffId: selectedStaff,
+        staffName: staffDetails?.name || "Unknown Staff",
         date: appointmentDate.toISOString(),
         duration: service.duration,
         location: selectedLocation,
@@ -1300,7 +1301,7 @@ export default function BookAppointmentPage() {
       try {
         // Create a notification for admin users
         const notificationData = {
-          type: 'appointment_created' as const,
+          type: NotificationType.APPOINTMENT_CREATED,
           title: 'New Appointment Booked',
           message: `${clientName} booked ${service.name} for ${format(selectedDate, "MMM d, yyyy")} at ${selectedTime}`,
           priority: 'normal' as const,

@@ -46,7 +46,7 @@ export function GiftCardPurchaseDialog({ open, onOpenChange, onSuccess }: GiftCa
     paymentMethod: PaymentMethod.CREDIT_CARD,
     purchaserName: user?.name || "",
     purchaserEmail: user?.email || "",
-    purchaserPhone: user?.phone || ""
+    purchaserPhone: ""
   })
 
   const handleSubmit = async () => {
@@ -136,7 +136,7 @@ export function GiftCardPurchaseDialog({ open, onOpenChange, onSuccess }: GiftCa
         paymentMethod: PaymentMethod.CREDIT_CARD,
         purchaserName: user?.name || "",
         purchaserEmail: user?.email || "",
-        purchaserPhone: user?.phone || ""
+        purchaserPhone: ""
       })
 
       onSuccess?.()

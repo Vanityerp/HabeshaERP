@@ -63,8 +63,8 @@ export async function POST() {
 
         // Migrate appointments
         const appointmentUpdate = await prisma.appointment.updateMany({
-          where: { location: mapping.oldId },
-          data: { location: mapping.newId }
+          where: { locationId: mapping.oldId },
+          data: { locationId: mapping.newId }
         })
         migrationResults.appointmentsMigrated += appointmentUpdate.count
         console.log(`Migrated ${appointmentUpdate.count} appointments`)

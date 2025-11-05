@@ -180,7 +180,7 @@ export function HRManagement({ search }: HRManagementProps) {
 
       for (const sectionId of options.sections) {
         switch (sectionId) {
-          case 'hr-overview':
+          case 'hr-overview': {
             const documents = aggregateStaffDocuments(staff || [])
             const reviews = aggregatePerformanceReviews(staff || [])
             const trainings = aggregateTrainingRecords(staff || [])
@@ -188,22 +188,27 @@ export function HRManagement({ search }: HRManagementProps) {
             const hrSummary = aggregateHRSummary(staff || [], documents, reviews, trainings, benefits)
             reportSections.push(hrSummary)
             break
-          case 'staff-documents':
+          }
+          case 'staff-documents': {
             const staffDocuments = aggregateStaffDocuments(staff || [], options.dateRange)
             reportSections.push(...staffDocuments)
             break
-          case 'performance-reviews':
+          }
+          case 'performance-reviews': {
             const performanceReviews = aggregatePerformanceReviews(staff || [], options.dateRange)
             reportSections.push(...performanceReviews)
             break
-          case 'training-records':
+          }
+          case 'training-records': {
             const trainingRecords = aggregateTrainingRecords(staff || [], options.dateRange)
             reportSections.push(...trainingRecords)
             break
-          case 'staff-benefits':
+          }
+          case 'staff-benefits': {
             const staffBenefits = aggregateStaffBenefits(staff || [], options.dateRange)
             reportSections.push(...staffBenefits)
             break
+          }
           case 'staff-directory':
             reportSections.push(...(staff || []))
             break
@@ -216,7 +221,10 @@ export function HRManagement({ search }: HRManagementProps) {
         options.includeSummary ? aggregateHRSummary(staff || [], [], [], [], []) : undefined
       )
 
-      reportData.dateRange = options.dateRange
+      reportData.dateRange = {
+        from: options.dateRange?.from || new Date(),
+        to: options.dateRange?.to || new Date()
+      }
 
       switch (options.format) {
         case 'csv':

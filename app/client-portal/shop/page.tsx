@@ -650,19 +650,13 @@ export default function ShopPage() {
                               </Badge>
                             </div>
                             {/* Show location breakdown if available */}
-                            {product.locations && product.locations.length > 0 && (
+                            {product.location && (
                               <div className="space-y-1">
-                                {product.locations.slice(0, 3).map((location, index) => (
-                                  <div key={index} className="flex justify-between text-xs text-gray-600">
-                                    <span className="truncate max-w-[60px]">
-                                      {location.locationName || 'Location'}
-                                    </span>
-                                    <span className={location.stock === 0 ? 'text-red-500' : ''}>{location.stock}</span>
-                                  </div>
-                                ))}
-                                {product.locations.length > 3 && (
-                                  <div className="text-xs text-gray-500">+{product.locations.length - 3} more</div>
-                                )}
+                                <div className="text-xs text-gray-600">
+                                  <span className="truncate">
+                                    {product.location}
+                                  </span>
+                                </div>
                               </div>
                             )}
                           </div>

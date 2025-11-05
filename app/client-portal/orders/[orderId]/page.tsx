@@ -276,7 +276,7 @@ export default function OrderTrackingPage({ params }: OrderTrackingPageProps) {
                     <div className={`
                       flex items-center justify-center w-8 h-8 rounded-full border-2
                       ${step.completed
-                        ? step.isError
+                        ? (step as any).isError
                           ? 'bg-red-100 border-red-500 text-red-600'
                           : 'bg-green-100 border-green-500 text-green-600'
                         : 'bg-gray-100 border-gray-300 text-gray-400'

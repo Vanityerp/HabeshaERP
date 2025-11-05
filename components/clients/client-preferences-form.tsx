@@ -22,7 +22,8 @@ interface ClientPreferencesFormProps {
 
 export function ClientPreferencesForm({ initialPreferences, onSave }: ClientPreferencesFormProps) {
   // Get real data from providers
-  const { staff, categories, services } = useServices()
+  const { categories, services } = useServices()
+  const { staff } = useStaff() // Get staff from the staff provider
 
   // Initialize with empty arrays or initial values if provided
   const [preferredStylists, setPreferredStylists] = useState<string[]>([])
@@ -79,7 +80,7 @@ export function ClientPreferencesForm({ initialPreferences, onSave }: ClientPref
   // Accept all roles but check for active status
   const stylists = staffData.filter(staffMember => {
     // Check if status is Active (case-insensitive)
-    const isActive = staffMember.status?.toLowerCase() === "active" || staffMember.status === "ACTIVE"
+    const isActive = staffMember.status === "Active"
 
     // Include all staff roles (Manager, Stylist, Nail Artist, Beautician, etc.)
     return isActive

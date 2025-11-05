@@ -37,7 +37,7 @@ import { transactionDeduplicationService } from "@/lib/transaction-deduplication
 import { format } from "date-fns"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { TransactionDetailsDialog } from "./transaction-details-dialog"
-import { printReceipt } from "./receipt-printer.ts"
+import { printReceipt } from "./receipt-printer"
 import { exportTransactionToHTMLPDF, exportReportToCSV, exportReportToExcel, exportReportToPDF, prepareTableDataForExport } from "@/lib/pdf-export"
 import { ExportOptionsDialog, type ExportSection, type ExportOptions } from "@/components/reports/export-options-dialog"
 import { useToast } from "@/components/ui/use-toast"
@@ -255,7 +255,7 @@ export function Transactions({
           case 'transactions':
             reportSections.push(...filteredTransactions)
             break
-          case 'summary':
+          case 'summary': {
             const summary = {
               totalTransactions: filteredTransactions.length,
               totalAmount: filteredTransactions.reduce((sum, t) => sum + (t.amount || 0), 0),
@@ -266,6 +266,7 @@ export function Transactions({
             }
             reportSections.push(summary)
             break
+          }
         }
       }
 

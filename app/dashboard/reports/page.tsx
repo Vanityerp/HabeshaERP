@@ -25,8 +25,8 @@ import { ExportOptionsDialog, type ExportSection, type ExportOptions } from "@/c
 import { BulkExportDialog, type BulkExportOptions, type ReportType } from "@/components/reports/bulk-export-dialog"
 import { useToast } from "@/components/ui/use-toast"
 import { FileDown, Printer, TrendingUp, TrendingDown, Calendar, ShoppingCart, Globe, ChevronDown, FileSpreadsheet, FileText, Loader2, Users, DollarSign, Package } from "lucide-react"
-import { format, subDays } from "date-fns"
-import { TransactionSource, TransactionType, TransactionStatus, getTransactionSourceLabel } from "@/lib/transaction-types"
+import { format, subDays, startOfDay, endOfDay } from "date-fns"
+import { TransactionSource, TransactionType, TransactionStatus, TransactionFilter, getTransactionSourceLabel } from "@/lib/transaction-types"
 import type { DateRange } from "react-day-picker"
 import {
   exportReportToPDF,
@@ -101,7 +101,7 @@ export default function ReportsPage() {
    const filter: TransactionFilter = {
      startDate: dateRange?.from,
      endDate: dateRange?.to,
-     source: selectedSource,
+     source: selectedSource === "all" ? undefined : selectedSource as TransactionSource,
      location: currentLocation
    }
     const filteredTransactions = filterTransactions(filter)
@@ -179,7 +179,7 @@ export default function ReportsPage() {
       const filter: TransactionFilter = {
         startDate: (options.dateRange || dateRange)?.from,
         endDate: (options.dateRange || dateRange)?.to,
-        source: selectedSource,
+        source: selectedSource === "all" ? undefined : selectedSource as TransactionSource,
         location: options.location || currentLocation
       }
       const filteredTransactions = filterTransactions(filter)
@@ -235,7 +235,10 @@ export default function ReportsPage() {
       if (reportSections.length > 0) {
         const mainReport: ReportData = {
           title: 'Reports & Analytics',
-          dateRange: options.dateRange || dateRange,
+          dateRange: {
+            from: options.dateRange?.from || dateRange?.from || new Date(),
+            to: options.dateRange?.to || dateRange?.to || new Date()
+          },
           location: getLocationName(options.location || currentLocation),
           data: reportSections.flatMap(section => section.data),
           summary: options.includeSummary ? realtimeStats : undefined
@@ -275,7 +278,12 @@ export default function ReportsPage() {
   const handlePrint = async () => {
     setIsPrinting(true)
     try {
-      const filteredTransactions = filterTransactions(transactions, dateRange, selectedSource, currentLocation)
+      const filteredTransactions = filterTransactions({
+        startDate: dateRange?.from,
+        endDate: dateRange?.to,
+        source: selectedSource === "all" ? undefined : selectedSource as TransactionSource,
+        location: currentLocation
+      })
       const printService = ReportPrintService.getInstance()
 
       const printSections: PrintSection[] = [
@@ -325,7 +333,12 @@ export default function ReportsPage() {
 
   // Quick export functions
   const handleQuickExportCSV = async () => {
-    const filteredTransactions = filterTransactions(transactions, dateRange, selectedSource, currentLocation)
+    const filteredTransactions = filterTransactions({
+      startDate: dateRange?.from,
+      endDate: dateRange?.to,
+      source: selectedSource === "all" ? undefined : selectedSource as TransactionSource,
+      location: currentLocation
+    })
     const salesData = aggregateSalesData(filteredTransactions, dateRange, 'day', currentLocation)
 
     try {
@@ -344,7 +357,12 @@ export default function ReportsPage() {
   }
 
   const handleQuickExportExcel = async () => {
-    const filteredTransactions = filterTransactions(transactions, dateRange, selectedSource, currentLocation)
+    const filteredTransactions = filterTransactions({
+      startDate: dateRange?.from,
+      endDate: dateRange?.to,
+      source: selectedSource === "all" ? undefined : selectedSource as TransactionSource,
+      location: currentLocation
+    })
     const salesData = aggregateSalesData(filteredTransactions, dateRange, 'day', currentLocation)
 
     try {
@@ -392,7 +410,12 @@ export default function ReportsPage() {
   const handleBulkExport = async (options: BulkExportOptions) => {
     setIsExporting(true)
     try {
-      const filteredTransactions = filterTransactions(transactions, dateRange, selectedSource, currentLocation)
+      const filteredTransactions = filterTransactions({
+        startDate: dateRange?.from,
+        endDate: dateRange?.to,
+        source: selectedSource === "all" ? undefined : selectedSource as TransactionSource,
+        location: currentLocation
+      })
       const exportPromises: Promise<void>[] = []
 
       // Generate exports for each combination of report type and format
@@ -402,19 +425,29 @@ export default function ReportsPage() {
 
           // Prepare data based on report type
           switch (reportType) {
-            case 'sales':
+            case 'sales': {
               const salesData = aggregateSalesData(filteredTransactions, dateRange, 'day', currentLocation)
-              reportData = { title: 'Sales Report', data: salesData, dateRange, location: getLocationName(currentLocation) }
+              reportData = { 
+                title: 'Sales Report', 
+                data: salesData, 
+                dateRange: {
+                  from: dateRange?.from || new Date(),
+                  to: dateRange?.to || new Date()
+                }, 
+                location: getLocationName(currentLocation) 
+              }
               break
+            }
             case 'appointments': {
               const appointmentData = aggregateAppointmentData(filteredTransactions, dateRange, currentLocation)
               reportData = prepareTableDataForExport(appointmentData, 'Appointments Report')
               break
             }
-            case 'staff':
+            case 'staff': {
               const staffData = aggregateStaffPerformanceData(filteredTransactions, staff || [], dateRange, currentLocation)
               reportData = prepareTableDataForExport(staffData, 'Staff Performance Report')
               break
+            }
             case 'inventory':
               // Mock inventory data for now
               reportData = prepareTableDataForExport([], 'Inventory Report')
@@ -423,14 +456,16 @@ export default function ReportsPage() {
               // Mock financial data for now
               reportData = prepareTableDataForExport([], 'Financial Report')
               break
-            case 'client':
+            case 'client': {
               const clientData = aggregateClientRetentionData(filteredTransactions, dateRange, currentLocation)
               reportData = prepareTableDataForExport(clientData, 'Client Report')
               break
-            case 'services':
+            }
+            case 'services': {
               const serviceData = aggregateServicePopularityData(filteredTransactions, dateRange, currentLocation)
               reportData = prepareTableDataForExport(serviceData, 'Service Popularity Report')
               break
+            }
             default:
               continue
           }
@@ -442,20 +477,24 @@ export default function ReportsPage() {
           const exportOptions: ExportOptions = {
             format: format as 'csv' | 'excel' | 'pdf',
             sections: [reportType],
-            dateRange,
+            dateRange: {
+              from: dateRange?.from || new Date(),
+              to: dateRange?.to || new Date()
+            },
             includeSummary: true,
-            customFileName: `${reportType}-report-${format}-${format(new Date(), 'yyyyMMdd-HHmm')}`
+            includeCharts: false,
+            customFileName: `${reportType}-report-${format}-${new Date().toISOString().slice(0, 16).replace(/[:-]/g, '')}`
           }
 
           switch (format) {
             case 'csv':
-              exportPromises.push(exportReportToCSV(reportData, exportOptions))
+              exportPromises.push(Promise.resolve(exportReportToCSV(reportData, exportOptions)).then(() => {}))
               break
             case 'excel':
-              exportPromises.push(exportReportToExcel(reportData, exportOptions))
+              exportPromises.push(Promise.resolve(exportReportToExcel(reportData, exportOptions)).then(() => {}))
               break
             case 'pdf':
-              exportPromises.push(exportReportToPDF(reportData, exportOptions))
+              exportPromises.push(exportReportToPDF(reportData, exportOptions).then(() => {}))
               break
           }
         }
@@ -638,7 +677,10 @@ export default function ReportsPage() {
           </Select>
           <DatePickerWithRange
              dateRange={dateRange as DateRange | undefined}
-             onDateRangeChange={setDateRange}
+             onDateRangeChange={(range) => setDateRange({ 
+               from: range?.from, 
+               to: range?.to 
+             })}
            />
 
           {/* Enhanced Export Dropdown */}
@@ -824,8 +866,6 @@ export default function ReportsPage() {
               <CardContent>
                 <SalesChart
                   dateRange={dateRange}
-                  transactions={transactions}
-                  currentLocation={currentLocation}
                 />
               </CardContent>
             </Card>
@@ -838,8 +878,8 @@ export default function ReportsPage() {
               <CardContent>
                 <AppointmentsChart
                   dateRange={dateRange}
-                  transactions={transactions}
-                  currentLocation={currentLocation}
+                  
+                  
                 />
               </CardContent>
             </Card>
@@ -854,8 +894,6 @@ export default function ReportsPage() {
               <StaffPerformanceTable
                 dateRange={dateRange}
                 limit={5}
-                transactions={transactions}
-                currentLocation={currentLocation}
               />
             </CardContent>
           </Card>
@@ -872,8 +910,6 @@ export default function ReportsPage() {
                 <SalesChart
                   dateRange={dateRange}
                   groupBy="day"
-                  transactions={transactions}
-                  currentLocation={currentLocation}
                 />
               </CardContent>
             </Card>
@@ -887,8 +923,6 @@ export default function ReportsPage() {
                 <ServicePopularityChart
                   dateRange={dateRange}
                   type="revenue"
-                  transactions={transactions}
-                  currentLocation={currentLocation}
                 />
               </CardContent>
             </Card>
@@ -903,8 +937,6 @@ export default function ReportsPage() {
               <CardContent className="h-[350px]">
                 <PaymentMethodChart
                   dateRange={dateRange}
-                  transactions={transactions}
-                  currentLocation={currentLocation}
                 />
               </CardContent>
             </Card>
@@ -917,8 +949,8 @@ export default function ReportsPage() {
               <CardContent>
                 <PaymentMethodTable
                   dateRange={dateRange}
-                  transactions={transactions}
-                  currentLocation={currentLocation}
+                  
+                  
                 />
               </CardContent>
             </Card>
@@ -1002,17 +1034,19 @@ export default function ReportsPage() {
 
         <TabsContent value="products" className="space-y-6">
           <ProductSalesChart
-            dateRange={dateRange}
-            transactions={transactions}
-            currentLocation={currentLocation}
+            dateRange={{
+              from: dateRange?.from || new Date(),
+              to: dateRange?.to || new Date()
+            }}
           />
         </TabsContent>
 
         <TabsContent value="inventory" className="space-y-6">
           <InventoryAnalytics
-            dateRange={dateRange}
-            transactions={transactions}
-            currentLocation={currentLocation}
+            dateRange={{
+              from: dateRange?.from || new Date(),
+              to: dateRange?.to || new Date()
+            }}
           />
         </TabsContent>
 
@@ -1026,8 +1060,8 @@ export default function ReportsPage() {
               <CardContent>
                 <AppointmentsChart
                   dateRange={dateRange}
-                  transactions={transactions}
-                  currentLocation={currentLocation}
+                  
+                  
                 />
               </CardContent>
             </Card>
@@ -1041,8 +1075,8 @@ export default function ReportsPage() {
                 <ServicePopularityChart
                   dateRange={dateRange}
                   type="count"
-                  transactions={transactions}
-                  currentLocation={currentLocation}
+                  
+                  
                 />
               </CardContent>
             </Card>
@@ -1094,8 +1128,8 @@ export default function ReportsPage() {
             <CardContent>
               <StaffPerformanceTable
                 dateRange={dateRange}
-                transactions={transactions}
-                currentLocation={currentLocation}
+                
+                
               />
             </CardContent>
           </Card>
@@ -1185,8 +1219,8 @@ export default function ReportsPage() {
               <CardContent className="h-[350px]">
                 <ClientRetentionChart
                   dateRange={dateRange as { from: Date; to: Date } | undefined}
-                  transactions={transactions}
-                  currentLocation={currentLocation}
+                  
+                  
                 />
               </CardContent>
             </Card>
@@ -1282,7 +1316,7 @@ export default function ReportsPage() {
         onExport={handleExport}
         availableSections={getAvailableExportSections()}
         defaultDateRange={dateRange}
-        currentLocation={currentLocation}
+        
         isLoading={isExporting}
       />
 

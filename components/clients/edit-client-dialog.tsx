@@ -167,7 +167,7 @@ export function EditClientDialog({ clientId, open, onOpenChange, onClientUpdated
             <DialogDescription>Update client information and preferences.</DialogDescription>
           </DialogHeader>
 
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-5 flex-1 flex flex-col overflow-hidden">
+          <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "basic" | "preferences" | "review")} className="mt-5 flex-1 flex flex-col overflow-hidden">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="basic">Basic Info</TabsTrigger>
               <TabsTrigger value="preferences">Preferences</TabsTrigger>
@@ -417,7 +417,7 @@ export function EditClientDialog({ clientId, open, onOpenChange, onClientUpdated
 
                     <div className="font-medium">Preferred Location:</div>
                     <div>
-                      {getLocationName(formData.preferredLocation)}
+                      {getLocationName(formData.preferredLocation || "")}
                     </div>
 
                     <div className="font-medium">Status:</div>

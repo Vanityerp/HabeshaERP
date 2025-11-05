@@ -39,8 +39,8 @@ export function DynamicQuickActions() {
 
   // Filter active quick actions and sort by order
   const activeQuickActions = quickActions
-    .filter(action => action.isActive)
-    .sort((a, b) => a.order - b.order)
+    .filter((action: any) => action.isActive)
+    .sort((a: any, b: any) => a.order - b.order)
 
   // If no quick actions are loaded, show default ones
   const defaultQuickActions = [
@@ -115,7 +115,7 @@ export function DynamicQuickActions() {
         }
       `}</style>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-        {actionsToDisplay.map((action) => {
+        {actionsToDisplay.map((action: any) => {
         // Force Calendar icon for Book Appointment
         let IconComponent = Calendar // Default to Calendar
 

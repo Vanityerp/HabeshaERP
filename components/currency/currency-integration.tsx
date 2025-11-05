@@ -81,7 +81,7 @@ export function EnhancedCurrencyDisplay({
   const formattedAmount = formatCurrency(amount)
   
   // Extract parts for custom display
-  const numericAmount = amount.toFixed(precision ?? currency.decimalPlaces ?? 2)
+  const numericAmount = amount.toFixed(precision ?? 2)
   
   return (
     <span className={`currency-display ${className}`} data-currency={currency.code}>
@@ -113,7 +113,7 @@ export function useCurrencyConverter() {
     const { showSymbol = true, showCode = false, precision } = options || {}
     const { currency } = useCurrency()
     
-    const numericAmount = amount.toFixed(precision ?? currency.decimalPlaces ?? 2)
+    const numericAmount = amount.toFixed(precision ?? 2)
     
     let formatted = ""
     if (showSymbol) formatted += currency.symbol + " "

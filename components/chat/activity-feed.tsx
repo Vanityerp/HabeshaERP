@@ -256,9 +256,9 @@ export function ActivityFeed({ className }: ActivityFeedProps) {
                           )}
                         </div>
 
-                        {item.amount && (
+                        {'amount' in item && item.amount && (
                           <Badge variant="default" className="text-xs">
-                            ${item.amount.toFixed(2)}
+                            ${'amount' in item ? item.amount?.toFixed(2) : '0.00'}
                           </Badge>
                         )}
                       </div>

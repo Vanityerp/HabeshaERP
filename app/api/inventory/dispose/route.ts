@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
           quantity: disposalQuantity,
           reason: `DISPOSAL: ${reason}`,
           notes: notes || null,
-          performedBy: session.user.email || "Unknown User",
+          userId: session.user.id || "unknown",
           previousStock: currentStock,
           newStock: newStock
         }

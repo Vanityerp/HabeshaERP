@@ -108,10 +108,11 @@ export function aggregateSalesData(
         case 'month':
           return transactionDate.getMonth() === date.getMonth() && 
                  transactionDate.getFullYear() === date.getFullYear()
-        case 'week':
+        case 'week': {
           const weekStart = new Date(date)
           const weekEnd = new Date(date.getTime() + 7 * 24 * 60 * 60 * 1000)
           return transactionDate >= weekStart && transactionDate < weekEnd
+        }
         default:
           return format(transactionDate, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd')
       }

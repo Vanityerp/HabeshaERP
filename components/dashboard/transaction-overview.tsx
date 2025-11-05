@@ -37,12 +37,14 @@ export function TransactionOverview() {
     switch (selectedPeriod) {
       case "today":
         return { start: today, end: new Date(today.getTime() + 24 * 60 * 60 * 1000) }
-      case "week":
+      case "week": {
         const weekStart = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
         return { start: weekStart, end: now }
-      case "month":
+      }
+      case "month": {
         const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
         return { start: monthStart, end: now }
+      }
       default:
         return { start: today, end: new Date(today.getTime() + 24 * 60 * 60 * 1000) }
     }

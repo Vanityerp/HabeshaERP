@@ -288,25 +288,29 @@ export default function AccountingPage() {
       // Prepare data for selected sections
       for (const sectionId of options.sections) {
         switch (sectionId) {
-          case 'financial-overview':
+          case 'financial-overview': {
             const financialSummary = aggregateFinancialSummary(filteredTransactions, [], safeDateRange, options.location)
             reportSections.push(prepareTableDataForExport([financialSummary], 'Financial Overview', financialSummary))
             break
-          case 'daily-sales':
+          }
+          case 'daily-sales': {
             const dailySalesData = aggregateDailySalesData(filteredTransactions, safeDateRange, options.location)
             reportSections.push(prepareTableDataForExport(dailySalesData, 'Daily Sales'))
             break
+          }
           case 'transactions':
             reportSections.push(prepareTableDataForExport(filteredTransactions, 'Transaction Details'))
             break
-          case 'staff-costs':
+          case 'staff-costs': {
             const staffCostsData = aggregateStaffCostsData(staff || [], filteredTransactions, safeDateRange, options.location)
             reportSections.push(prepareTableDataForExport(staffCostsData, 'Staff Costs'))
             break
-          case 'expenses':
+          }
+          case 'expenses': {
             const expenseData = aggregateExpenseData(safeDateRange, options.location)
             reportSections.push(prepareTableDataForExport(expenseData, 'Expenses'))
             break
+          }
         }
       }
 

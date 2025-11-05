@@ -55,6 +55,7 @@ export function EnhancedNewClientDialog({ open, onOpenChange }: EnhancedNewClien
   const [preferences, setPreferences] = useState({
     preferredStylists: [],
     preferredServices: [],
+    preferredProducts: [],
     allergies: [],
     notes: ""
   })
@@ -75,7 +76,6 @@ export function EnhancedNewClientDialog({ open, onOpenChange }: EnhancedNewClien
         birthday,
         referredBy,
         notes,
-        currency,
         locations: [preferredLocation],
         preferences
       })
@@ -97,6 +97,7 @@ export function EnhancedNewClientDialog({ open, onOpenChange }: EnhancedNewClien
       setPreferences({
         preferredStylists: [],
         preferredServices: [],
+        preferredProducts: [],
         allergies: [],
         notes: ""
       })

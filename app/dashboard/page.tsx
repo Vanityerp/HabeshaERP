@@ -84,7 +84,10 @@ export default function DashboardPage() {
       {/* Alert Summary Banner */}
       <AlertSummary onNavigateToAlerts={handleNavigateToAlerts} />
 
-      <StatsCards dateRange={dateRange} />
+      <StatsCards dateRange={{
+        from: dateRange?.from || new Date(),
+        to: dateRange?.to || new Date()
+      }} />
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="mb-4">
@@ -124,7 +127,10 @@ export default function DashboardPage() {
               </CardHeader>
               <CardContent>
                 <Suspense fallback={<ChartSkeleton />}>
-                  <RevenueChart dateRange={dateRange} />
+                  <RevenueChart dateRange={{
+                    from: dateRange?.from || new Date(),
+                    to: dateRange?.to || new Date()
+                  }} />
                 </Suspense>
               </CardContent>
             </Card>
@@ -152,7 +158,10 @@ export default function DashboardPage() {
 
         <TabsContent value="analytics">
           <Suspense fallback={<div className="space-y-4">{Array(4).fill(0).map((_, i) => <CardSkeleton key={i} />)}</div>}>
-            <IntegratedOverview dateRange={dateRange} />
+            <IntegratedOverview dateRange={{
+              from: dateRange?.from || new Date(),
+              to: dateRange?.to || new Date()
+            }} />
           </Suspense>
         </TabsContent>
 

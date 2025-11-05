@@ -241,6 +241,20 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     )
   }
 
+  if (!product) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Product Not Found</h1>
+          <p className="text-gray-600 mb-8">The product you're looking for doesn't exist.</p>
+          <Link href="/client-portal/shop" className="text-pink-600 hover:text-pink-700">
+            Back to Shop
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
   return (
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumbs */}

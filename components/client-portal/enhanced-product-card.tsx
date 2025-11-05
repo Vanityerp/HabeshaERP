@@ -117,7 +117,7 @@ export function EnhancedProductCard({
   const badges = getBadges()
   const hasDiscount = product.salePrice && product.salePrice < product.price
   const discountPercentage = hasDiscount 
-    ? Math.round(((product.price - product.salePrice) / product.price) * 100)
+    ? Math.round(((product.price - (product.salePrice || 0)) / product.price) * 100)
     : 0
 
   if (compact) {
@@ -128,7 +128,7 @@ export function EnhancedProductCard({
             {/* Product Image */}
             <div className="relative flex-shrink-0">
               <EnhancedImage
-                src={currentImage}
+                src={currentImage || '/placeholder-product.jpg'}
                 alt={product.name}
                 className="w-16 h-16 rounded-lg"
                 aspectRatio="square"
@@ -205,7 +205,7 @@ export function EnhancedProductCard({
         {/* Product Image */}
         <div className="relative aspect-square overflow-hidden">
           <EnhancedImage
-            src={currentImage}
+            src={currentImage || '/placeholder-product.jpg'}
             alt={product.name}
             className="w-full h-full group-hover:scale-105 transition-transform duration-300"
             aspectRatio="square"

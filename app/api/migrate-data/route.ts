@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
             userId: user.id,
             name: staff.name,
             phone: staff.phone || null,
-            avatar: staff.avatar || staff.name.split(' ').map(n => n[0]).join(''),
+            avatar: staff.avatar || staff.name.split(' ').map((n: string) => n[0]).join(''),
             color: staff.color || 'bg-purple-100 text-purple-800',
             jobRole: staff.role, // Store the original specific job role
             homeService: staff.homeService || false,

@@ -34,7 +34,7 @@ export function ClientDirectory({ search }: ClientDirectoryProps) {
   // Filter clients based on location permissions and search term
   const filteredClients = clientsArray.filter((client) => {
     // Filter by location
-    if (currentLocation !== "all" && !client.locations.includes(currentLocation)) {
+    if (currentLocation !== "all" && !client.locations?.includes(currentLocation)) {
       return false
     }
 
@@ -130,7 +130,7 @@ export function ClientDirectory({ search }: ClientDirectoryProps) {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {getLocationName(client.preferredLocation)}
+                    {getLocationName(client.preferredLocation || "")}
                   </TableCell>
                   <TableCell>
                     {client.totalSpent ? (

@@ -10,9 +10,14 @@ export async function GET() {
   try {
     console.log("🔄 Fetching staff members without credentials...")
     
+    // Since userId is required in the schema, we'll return staff members
+    // whose associated user accounts might need credential setup
     const staffWithoutCredentials = await prisma.staffMember.findMany({
       where: {
-        user: { is: null } // Staff members without user accounts
+        user: {
+          // Find users who might need credential setup (you can adjust this logic)
+          role: "STAFF"
+        }
       },
       include: {
         locations: {

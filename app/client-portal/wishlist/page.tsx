@@ -125,7 +125,7 @@ export default function WishlistPage() {
                         <Star
                           key={i}
                           className={`h-3 w-3 ${
-                            i < Math.floor(item.product.rating)
+                            i < Math.floor(item.product.rating || 0)
                               ? 'text-yellow-400 fill-current'
                               : 'text-gray-300'
                           }`}
